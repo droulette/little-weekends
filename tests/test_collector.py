@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, merge_events, dedupe, validate_event
+from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, merge_events, dedupe, validate_event, parse_bn, parse_alamedakids
 
 NOW=datetime(2026,11,4,20,tzinfo=timezone.utc)
 IKEA={'id':'ikea','name':'IKEA Emeryville'}
@@ -84,6 +84,22 @@ class CollectTests(unittest.TestCase):
         for e in events:e['checked_at']=NOW.isoformat()
         merged=merge_events(events,[],[events[0]],NOW,full_sources={'ikea'})
         self.assertEqual(len(merged),1)
+
+    def test_bn_start_only_and_store_filter(self):
+        def row(id,store):
+            return dict(eventId=id,storeId=store,name='Storytime',isStoryTime=True,isInstoreEvent=True,isVirtualEvent=False,
+                        date='2026-11-07',time24='14:00',storeAddress1='5604 Bay Street',descriptionText='Storytime in the Kids Department')
+        data={'content':[row('local',2072),row('other',9005)]}
+        script='self.__next_f.push('+json.dumps([1,'a:'+json.dumps(data)])+')'
+        events=parse_bn('<script>'+script+'</script>',{'id':'bn','name':'Barnes & Noble Emeryville'})
+        self.assertEqual(len(events),1);self.assertEqual(events[0]['start'],'14:00');self.assertIsNone(events[0]['end'])
+
+    def test_local_calendar_excludes_paid_and_out_of_area(self):
+        def row(city,cost,title):
+            return f'<tr><td><span class="date-display-single" content="2026-11-14T00:00:00-08:00"></span></td><td><a aria-controls="event">{title}</a><div class="collapse"><p>Fun for kids.</p><p>Time: 3PM – 4PM</p><p>Cost: {cost}</p><p>Location: Library, Main Street, {city}</p><p>Link: More</p><a href="/event">Click here for complete event details</a></div></td></tr>'
+        html='<table class="views-table">'+row('Castro Valley','Free','Kids craft')+row('Castro Valley','$5','Paid kids craft')+row('Fremont','Free','Faraway kids craft')+'</table>'
+        events=parse_alamedakids(html,{'id':'alamedakids','name':'Alameda Kids','url':'https://www.alamedakids.org/calendar'})
+        self.assertEqual(len(events),1);self.assertEqual(events[0]['start'],'15:00')
 
     def test_unsafe_urls_rejected(self):
         e=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0];e['url']='javascript:alert(1)'

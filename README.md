@@ -5,7 +5,7 @@ A free family-outing planner for Oakland and nearby East Bay cities. Static HTML
 ## What works
 
 - This weekend, next weekend, and future events; city, age, activity, and price filters.
-- Free-only is selected by default. Imported events require explicitly free admission.
+- Free-only is selected by default. Imported events require free admission; regular Barnes & Noble in-store storytime is treated as its free storytime program when no ticket or purchase requirement is listed.
 - Save plans and personal additions in your browser; export them to an `.ics` calendar file.
 - Ongoing activities, such as IKEA's gnome hunt, sort below dated activities.
 - Source-specific refresh status, timestamps, stale-listing labels, and manual-source notes.
@@ -19,7 +19,8 @@ A free family-outing planner for Oakland and nearby East Bay cities. Static HTML
 | Oakland Public Library | Public calendar's embedded event data | First six pages; kids/family audiences; not the entire library calendar |
 | 510 Families | Calendar pages plus individual structured event pages | First six list pages, at most 90 unique details; exact free-admission labels and supported cities only |
 | Funcheap East Bay | Structured event listings and family-keyword detail pages | Conservative: requires free price, a local structured address, and family wording; can find zero matching events |
-| Barnes & Noble Emeryville | Manual source link | Automatic importer not implemented |
+| Barnes & Noble Emeryville | Official store page’s embedded calendar | Local store 2072 only; regular storytimes and explicitly free children’s events. Missing end times stay unknown. |
+| Alameda Kids | Public local family calendar | Explicitly free activities in supported cities; includes San Leandro, Castro Valley, and local Home Depot listings. |
 | Home Depot Emeryville | Hand-checked starter dates | Confirm participation and registration at the local store |
 | Michaels East Bay Bridge | Hand-checked national starter dates | Local participation is unconfirmed; store 1538 only |
 | Downtown San Leandro / Castro Valley Chamber | Hand-checked festival dates and source links | Automatic importers not implemented |
@@ -78,3 +79,9 @@ The app does not use an LLM to collect events. Deterministic code handles these 
 ## Personal saved plans
 
 Saved plans are local to the browser and website address. Plans previously saved in the downloadable HTML do not automatically move to the hosted website. Calendar export from the original app is one way to retain those choices. Cross-device synchronization would be a separate feature.
+
+## Reliability and maintenance
+
+The main view hides stale, full, closed-registration, and unconfirmed-local listings by default. The “Include ideas that need confirmation” checkbox reveals them, and saved plans remain accessible. Events with a published start but no end time say “Starts …”; calendar export omits an invented end time. A public-feed cache keeps the last loaded collection available when a new fetch fails.
+
+A separate daily ChatGPT maintenance task, “Keep Little Weekends current”, checks source freshness and failed imports, researches public local listings for sources that cannot be scraped reliably, and can update validated curated records or make bounded adapter repairs in this repository. It is not a promise of complete coverage. Website access restrictions are respected. Routine success is quiet; user action is requested only for an unresolved material blocker.

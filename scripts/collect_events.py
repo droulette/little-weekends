@@ -28,9 +28,10 @@ ADULT = re.compile(r'\b(21\+|18\+|adults? only|adult-only|happy hour|nightclub|b
 SOURCES = [
  {'id':'ikea','name':'IKEA Emeryville','url':'https://www.ikea.com/us/en/stores/emeryville/','mode':'automatic'},
  {'id':'opl','name':'Oakland & Temescal libraries','url':'https://oaklandlibrary.bibliocommons.com/v2/events','mode':'automatic'},
+ {'id':'alamedakids','name':'Alameda Kids · free family events','url':'https://www.alamedakids.org/calendar','mode':'automatic'},
  {'id':'510','name':'510 Families','url':'https://www.510families.com/calendar/','mode':'automatic'},
  {'id':'funcheap','name':'SF Funcheap · East Bay','url':'https://sf.funcheap.com/region/east-bay/','mode':'automatic'},
- {'id':'bn','name':'Barnes & Noble · Emeryville','url':'https://stores.barnesandnoble.com/store/2072','mode':'manual','note':'Local calendar needs manual checking; no working importer yet.'},
+ {'id':'bn','name':'Barnes & Noble · Emeryville','url':'https://stores.barnesandnoble.com/store/2072','mode':'automatic'},
  {'id':'homedepot','name':'Home Depot · Emeryville','url':'https://www.homedepot.com/c/kids-workshop','mode':'manual','note':'Starter dates only; confirm local registration.'},
  {'id':'michaels','name':'Michaels · East Bay Bridge, Emeryville','url':'https://locations.michaels.com/CA/EMERYVILLE/1538','mode':'manual','note':'National starter dates only; confirm store 1538.'},
  {'id':'sanleandro','name':'Downtown San Leandro','url':'https://downtownsanleandro.com/special-events/','mode':'manual','note':'Festival calendar; current dates are hand-checked.'},
@@ -74,7 +75,7 @@ def jsonld(soup):
 
 def ages(text):
     text = clean(text)
-    m = re.search(r'ages?\s*(\d{1,2})\s*(?:-|–|through|to)\s*(\d{1,2})', text, re.I)
+    m = re.search(r'ages?\s*:?\s*(\d{1,2})\s*(?:-|–|through|to)\s*(\d{1,2})', text, re.I)
     if m:
         return int(m[1]), int(m[2])
     m = re.search(r'ages?\s*(\d{1,2})\s*(?:\+|and (?:up|older))', text, re.I)
@@ -102,8 +103,8 @@ def local_datetime(value):
 
 
 def make_event(source, title, start, end, city, venue, url, description, *, status='Check organizer', min_age=None, max_age=None):
-    st, en = local_datetime(start), local_datetime(end)
-    if en <= st or city not in CITIES:
+    st, en = local_datetime(start), local_datetime(end) if end else None
+    if (en is not None and en <= st) or city not in CITIES:
         raise ValueError('Invalid time or unsupported city')
     title, description = clean(title), clean(description)
     if not title:
@@ -111,10 +112,10 @@ def make_event(source, title, start, end, city, venue, url, description, *, stat
     cat, icon, color = category(title)
     key = canonical(url) + '|' + st.isoformat()
     result = dict(id='event-'+sha256(key.encode()).hexdigest()[:18], title=title[:180], date=st.date().isoformat(),
-                  start=st.strftime('%H:%M'), end=en.strftime('%H:%M'), city=city, venue=clean(venue)[:220],
+                  start=st.strftime('%H:%M'), end=en.strftime('%H:%M') if en else None, city=city, venue=clean(venue)[:220],
                   price='Free', min=min_age, max=max_age, cat=cat, icon=icon, color=color, source=source['name'],
                   source_id=source['id'], status=status, url=canonical(url)+'/', desc=description[:600])
-    if st.date() != en.date():
+    if en is not None and st.date() != en.date():
         result['endDate'] = en.date().isoformat()
         result['ongoing'] = (en.date()-st.date()).days > 1
         result['hoursLabel'] = 'Check daily hours' if result['ongoing'] else st.strftime('%H:%M')+'–'+en.strftime('%H:%M')+' · multiple dates'
@@ -123,16 +124,17 @@ def make_event(source, title, start, end, city, venue, url, description, *, stat
 
 
 def validate_event(e):
-    for key in ['id', 'title', 'date', 'start', 'end', 'city', 'venue', 'price', 'url', 'source_id']:
+    for key in ['id', 'title', 'date', 'start', 'city', 'venue', 'price', 'url', 'source_id']:
         if not isinstance(e.get(key), str) or not e[key]:
             raise ValueError('Missing/invalid '+key)
     date.fromisoformat(e['date'])
     datetime.strptime(e['start'], '%H:%M')
-    datetime.strptime(e['end'], '%H:%M')
+    if e.get('end') is not None:
+        datetime.strptime(e['end'], '%H:%M')
     if e.get('endDate'):
         if date.fromisoformat(e['endDate']) < date.fromisoformat(e['date']):
             raise ValueError('End date before start')
-    elif e['end'] <= e['start']:
+    elif e.get('end') is not None and e['end'] <= e['start']:
         raise ValueError('End time before start')
     if e['city'] not in CITIES:
         raise ValueError('Unsupported city')
@@ -216,6 +218,9 @@ def parse_ikea(html, source):
         registration = item.get('registrationSettings', {}).get('registrationRequired', False)
         note = ('IKEA Family signup required. ' if item.get('loyaltyEvent') == 'IKEA_FAMILY_ONLY' else '')
         lo, hi = ages(description)
+        conflicting_store = 'IKEA Tempe' in description
+        if conflicting_store:
+            description = 'Listed on the Emeryville calendar, but the description names another store. Confirm with IKEA before making a trip. '
         for slot in item['timeSlots']:
             if slot.get('visibilityState', 'ACTIVE') != 'ACTIVE':
                 continue
@@ -227,7 +232,7 @@ def parse_ikea(html, source):
                 status = 'Full · check waitlist'
             rows.append(make_event(source, title, slot['startDate'], slot['endDate'], 'Emeryville',
                                    'IKEA Emeryville · 4400 Shellmound St', url, note+description,
-                                   status=status, min_age=lo, max_age=hi))
+                                   status='Confirm store details' if conflicting_store else status, min_age=lo, max_age=hi))
     return rows
 
 
@@ -361,13 +366,108 @@ def collect_funcheap(client, source, pages, max_details):
     return rows, 'Family-keyword candidates only; events without a structured local address are skipped.'
 
 
+def next_flight_objects(html):
+    """Decode public Next.js server data as JSON, never execute page scripts."""
+    parts = []
+    for tag in BeautifulSoup(html, 'html.parser').select('script'):
+        match = re.fullmatch(r'self\.__next_f\.push\((\[.*\])\)\s*;?', tag.get_text(), re.S)
+        if match:
+            payload = json.loads(match[1])
+            if len(payload) > 1 and isinstance(payload[1], str):
+                parts.append(payload[1])
+    for line in ''.join(parts).splitlines():
+        try:
+            yield from walk(json.loads(line.split(':',1)[1]))
+        except (ValueError, IndexError):
+            continue
+
+
+def parse_bn(html, source):
+    items = {}
+    for obj in next_flight_objects(html):
+        if obj.get('eventId') and obj.get('storeId') == 2072 and obj.get('isInstoreEvent') and not obj.get('isVirtualEvent'):
+            items[obj['eventId']] = obj
+    if not items:
+        raise ValueError('Emeryville calendar data not found')
+    rows = []
+    for obj in items.values():
+        desc = clean(obj.get('descriptionText'))
+        # Regular in-store Storytime is the free B&N program. Other events need
+        # explicit free wording. Never import ticketed, purchase-required events.
+        if obj.get('eventbriteEventId') or re.search(r'\b(ticket|purchase|required fee|sold out|reservations are full)\b',desc,re.I):
+            continue
+        if not obj.get('isStoryTime') and not re.search(r'\bfree\b',desc,re.I):
+            continue
+        if not FAMILY.search(obj.get('name','')+' '+desc):
+            continue
+        lo,hi = ages(desc)
+        row = make_event(source,obj['name'],obj['date']+'T'+obj['time24'],None,'Emeryville',
+                         'Barnes & Noble · '+obj['storeAddress1'],
+                         'https://stores.barnesandnoble.com/event/'+obj['eventId'],desc,
+                         status='Store calendar',min_age=lo,max_age=hi)
+        if obj.get('isStoryTime'):
+            row['price_basis'] = 'Regular in-store storytime; no ticket or purchase requirement listed.'
+        rows.append(row)
+    return rows
+
+
+def parse_clock(text):
+    value=re.sub(r'\s+','',text).upper().replace('.','')
+    for fmt in ['%I:%M%p','%I%p']:
+        try:return datetime.strptime(value,fmt).strftime('%H:%M')
+        except ValueError:pass
+    raise ValueError('Unrecognized time')
+
+
+def parse_alamedakids(html, source):
+    soup=BeautifulSoup(html,'html.parser')
+    listings=soup.select('table.views-table tr')
+    if not listings:
+        raise ValueError('Local family calendar structure missing')
+    rows=[]
+    for listing in listings:
+        stamp=listing.select_one('.date-display-single[content]')
+        title_tag=listing.select_one('a[aria-controls]')
+        content=listing.select_one('div.collapse')
+        if not stamp or not title_tag or not content:
+            continue
+        title=clean(title_tag.get_text())
+        text=clean(content.get_text(' ',strip=True))
+        if re.search(r'pantry|food bank|parent.*workshop|resource center|virtual|vaccin|support group',title,re.I):
+            continue
+        fields={}
+        for field in ['Time','Cost','Location']:
+            match=re.search(r'\b'+field+r'\s*:\s*(.*?)(?=\b(?:Date|Time|Cost|Location|Link)\s*:|Share:|$)',text,re.I)
+            if match:fields[field]=match[1].strip()
+        if not re.fullmatch(r'Free[.!]?',fields.get('Cost',''),re.I):
+            continue
+        venue=fields.get('Location','')
+        city=next((c for c in sorted(CITIES,key=len,reverse=True) if re.search(r'\b'+re.escape(c)+r'\b',venue,re.I)),None)
+        if not city:
+            continue
+        if not FAMILY.search(title+' '+text) and not re.search('festival|parade|lighting|celebrat|concert|workshop',title,re.I):
+            continue
+        times=re.fullmatch(r'(\d{1,2}(?::\d{2})?\s*[AP]M)\s*[-–—]\s*(\d{1,2}(?::\d{2})?\s*[AP]M)',fields.get('Time',''),re.I)
+        if not times:
+            continue
+        link=next((a.get('href') for a in content.select('a[href]') if 'complete event details' in a.get_text().lower()),None)
+        if not link:continue
+        event_date=stamp['content'][:10]
+        lo,hi=ages(text)
+        # Descriptions exclude bookkeeping, share controls, and repeated dates.
+        description=text.split('Date:',1)[0]
+        rows.append(make_event(source,title,event_date+'T'+parse_clock(times[1]),event_date+'T'+parse_clock(times[2]),
+                               city,venue,urljoin(source['url'],link),description,status='Local family calendar',min_age=lo,max_age=hi))
+    return rows
+
+
 def load_json(path, fallback):
     return json.loads(path.read_text()) if path.exists() else fallback
 
 
 def dedupe(events):
     """Prefer live official sources, but retain old IDs when refreshing a card."""
-    priority = {'ikea':0,'opl':0,'curated':2,'510':3,'funcheap':4}
+    priority = {'ikea':0,'opl':0,'bn':0,'alamedakids':1,'curated':2,'510':3,'funcheap':4}
     output, seen = [], set()
     for e in sorted(events, key=lambda x: (priority.get(x['source_id'], 5), -datetime.fromisoformat(x.get('checked_at','2000-01-01T00:00:00Z').replace('Z','+00:00')).timestamp())):
         key = (canonical(e['url']), e['date'], e['start'])
@@ -382,7 +482,7 @@ def dedupe(events):
 def merge_events(previous, curated, fresh, now, full_sources=()):
     today = now.astimezone(PACIFIC).date().isoformat()
     identity = {(canonical(e['url']),e['date'],e['start']):e['id'] for e in curated+previous}
-    live_opl_urls = {canonical(e['url']) for e in fresh if e['source_id'] == 'opl'}
+    live_opl_urls = {canonical(e['url']) for e in fresh if e['source_id'] in {'opl','bn'}}
     cancelled = {(canonical(e['url']),e['date']) for e in fresh if e.get('cancelled')}
     by_id = {e['id']:dict(e) for e in previous if e.get('source_id') != 'curated'
              and e.get('source_id') not in full_sources
@@ -419,7 +519,7 @@ def merge_events(previous, curated, fresh, now, full_sources=()):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sources', nargs='*', default=['ikea','opl','510','funcheap'])
+    parser.add_argument('--sources', nargs='*', default=['ikea','opl','bn','alamedakids','510','funcheap'])
     parser.add_argument('--pages', type=int, default=4)
     parser.add_argument('--max-details', type=int, default=90)
     parser.add_argument('--output', type=Path, default=DATA/'events.json')
@@ -448,6 +548,12 @@ def main():
                     for page in range(1,args.pages+1):
                         rows += parse_opl(client.get(source['url']+(f'?page={page}' if page>1 else '')),source)
                     note = f'First {args.pages} calendar pages; children/family audiences only.'
+                elif source['id'] == 'bn':
+                    rows = parse_bn(client.get(source['url']),source)
+                    note = 'Emeryville store calendar; individual dates and start times.'
+                elif source['id'] == 'alamedakids':
+                    rows = parse_alamedakids(client.get(source['url']),source)
+                    note = 'Free local family events, including festivals, workshops, and San Leandro / Castro Valley activities.'
                 elif source['id'] == '510':
                     rows,note = collect_510(client,source,args.pages,args.max_details)
                 else:

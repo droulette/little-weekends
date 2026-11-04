@@ -25,7 +25,7 @@ setImmediate(async()=>{
   await vm.runInContext('loadFeed()',ctx);
   vm.runInContext(`$('#cost').value='free';period='all';render();`,ctx);
   assert.match(elements['#cards'].innerHTML,/Holiday Cookie Decorating/i);
-  assert.match(elements['#feed-status'].textContent,/automatic sources refreshed/);
+  assert.match(elements['#feed-status'].textContent,/Updated Nov 4/);
   vm.runInContext(`$('#search').value='Gnome';render();`,ctx);
   assert.match(elements['#cards'].innerHTML,/DEC 31|Dec 31/);
   vm.runInContext(`$('#search').value='';period='weekend';render();`,ctx);
@@ -38,7 +38,10 @@ setImmediate(async()=>{
   vm.runInContext(`seed=[{id:'evil',title:'<img src=x onerror=alert(1)>',date:'2026-11-07',start:'10:00',end:'11:00',city:'Oakland',venue:'Example',price:'Free',min:null,max:null,cat:'Art & crafts',source:'Test',status:'Test',url:'javascript:alert(1)',desc:'<script>bad</script>',color:'red;position:fixed'}];render()`,ctx);
   cards=elements['#cards'].innerHTML;assert(!cards.includes('<img'));assert(!cards.includes('<script>'));assert(cards.includes('href="#"'));assert(!cards.includes('position:fixed'));
   ctx.fetch=async()=>{throw Error('offline')};await vm.runInContext('loadFeed()',ctx);
-  assert.match(elements['#feed-status'].textContent,/Could not load/);
+  assert.match(elements['#feed-status'].textContent,/last collection saved/);
+  vm.runInContext(`seed=[{...seed[0],id:'closed',status:'Registration closed'},{...seed[0],id:'uncertain',status:'Confirm store details'},{...seed[0],id:'ready',status:'Store calendar',end:null}];$('#include-unconfirmed').checked=false;render()`,ctx);
+  assert(!elements['#cards'].innerHTML.includes('data-save="closed"'));assert(!elements['#cards'].innerHTML.includes('data-save="uncertain"'));assert.match(elements['#cards'].innerHTML,/Starts 12pm/);
+  vm.runInContext(`$('#include-unconfirmed').checked=true;render()`,ctx);assert(elements['#cards'].innerHTML.includes('data-save="uncertain"'));
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, and failure message.');
  }catch(e){console.error(e);process.exitCode=1}
 });
