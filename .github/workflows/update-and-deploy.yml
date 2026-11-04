@@ -1,0 +1,76 @@
+name: Refresh events and publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # 6:23 am Pacific in winter / 7:23 am in summer. GitHub schedules use UTC.
+    - cron: '23 14 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: little-weekends-production
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      collection_failed: ${{ steps.collection.outcome == 'failure' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Run parser and merge checks
+        run: python -m unittest discover -s tests -v
+      - name: Check frontend JavaScript
+        run: node --check site/app.js
+      - name: Check frontend behavior
+        run: node tests/frontend.cjs
+      - name: Collect free family events
+        id: collection
+        continue-on-error: true
+        run: python scripts/collect_events.py --pages 6 --max-details 90
+      - name: Validate published data
+        run: python scripts/validate_feed.py
+      - name: Record refreshed feed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site/data/events.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Refresh public family event listings'
+            git push
+          fi
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: collect
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Report collection failure after publishing retained data
+        if: needs.collect.outputs.collection_failed == 'true'
+        run: |
+          echo 'All automatic sources failed. The retained feed was published with failure status.'
+          exit 1
