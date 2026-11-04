@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-04T19:51:07.662754+00:00",
-  "last_successful_collection": "2026-11-04T19:51:07.662754+00:00",
+  "generated_at": "2026-11-04T20:22:07.897005+00:00",
+  "last_successful_collection": "2026-11-04T20:22:07.897005+00:00",
   "sources": [
     {
       "id": "ikea",
       "name": "IKEA Emeryville",
       "url": "https://www.ikea.com/us/en/stores/emeryville/",
       "mode": "automatic",
-      "last_success": "2026-11-04T19:51:07.662754+00:00",
-      "last_attempt": "2026-11-04T19:51:07.662754+00:00",
+      "last_success": "2026-11-04T20:22:07.897005+00:00",
+      "last_attempt": "2026-11-04T20:22:07.897005+00:00",
       "state": "ok",
       "count": 11,
       "note": "Official Emeryville store data; only free family activities."
@@ -19,10 +19,10 @@
       "name": "Oakland & Temescal libraries",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events",
       "mode": "automatic",
-      "last_success": "2026-11-04T19:51:07.662754+00:00",
-      "last_attempt": "2026-11-04T19:51:07.662754+00:00",
+      "last_success": "2026-11-04T20:22:07.897005+00:00",
+      "last_attempt": "2026-11-04T20:22:07.897005+00:00",
       "state": "ok",
-      "count": 48,
+      "count": 50,
       "note": "First 6 calendar pages; children/family audiences only."
     },
     {
@@ -31,18 +31,17 @@
       "url": "https://www.510families.com/calendar/",
       "mode": "automatic",
       "last_success": "2026-11-04T19:51:07.662754+00:00",
-      "last_attempt": "2026-11-04T19:51:07.662754+00:00",
-      "state": "ok",
-      "count": 49,
-      "note": "Checked 90 event pages; 0 failed. Bounded sample, not the full calendar."
+      "last_attempt": "2026-11-04T20:22:07.897005+00:00",
+      "state": "error",
+      "note": "Could not refresh (HTTPError); retained recent listings. Check the source directly."
     },
     {
       "id": "funcheap",
       "name": "SF Funcheap · East Bay",
       "url": "https://sf.funcheap.com/region/east-bay/",
       "mode": "automatic",
-      "last_success": "2026-11-04T19:51:07.662754+00:00",
-      "last_attempt": "2026-11-04T19:51:07.662754+00:00",
+      "last_success": "2026-11-04T20:22:07.897005+00:00",
+      "last_attempt": "2026-11-04T20:22:07.897005+00:00",
       "state": "ok",
       "count": 0,
       "note": "Family-keyword candidates only; events without a structured local address are skipped."
@@ -179,7 +178,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247f0f4e5db3d00c67763/",
       "desc": "Join us for Tween Club at the Martin Luther King Jr. Branch! Activities may include 3D pen art, painting, movies, arts and crafts, and much more. For kids 8-14, but all are welcome to join. Get accessibility information . Acompáñanos en el Club para Preadolescentes en King. Las actividades pueden incluir bolígrafos 3D, manualidades, pintura, películas y mucho más. Dirigido a niños de 8 a 14 años, pero todos son bienvenidos a participar.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -201,7 +201,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/695bf2060c4aad14d373cad5/",
       "desc": "Come and get creative with us here at Lakeview! We will be doing a different craft every week. Crafts are geared towards ages 6-11 but younger kids are welcome with an adult present. The program is every Wednesday from 2-3pm. All supplies are provided. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -245,7 +246,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a834c54be1482002987efc6/",
       "desc": "Join us for monthly art workshops for children and families led by teachers from the Museum of Children's Art (MOCHA) . For ages 5-15 and caregivers. MOCHA workshops focus on building creativity, social-emotional and academic skills through art. This program is supported by funding provided by the Friends of the Oakland Public Library Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -267,7 +269,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6ad7bc4df34d34366b3d9c66/",
       "desc": "Pick up a hands-on science kit in the Children's Room! Work on it here or take it home, while supplies last. This month's kit: 3D Printed Sand!",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -289,7 +292,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6971916d491b809c6f145ba8/",
       "desc": "Does your bike have a flat tire? Does something feel wrong with your bike? Bring your bike in and we'll help fix it. We do minor bike repairs and provide tools and some supplies. All are welcome and the program is FREE! Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -355,7 +359,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6abd6a82ea50a10050a5bff5/",
       "desc": "Join us for a special Diwali celebration with Laya Arts Collective ! Experience the Festival of Lights through Indian classical dance, storytelling, music, and hands-on learning . Perfect for families and audiences of all ages—come learn, move, and celebrate!",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -399,7 +404,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/69ab4e20db89981d9df8d82a/",
       "desc": "Join us for stories, songs, and playtime! Fun for families with children ages 0-5 years old. Snacks provided for kids & caregivers. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -443,7 +449,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/698a26614dacf581ff7a21fb/",
       "desc": "Come join us Thursday mornings at 10:15am for songs, rhymes and stories! This Storytime is geared towards children ages 18 months to 3 years. Stay and play after storytime with fun age-appropriate toys. There are no public restrooms at this branch. Public restrooms are outside by the park next to the library. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -487,7 +494,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206ae9/",
       "desc": "Children of all ages are welcome; the content is geared toward ages 1 to 5. Please plan to park your stroller in the community meeting room, as the program takes place in the children's area where space is limited. The building has an elevator on the west side for accessibility. If you have any questions, please call the branch during open hours. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -541,7 +549,7 @@
       "start": "10:30",
       "end": "11:30",
       "city": "Oakland",
-      "venue": "Brookfield Branch · 9255 Edes Avenue",
+      "venue": "Brookfield Branch · 9255 Edes Ave, Oakland, CA",
       "price": "Free",
       "min": 0,
       "max": 5,
@@ -553,7 +561,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a85df3960ccaf01c01f5f29/",
       "desc": "Join us for stories, songs, and playtime! Fun for families with children ages 0-5 years old. Snacks provided for kids & caregivers. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -575,7 +584,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/695bf21548a98474cec3839f/",
       "desc": "Toddler Story Time at Rockridge Branch Library, every Thursday at 10:30am Children of all ages are welcome; content geared toward ages 1 to 3 years. Sometimes we meet outdoors in the Staff Parking Lot behind the library. Other times we meet indoors in the upstairs Meeting Room - it depends on the weather, the temperature, and on our story-reader's preference for the day. After storytime, we invite you to come inside the library to check out library materials. Welcome to all! We look forward to reading & singing with you! Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -641,7 +651,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a83765bbe1482002987fcf1/",
       "desc": "Join us for monthly art workshops for children and families led by teachers from the Museum of Children's Art (MOCHA) . For ages 5-15 and caregivers. MOCHA workshops focus on building creativity, social-emotional and academic skills through art. This program is supported by funding provided by the Friends of the Oakland Public Library Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -663,7 +674,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/69f2e81af29b90618effe8bd/",
       "desc": "Did you know that some dogs love to listen when new or experienced readers practice reading aloud? Each person will have a turn reading aloud to one of the three dogs who alternate coming to Rockridge to help you practice reading; Finn, Gladys, or Christina. Drop by on Thursday afternoons, check in at the Children's Reference Desk to sign up for your turn. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -685,7 +697,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6971652694297d3600a6af88/",
       "desc": "Does your bike have a flat tire? Does something feel wrong with your bike? Bring your bike in and we'll help fix it. We do minor bike repairs and provide tools and some supplies. All are welcome and the program is FREE! Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -717,7 +730,7 @@
       "start": "16:00",
       "end": "17:00",
       "city": "Oakland",
-      "venue": "Dimond Branch · 3565 Fruitvale Avenue",
+      "venue": "Dimond Branch · 2nd Floor Meeting room",
       "price": "Free",
       "min": null,
       "max": null,
@@ -729,7 +742,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/699b4034b0595799c09e945a/",
       "desc": "Join us at the Dimond Branch, to build with Lego and Duplo bricks! We have a new build challenge every month, or build whatever you want. Select builds will be displayed in the children's area at Dimond Branch until the next month! Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -861,7 +875,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6abd6a7c295b3b0033ca22df/",
       "desc": "Join us for a special Diwali Celebration with Laya Arts Collective ! Experience the Festival of Lights through Indian classical dance, storytelling, music, and hands-on learning . Perfect for families and audiences of all ages—come learn, move, and celebrate!",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -905,7 +920,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/695bf211c719ac98c336096d/",
       "desc": "Family Story Time at Rockridge Branch Library, every Thursday at 10:30am Children of all ages are welcome; content geared toward ages 1 to 5 years. Stories, songs, and fun - bring your siblings, friends, and visiting relatives! We usually meet indoors in the Upstairs Meeting Room. Occasionally we meet downstairs in the Picture Book area. After storytime, we invite you to visit with other caregivers and parents in the storytime space. Welcome to all! We look forward to reading & singing with you! Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -927,7 +943,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/676ee5ccc4569f936cc737b7/",
       "desc": "Games and toys for families, and sometimes a storytime or a show. 與家人一同互動, 提供遊戲和玩具。間中會有故事時間或表演。 Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -937,7 +954,7 @@
       "start": "10:30",
       "end": "12:30",
       "city": "Oakland",
-      "venue": "Main Library · 125 14th Street",
+      "venue": "Main Library · 125 14th Street, Oakland Ca.",
       "price": "Free",
       "min": 4,
       "max": 8,
@@ -949,7 +966,8 @@
       "status": "Registration closed",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6ab1a66e8cf597003f957b1a/",
       "desc": "Rock, Paper, Scissors, Cheese! with W. Kamau Bell and Adam Mansbach Join Oakland’s own W. Kamau Bel l and bestselling author Adam Mansbach for the Oakland stop of their tour celebrating their new picture book, Rock Paper Scissors Cheese , illustrated by Breanna Chambers. What happens when a family game of rock, paper, scissors gets a cheesy new twist? Find out in this funny, playful story about family, imagination, and making your own rules. Come hear the authors read from the book, talk about their creative collaboration, and celebrate the joy of reading together. Bring the whole family and g",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -993,7 +1011,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a834c85be1482002987efe0/",
       "desc": "Join us for monthly art workshops for children and families led by teachers from the Museum of Children's Art (MOCHA) . For ages 5-15 and caregivers. MOCHA workshops focus on building creativity, social-emotional and academic skills through art. This program is supported by funding provided by the Friends of the Oakland Public Library Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1037,7 +1056,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/695bf20c1f01fb76cec4d4a0/",
       "desc": "Have you ever wanted to learn how to play chess? Or are you a pro and want to play with other folks in the neighborhood? Join us at the Lakeview branch every 1st and 3rd Saturday of the month from noon to 2pm. The Lakeview Chess Club is all ages and all skill levels. *Please note that there are no restrooms in the branch building. Public restrooms are located outside the building next to the park across the street. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1069,7 +1089,7 @@
       "start": "13:00",
       "end": "14:00",
       "city": "Oakland",
-      "venue": "African American Museum and Library at Oakland · 659 14th Street",
+      "venue": "African American Museum and Library at Oakland · Museum Gallery, 2nd Floor",
       "price": "Free",
       "min": null,
       "max": null,
@@ -1081,7 +1101,8 @@
       "status": "Registration required",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/691de40b886bb73600bb9060/",
       "desc": "Join us for our monthly AAMLO Kids' Club for a day of storytelling and arts and crafts. This event takes place every first Saturday at 1 pm. For more information on book titles and event details, please look for our monthly invitation or sign up for our monthly newsletter.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1179,7 +1200,7 @@
       "start": "14:30",
       "end": "16:30",
       "city": "Oakland",
-      "venue": "Melrose Branch · 4805 Foothill Boulevard",
+      "venue": "Melrose Branch · Meeting Room",
       "price": "Free",
       "min": 0,
       "max": 99,
@@ -1191,7 +1212,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a68db0f0d65ac360042c6c3/",
       "desc": "Come join the East Oakland Capoeira Angola Study Group and practice Capoeira Angola, a Brazilian martial art that includes elements of dance, music, fitness and ritual. This class is open to all ages. Children under 8 must be accompanied by an adult. Beginners are welcome. Please wear soft sole shoes, sweat pants and a tucked in t-shirt.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1201,7 +1223,7 @@
       "start": "14:30",
       "end": "16:00",
       "city": "Oakland",
-      "venue": "Temescal Branch · 5205 Telegraph Avenue",
+      "venue": "Temescal Branch · In the lower-level community meeting room.",
       "price": "Free",
       "min": 8,
       "max": 12,
@@ -1213,7 +1235,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6adfdb13de685359098bbfff/",
       "desc": "Have you ever wondered how to sew by hand? Do you want to learn how to attach 2 pieces of fabric together to make something? Do you have a sewing project you want to work on or finish? Well, then come to the Kids' Hand Sewing Circle this November! Join us at the Temescal Branch Library to learn basic hand sewing skills and create fun little projects. All materials will be provided at the library. Recommended for ages 8-12, but larger plastic needles and yarn for ages as young as 5 years will also be available to develop early skills. No prior experience required. If you have any questions, ple",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1377,7 +1400,7 @@
       "start": "10:00",
       "end": "11:30",
       "city": "Oakland",
-      "venue": "Main Library · 125 14th Street",
+      "venue": "Main Library · children's room",
       "price": "Free",
       "min": null,
       "max": null,
@@ -1389,7 +1412,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6938b3826724c63d00e62729/",
       "desc": "Family Paths is a Community Based focus organization, which offers therapy for adults, couples, and children; in addition, we offer services to adults, which may not be the biological birth parent, but hold a caregiving role with a child. Family paths has been in the City of Oakland for 50 years and is offering their services as a referral resource. Learn more and chat with Family Paths in person. About Family Paths: We provide therapy which is typically focused on building healthy ways to manage the stress in a parent life and make good choices even when faced with the challenges that life br",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1455,7 +1479,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/694b30b34be11d3d00d9a427/",
       "desc": "Songs, active rhymes and stories especially for ages 18 months to 3 years. Every Monday morning at 10:30am. Stay and play after Storytime with fun age-appropriate toys. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1477,7 +1502,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/695bf1f648a98474cec3828e/",
       "desc": "Come build with us at Lego club! Every Monday we unleash our imagination building amazing Lego creations. Our favorite creations will be displayed at the branch for all to admire! Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1509,7 +1535,7 @@
       "start": "15:30",
       "end": "16:30",
       "city": "Oakland",
-      "venue": "Temescal Branch · 5205 Telegraph Avenue",
+      "venue": "Temescal Branch · In the Children's Area",
       "price": "Free",
       "min": null,
       "max": null,
@@ -1521,7 +1547,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67721/",
       "desc": "Did you know that some dogs love to listen when new or experienced readers practice reading aloud? Our furry friends Navi and Barley are gentle, trained therapy dogs who patiently listen to reading-age kids & tweens as they gain confidence to read out loud. Drop by on the second Monday of each month to read with Navi and Barley! Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1543,7 +1570,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6adfdac2377296003a4ed236/",
       "desc": "Join teachers from Scientific Adventures for Girls for Monday afternoon starting October 22 - Dec 8 full of science experiments, learning, and FUN! Únete a las profesores de Scientific Adventures for Girls para disfrutar de tardes llenas de experimentos científicos, aprendizaje y DIVERSIÓN!",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1609,7 +1637,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6927886d51da852800c3bc1f/",
       "desc": "Bring your babies to the library for songs, books, and socializing! This event is best for parents or caregivers with babies from birth to 18 months. Please note the duration of Baby Bounce storytime is approximately 15-20 minutes with playtime directly after. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1631,7 +1660,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/695bf1f20c4aad14d373ca59/",
       "desc": "You are invited to a Storytime with rhymes, books, and songs! It will be followed by free playtime with toys and access to our outdoor gardens and play area. All kids welcome, but program is especially for those 18 months to 4 years old. Snacks provided, tea and coffee for parents. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1653,7 +1683,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/696417db6faf374bd593313c/",
       "desc": "Songs, active rhymes and stories especially for ages 18 months to 3 years . Every Tuesday morning at 10:15am. Stay and play after Storytime with fun age-appropriate toys through 11:15am. If conditions allow, Storytime will be held outside the library building. We ask that patrons refrain from wearing scented products. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1763,7 +1794,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a1a16a4748daf857d5a3d13/",
       "desc": "Join us for storytime with songs, movement and stories at the West Oakland Branch. All kids (0-6 years old) are welcome with grownup participation. Stay after for a 30-minute free play time.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1785,7 +1817,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/695bf1f80c4aad14d373ca8d/",
       "desc": "Join us for stories, songs, and play! Storytime at 11 am followed by free play in our community garden with our library chickens! For ages 0-5 but all ages are welcome! Snacks provided for kids & caregivers. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1807,7 +1840,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a68daff88e9bf280033dce6/",
       "desc": "Come learn to crochet and to hang out with other yarn lovers! All experience levels welcome, bring your own project or use the supplies provided. For children in 3rd to 6th grade.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1829,7 +1863,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a833d2c60ccaf01c01ed1c6/",
       "desc": "Join us for monthly art workshops for children and families led by teachers from the Museum of Children's Art (MOCHA) . For ages 5-15 and caregivers. MOCHA workshops focus on building creativity, social-emotional and academic skills through art. This program is supported by funding provided by the Friends of the Oakland Public Library Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1839,7 +1874,7 @@
       "start": "15:30",
       "end": "17:00",
       "city": "Oakland",
-      "venue": "Rockridge Branch · 5366 College Avenue",
+      "venue": "Rockridge Branch · Upstairs meeting room",
       "price": "Free",
       "min": 8,
       "max": 12,
@@ -1851,7 +1886,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a5fc228a41369ab2c67ab53/",
       "desc": "Children ages 8 to 12 are invited to join us on the second and fourth Tuesday of each month from 3:30-5 pm to write, illustrate, make, and tell your own stories. This is a workshop/club, where kids can work alone, in pairs, or in small groups to write and illustrate stories. Do a fun writing or drawing game, follow a prompt, free-write, or illustrate. Create a book, a zine, a comic, a story, a kamishibai, a play, a poem, or whatever! We'll set a date for people who want to read aloud their finished stories and celebrate, and we welcome stories to be added into the library collection. Drop in, ",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1861,7 +1897,7 @@
       "start": "18:30",
       "end": "19:30",
       "city": "Oakland",
-      "venue": "Rockridge Branch · 5366 College Avenue",
+      "venue": "Rockridge Branch · Community Meeting Room",
       "price": "Free",
       "min": 0,
       "max": 99,
@@ -1873,7 +1909,8 @@
       "status": "Registration required",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6ad9596cebad220045470eba/",
       "desc": "Join local baker Priyanka Kothari to make sweets to eat and a diya to light for the Diwali holiday. This is a great activity for children and adults together. All ages welcome - children under age 8 must be accompanied by a grown-up. Space is limited, please call Rockridge Branch to reserve a spot.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1883,7 +1920,7 @@
       "start": "19:00",
       "end": "19:30",
       "city": "Oakland",
-      "venue": "Dimond Branch · 3565 Fruitvale Avenue",
+      "venue": "Dimond Branch · In the children's section of the library.",
       "price": "Free",
       "min": 0,
       "max": 99,
@@ -1895,7 +1932,8 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/698a265d94297d3600ab121c/",
       "desc": "Our pajama family storytimes are great for the whole family. Stories, songs, and rhymes for all ages. Have children of different ages? Bring them all! These stories and activities are for everyone. Get accessibility information .",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -1917,7 +1955,31 @@
       "status": "Check organizer",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6ad7bc4df34d34366b3d9c67/",
       "desc": "Pick up a hands-on science kit in the Children's Room! Work on it here or take it home, while supplies last. This month's kit: 3D Printed Sand!",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
+      "stale": false
+    },
+    {
+      "id": "event-f4a056ea6ae73937b4",
+      "title": "Play Cafe",
+      "date": "2026-11-12",
+      "start": "10:00",
+      "end": "11:30",
+      "city": "Oakland",
+      "venue": "81st Avenue Branch · 1021 81st Avenue",
+      "price": "Free",
+      "min": 0,
+      "max": 5,
+      "cat": "Stories & play",
+      "icon": "🧸",
+      "color": "#dce8dd",
+      "source": "Oakland & Temescal libraries",
+      "source_id": "opl",
+      "status": "Check organizer",
+      "url": "https://oaklandlibrary.bibliocommons.com/v2/events/69ab4e20db89981d9df8d82b/",
+      "desc": "Join us for stories, songs, and playtime! Fun for families with children ages 0-5 years old. Snacks provided for kids & caregivers. Get accessibility information .",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2027,7 +2089,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/beaded-pumpkin-keychain--107f1b92-430c-4795-83ad-6c7b9fdd1b0b/",
       "desc": "IKEA Family signup required. Create your own colorful fusible beaded pumpkin keychain in a welcoming, creative space where everyone can express themselves. Each participant will create one (1) pumpkin keychain from PYSSLA fusible beads*. Supplies cannot be provided for crafters who are not present. *For safety reasons, all projects will be ironed by IKEA co-workers. The IKEA Family member creating the registration is automatically included in the guest count. Please select the number of additional adults and children.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2112,10 +2174,10 @@
       "color": "#e6e9db",
       "source": "IKEA Emeryville",
       "source_id": "ikea",
-      "status": "Registration required",
+      "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-ornament-decorating--66c5b267-ba0f-4bb1-aae0-5c4a59165fd7/",
       "desc": "IKEA Family signup required. Join us for our Holiday Ornament Decorating, where you’ll decorate your own festive ornament to add a personal touch to your holiday décor. We’ll provide the ornament and decorating materials—you bring the creativity! Make something for your own tree, create a handmade gift for someone special, or simply enjoy a relaxing evening of holiday crafting. No crafting experience needed—just come ready to make something merry!",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2137,7 +2199,7 @@
       "status": "No registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/celebrate-the-holidays-at-ikea--6366cc2f-a20c-4065-955c-1b32a69c6c2c/",
       "desc": "Join us on Saturday, November 28th for a festive day of holiday fun and family-friendly activities. Enjoy holiday cookie decorating, create handmade holiday cards, personalize a picture frame to bring home, and discover helpful pantry organizing tips for the season ahead. Whether you're creating new traditions, making memories with loved ones, or looking for holiday inspiration, there's something for everyone to enjoy. Check out what we're hosting: Holiday Cookie Decorating Holiday Card Crafting Holiday Pantry Organizing 101 Gnome in the Home Scavenger Hunt IKEA Family Member Holiday Giveaway ",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2159,7 +2221,7 @@
       "status": "Registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-card-making--de99e7ae-03de-40d6-a08c-95de089bcf3c/",
       "desc": "IKEA Family signup required. Let your creativity shine at our Holiday Card-Making Activity! Using colorful MÅLA arts and crafts supplies, you can design and personalize your own holiday cards to share with family and friends. This simple, self-guided activity is perfect for creators of all ages and offers a fun way to celebrate the holiday season. Drop in anytime during event hours and create a unique keepsake to take home. Located at the Children's Department upstairs in the Showroom. Open to all customers while supplies last.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2181,7 +2243,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-cookie-decorating--08b6d636-8a1b-4ca8-95e0-f785f3f2ded6/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2203,7 +2265,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-photo-frame-decorating--4fa55662-8eba-4569-ab05-952bdd4e905b/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! One complimentary frame per IKEA Family membership, while supplies last. Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2225,7 +2287,7 @@
       "status": "No registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/celebrate-the-holidays-at-ikea--6366cc2f-a20c-4065-955c-1b32a69c6c2c/",
       "desc": "Join us on Saturday, November 28th for a festive day of holiday fun and family-friendly activities. Enjoy holiday cookie decorating, create handmade holiday cards, personalize a picture frame to bring home, and discover helpful pantry organizing tips for the season ahead. Whether you're creating new traditions, making memories with loved ones, or looking for holiday inspiration, there's something for everyone to enjoy. Check out what we're hosting: Holiday Cookie Decorating Holiday Card Crafting Holiday Pantry Organizing 101 Gnome in the Home Scavenger Hunt IKEA Family Member Holiday Giveaway ",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2247,7 +2309,7 @@
       "status": "Registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-card-making--de99e7ae-03de-40d6-a08c-95de089bcf3c/",
       "desc": "IKEA Family signup required. Let your creativity shine at our Holiday Card-Making Activity! Using colorful MÅLA arts and crafts supplies, you can design and personalize your own holiday cards to share with family and friends. This simple, self-guided activity is perfect for creators of all ages and offers a fun way to celebrate the holiday season. Drop in anytime during event hours and create a unique keepsake to take home. Located at the Children's Department upstairs in the Showroom. Open to all customers while supplies last.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2269,7 +2331,7 @@
       "status": "Registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-cookie-decorating--08b6d636-8a1b-4ca8-95e0-f785f3f2ded6/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2291,7 +2353,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-photo-frame-decorating--4fa55662-8eba-4569-ab05-952bdd4e905b/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! One complimentary frame per IKEA Family membership, while supplies last. Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2389,7 +2451,7 @@
       "start": "00:00",
       "end": "00:00",
       "city": "Oakland",
-      "venue": "Main Library · 125 14th Street",
+      "venue": "Main Library · First Floor Display Cases",
       "price": "Free",
       "min": null,
       "max": null,
@@ -2404,7 +2466,8 @@
       "endDate": "2026-12-04",
       "ongoing": true,
       "hoursLabel": "Check daily hours",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2414,7 +2477,7 @@
       "start": "00:00",
       "end": "00:00",
       "city": "Oakland",
-      "venue": "African American Museum and Library at Oakland · 659 14th Street",
+      "venue": "African American Museum and Library at Oakland · Museum Gallery",
       "price": "Free",
       "min": null,
       "max": null,
@@ -2429,7 +2492,8 @@
       "endDate": "2026-12-31",
       "ongoing": true,
       "hoursLabel": "Check daily hours",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "cancelled": false,
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     },
     {
@@ -2454,7 +2518,7 @@
       "endDate": "2026-12-31",
       "ongoing": true,
       "hoursLabel": "Check daily hours",
-      "checked_at": "2026-11-04T19:51:07.662754+00:00",
+      "checked_at": "2026-11-04T20:22:07.897005+00:00",
       "stale": false
     }
   ],
