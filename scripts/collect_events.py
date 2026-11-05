@@ -139,6 +139,10 @@ def validate_event(e):
     if e['city'] not in CITIES:
         raise ValueError('Unsupported city')
     canonical(e['url'])
+    if not isinstance(e.get('also_listed_at', []), list):
+        raise ValueError('Invalid verified URL aliases')
+    for url in e.get('also_listed_at', []):
+        canonical(url)
     for key in ['min', 'max']:
         if e.get(key) is not None and (type(e[key]) is not int or not 0 <= e[key] <= 99):
             raise ValueError('Invalid age')
@@ -465,23 +469,29 @@ def load_json(path, fallback):
     return json.loads(path.read_text()) if path.exists() else fallback
 
 
+def event_urls(event):
+    """Only hand-verified exact aliases; never fuzzy-match unrelated outings."""
+    return {canonical(url) for url in [event["url"]] + event.get("also_listed_at", [])}
+
+
 def dedupe(events):
     """Prefer live official sources, but retain old IDs when refreshing a card."""
     priority = {'ikea':0,'opl':0,'bn':0,'alamedakids':1,'curated':2,'510':3,'funcheap':4}
     output, seen = [], set()
     for e in sorted(events, key=lambda x: (priority.get(x['source_id'], 5), -datetime.fromisoformat(x.get('checked_at','2000-01-01T00:00:00Z').replace('Z','+00:00')).timestamp())):
-        key = (canonical(e['url']), e['date'], e['start'])
+        keys = {(url, e['date'], e['start']) for url in event_urls(e)}
         title_key = (re.sub(r'[^a-z0-9]', '', e['title'].lower()), e['date'], e['start'], e['city'])
-        if key in seen or title_key in seen:
+        if keys & seen or title_key in seen:
             continue
-        seen.update((key, title_key))
+        seen.update(keys | {title_key})
         output.append(e)
     return sorted(output, key=lambda e: (bool(e.get('ongoing', e.get('endDate'))), e['date'], e['start'], e['title']))
 
 
 def merge_events(previous, curated, fresh, now, full_sources=()):
     today = now.astimezone(PACIFIC).date().isoformat()
-    identity = {(canonical(e['url']),e['date'],e['start']):e['id'] for e in curated+previous}
+    identity = {(url,e['date'],e['start']):e['id'] for e in previous+curated for url in event_urls(e)}
+    aliases = {e['id']: e.get('also_listed_at', []) for e in curated}
     live_opl_urls = {canonical(e['url']) for e in fresh if e['source_id'] in {'opl','bn'}}
     cancelled = {(canonical(e['url']),e['date']) for e in fresh if e.get('cancelled')}
     by_id = {e['id']:dict(e) for e in previous if e.get('source_id') != 'curated'
@@ -491,6 +501,8 @@ def merge_events(previous, curated, fresh, now, full_sources=()):
         event = dict(event)
         key = (canonical(event['url']),event['date'],event['start'])
         event['id'] = identity.get(key,event['id'])
+        if aliases.get(event['id']):
+            event['also_listed_at'] = aliases[event['id']]
         if event.get('cancelled'):
             continue
         event['checked_at'] = now.isoformat()
@@ -499,6 +511,8 @@ def merge_events(previous, curated, fresh, now, full_sources=()):
     pool = []
     for event in list(by_id.values())+curated:
         event = dict(event)
+        if event['source_id'] != 'curated':
+            event['id'] = identity.get((canonical(event['url']),event['date'],event['start']),event['id'])
         if (canonical(event['url']),event['date']) in cancelled:
             continue
         if event['source_id']=='curated' and 'ikea' in full_sources and 'ikea.com/us/en/stores/events/ikea-emeryville-ca/' in event['url']:

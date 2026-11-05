@@ -74,6 +74,18 @@ class CollectTests(unittest.TestCase):
         self.assertEqual(len(result),1);self.assertEqual(result[0]['id'],'ikea-cookies-28')
         self.assertEqual(result[0]['source_id'],'ikea')
 
+    def test_verified_alias_preserves_saved_id_and_deduplicates(self):
+        fresh=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0]
+        old=copy.deepcopy(fresh)
+        old.update(id='saved-card',source_id='curated',url='https://example.org/official/',
+                   also_listed_at=[fresh['url']],checked_at=NOW.isoformat())
+        result=merge_events([], [old], [fresh],NOW)
+        self.assertEqual(len(result),1)
+        self.assertEqual(result[0]['id'],'saved-card')
+        # A later session at the same URL remains a separate outing.
+        later=copy.deepcopy(fresh);later.update(id='later',start='16:00',end='17:00')
+        self.assertEqual(len(merge_events([], [old], [fresh,later],NOW)),2)
+
     def test_explicit_cancellation_removes_previous_card(self):
         e=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0];e['checked_at']=NOW.isoformat()
         cancelled=copy.deepcopy(e);cancelled['cancelled']=True
