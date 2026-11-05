@@ -16,7 +16,7 @@ A free family-outing planner for Oakland and nearby East Bay cities. Static HTML
 | Source | Collection method | Limits |
 | --- | --- | --- |
 | IKEA Emeryville | Official store page's embedded public event data | Store `sto165` only; free family activities; individual sessions and registration capacity |
-| Oakland Public Library | Public calendar's embedded event data | First six pages; kids/family audiences; not the entire library calendar |
+| Temescal Branch Library | Public calendar's embedded event data | First six pages; Temescal Branch only; kids/family audiences; not the entire library calendar |
 | 510 Families | Calendar pages plus individual structured event pages | First six list pages, at most 90 unique details; exact free-admission labels and supported cities only |
 | Funcheap East Bay | Structured event listings and family-keyword detail pages | Conservative: requires free price, a local structured address, and family wording; can find zero matching events |
 | Barnes & Noble Emeryville | Official store page’s embedded calendar | Local store 2072 only; regular storytimes and explicitly free children’s events. Missing end times stay unknown. |
@@ -87,3 +87,5 @@ The main view hides stale, full, closed-registration, and unconfirmed-local list
 A separate daily ChatGPT maintenance task, “Keep Little Weekends current”, checks source freshness and failed imports, researches public local listings for sources that cannot be scraped reliably, and can update validated curated records or make bounded adapter repairs in this repository. It is not a promise of complete coverage. Website access restrictions are respected. Routine success is quiet; user action is requested only for an unresolved material blocker.
 
 Curated records may include `also_listed_at`, a list of hand-verified exact event URLs. The merge uses these aliases only for the same date and start time, preserving the curated card ID when an automatic calendar imports the same outing under another title. Do not add guessed URLs or general venue aliases across unrelated sessions.
+
+Library outings are limited to Temescal Branch, including listings from family calendars. A checked-by-default Saturday/Sunday filter also applies to Looking ahead; turn it off to see weekdays. Saved plans remain accessible, and ongoing events that overlap a weekend remain at the bottom.

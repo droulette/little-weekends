@@ -122,7 +122,7 @@ class CollectTests(unittest.TestCase):
         es.append(e);self.assertEqual(dedupe(es)[-1]['id'],'ongoing')
 
     def test_library_family_filter_and_cancellation(self):
-        entities={'eventAudiences':{'kids':{'name':'Kids'},'adult':{'name':'Adults'}},'locations':{'x':{'name':'Library','address':{'city':'Oakland','number':'1','street':'Main'}}},'events':{}}
+        entities={'eventAudiences':{'kids':{'name':'Kids'},'adult':{'name':'Adults'}},'locations':{'x':{'name':'Temescal Branch','address':{'city':'Oakland','number':'1','street':'Main'}}},'events':{}}
         for id,audience,cancelled in [('good','kids',False),('cancelled','kids',True),('adult','adult',False)]:
             entities['events'][id]={'id':id,'definition':{'title':'Craft','start':'2026-11-07T10:00','end':'2026-11-07T11:00','audienceIds':[audience],'branchLocationId':'x','isCancelled':cancelled}}
         html='<script data-iso-key="_0">'+json.dumps({'entities':entities})+'</script>'

@@ -23,7 +23,11 @@ vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.j
 setImmediate(async()=>{
  try{
   await vm.runInContext('loadFeed()',ctx);
-  vm.runInContext(`$('#cost').value='free';period='all';render();`,ctx);
+  vm.runInContext(`$('#weekends-only').checked=true;$('#cost').value='free';period='all';render();`,ctx);
+  assert.equal(vm.runInContext("overlapsWeekend({date:'2026-11-06'})",ctx),false);
+  assert.equal(vm.runInContext("overlapsWeekend({date:'2026-11-07'})",ctx),true);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Rockridge Branch Library'})",ctx),false);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Temescal Branch · 5205 Telegraph'})",ctx),true);
   assert.match(elements['#cards'].innerHTML,/Holiday Cookie Decorating/i);
   assert.match(elements['#feed-status'].textContent,/Updated Nov 4/);
   vm.runInContext(`$('#search').value='Gnome';render();`,ctx);

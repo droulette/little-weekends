@@ -27,7 +27,7 @@ FAMILY = re.compile(r'\b(kids?|child(?:ren)?|famil(?:y|ies)|story\s?time|prescho
 ADULT = re.compile(r'\b(21\+|18\+|adults? only|adult-only|happy hour|nightclub|beer tasting|wine tasting|comedy night)\b', re.I)
 SOURCES = [
  {'id':'ikea','name':'IKEA Emeryville','url':'https://www.ikea.com/us/en/stores/emeryville/','mode':'automatic'},
- {'id':'opl','name':'Oakland & Temescal libraries','url':'https://oaklandlibrary.bibliocommons.com/v2/events','mode':'automatic'},
+ {'id':'opl','name':'Temescal Branch Library','url':'https://oaklandlibrary.bibliocommons.com/v2/events','mode':'automatic'},
  {'id':'alamedakids','name':'Alameda Kids · free family events','url':'https://www.alamedakids.org/calendar','mode':'automatic'},
  {'id':'510','name':'510 Families','url':'https://www.510families.com/calendar/','mode':'automatic'},
  {'id':'funcheap','name':'SF Funcheap · East Bay','url':'https://sf.funcheap.com/region/east-bay/','mode':'automatic'},
@@ -255,6 +255,8 @@ def parse_opl(html, source):
         if not set(audience).intersection({'Kids','Families','Grade Schoolers','Preschoolers','Birth to 5','Toddlers'}):
             continue
         location = entities.get('locations', {}).get(d.get('branchLocationId'), {})
+        if location.get('name') not in {'Temescal', 'Temescal Branch', 'Temescal Branch Library'}:
+            continue
         address = location.get('address', {})
         city = address.get('city')
         if city not in CITIES:
@@ -517,6 +519,8 @@ def merge_events(previous, curated, fresh, now, full_sources=()):
             continue
         if event['source_id']=='curated' and 'ikea' in full_sources and 'ikea.com/us/en/stores/events/ikea-emeryville-ca/' in event['url']:
             continue
+        if re.search(r'\blibrary\b|\bbranch\b', event.get('venue',''), re.I) and not re.search(r'\bTemescal\b',event.get('venue',''),re.I):
+            continue
         validate_event(event)
         if (event.get('endDate') or event['date']) < today:
             continue
@@ -561,7 +565,7 @@ def main():
                     rows = []
                     for page in range(1,args.pages+1):
                         rows += parse_opl(client.get(source['url']+(f'?page={page}' if page>1 else '')),source)
-                    note = f'First {args.pages} calendar pages; children/family audiences only.'
+                    note = f'First {args.pages} calendar pages; Temescal Branch only; children/family audiences.'
                 elif source['id'] == 'bn':
                     rows = parse_bn(client.get(source['url']),source)
                     note = 'Emeryville store calendar; individual dates and start times.'
