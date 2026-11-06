@@ -556,5 +556,57 @@
       "https://www.510families.com/calendar/tree-lighting/"
     ],
     "price_basis": "510 Families event page explicitly lists Free admission."
+  },
+  {
+    "id": "fourth-street-craft-party-2026",
+    "title": "Winter Holiday Fest & Craft Party",
+    "date": "2026-12-12",
+    "start": "13:00",
+    "end": "16:00",
+    "city": "Berkeley",
+    "venue": "Fourth Street at Delaware Street",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Art & crafts",
+    "icon": "🎨",
+    "color": "#e6e9db",
+    "source": "Fourth Street · organizer",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://www.fourthstreet.com/eventslisting/2026/12/12/holiday-crafting-like-never-before-2026/",
+    "desc": "Free outdoor family craft festival with wreath making, collage pendants, glitter pine cones, snowflakes, live music, and visits with Santa, an Elf and the Grinch. Charm pressing is limited to the first 150 people. No numeric age limits or registration availability are published.",
+    "evidence_urls": [
+      "https://www.fourthstreet.com/events",
+      "https://www.510families.com/a-parents-guide-to-berkeleys-fourth-street/"
+    ],
+    "price_basis": "Organizer explicitly states that the annual family event is free.",
+    "checked_at": "2026-11-06T16:06:59.224450+00:00"
+  },
+  {
+    "id": "alameda-cocoa-stroll-2026",
+    "title": "Downtown Alameda Hot Cocoa Stroll",
+    "date": "2026-12-05",
+    "start": "17:00",
+    "end": "19:00",
+    "city": "Alameda",
+    "venue": "Downtown Alameda · participating businesses",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Stories & play",
+    "icon": "🧸",
+    "color": "#dce8dd",
+    "source": "Downtown Alameda · organizer",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://downtownalameda.com/events/holiday-activities/",
+    "desc": "Free family-friendly stroll with participating downtown businesses offering sips and nibbles while supplies last. Runs alongside the Winter Market, whose shopping and other purchases cost extra. The organizer’s 2026 events page and 510 Families independently confirm December 5; the organizer holiday page supplies the 5–7pm hours.",
+    "evidence_urls": [
+      "https://downtownalameda.com/events/",
+      "https://www.510families.com/things-to-do-alameda-kids/"
+    ],
+    "price_basis": "Organizer explicitly describes a free family-friendly tradition.",
+    "checked_at": "2026-11-06T16:06:59.224450+00:00"
   }
 ]
