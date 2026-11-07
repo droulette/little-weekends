@@ -608,5 +608,58 @@
     ],
     "price_basis": "Organizer explicitly describes a free family-friendly tradition.",
     "checked_at": "2026-11-06T16:06:59.224450+00:00"
+  },
+  {
+    "id": "estuary-lighted-yacht-parade-2026",
+    "title": "Oakland–Alameda Lighted Yacht Parade",
+    "date": "2026-12-05",
+    "start": "17:30",
+    "end": null,
+    "city": "Oakland",
+    "venue": "Public waterfront · Jack London Square / Oakland–Alameda Estuary",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "🎉",
+    "color": "#f0e3ca",
+    "source": "Lighted Yacht Parade · organizers",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://www.lightedyachtparade.com/",
+    "desc": "Watch illuminated boats from the public Jack London Square waterfront. The organizer lists a 5:30pm parade start; arrival at a particular viewing spot can be later. Free public viewing is corroborated by a local family calendar. Yacht-club dinners, reserved seating and boat-entry fees are separate paid options. No end time is published.",
+    "price_basis": "Littles Weekly lists free public viewing; paid club meals and boat participation are not included.",
+    "evidence_urls": [
+      "https://www.encinal.org/default.aspx?ID=201083&chgs=&p=.NETEventView&qfilter=&ssid=0&title=&type=0",
+      "https://www.510families.com/holiday-lights-oakland/",
+      "https://littlesweekly.com/bay-area/christmas-parades/"
+    ],
+    "checked_at": "2026-11-07T16:39:29.257516+00:00"
+  },
+  {
+    "id": "el-cerrito-winter-market-2026",
+    "title": "El Cerrito Winter Market",
+    "date": "2026-12-06",
+    "start": "12:00",
+    "end": "16:00",
+    "city": "El Cerrito",
+    "venue": "Hana Gardens · 10970 San Pablo Ave (city flyer)",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Stories & play",
+    "icon": "🧸",
+    "color": "#dce8dd",
+    "source": "City of El Cerrito · winter market",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://www.elcerrito.gov/1677/El-Cerrito-Winter-Market/",
+    "desc": "Outdoor seasonal market with local makers, live music and food vendors. All are welcome; free admission is listed by GoBayArea. Purchases cost extra. The official city flyer gives 10970 San Pablo Avenue near City Hall; the independent calendar says 10870, so use the city flyer’s address. No numeric age limits or dedicated children’s activities are published.",
+    "price_basis": "GoBayArea explicitly lists free family-friendly admission.",
+    "evidence_urls": [
+      "https://www.elcerrito.gov/ImageRepository/Document?documentID=24110",
+      "https://gobayarea.com/events/el-cerrito-winter-market"
+    ],
+    "checked_at": "2026-11-07T16:39:29.257516+00:00"
   }
 ]
