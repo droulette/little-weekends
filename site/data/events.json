@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-08T16:44:11.566486+00:00",
-  "last_successful_collection": "2026-11-08T16:44:11.566486+00:00",
+  "generated_at": "2026-11-08T18:51:53.846246+00:00",
+  "last_successful_collection": "2026-11-08T18:51:53.846246+00:00",
   "sources": [
     {
       "id": "ikea",
       "name": "IKEA Emeryville",
       "url": "https://www.ikea.com/us/en/stores/emeryville/",
       "mode": "automatic",
-      "last_success": "2026-11-08T16:44:11.566486+00:00",
-      "last_attempt": "2026-11-08T16:44:11.566486+00:00",
+      "last_success": "2026-11-08T18:51:53.846246+00:00",
+      "last_attempt": "2026-11-08T18:51:53.846246+00:00",
       "state": "ok",
       "count": 11,
       "note": "Official Emeryville store data; only free family activities."
@@ -19,8 +19,8 @@
       "name": "Temescal Branch Library",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events",
       "mode": "automatic",
-      "last_success": "2026-11-08T16:44:11.566486+00:00",
-      "last_attempt": "2026-11-08T16:44:11.566486+00:00",
+      "last_success": "2026-11-08T18:51:53.846246+00:00",
+      "last_attempt": "2026-11-08T18:51:53.846246+00:00",
       "state": "ok",
       "count": 3,
       "note": "First 6 calendar pages; Temescal Branch only; children/family audiences."
@@ -30,8 +30,8 @@
       "name": "Alameda Kids · free family events",
       "url": "https://www.alamedakids.org/calendar",
       "mode": "automatic",
-      "last_success": "2026-11-08T16:44:11.566486+00:00",
-      "last_attempt": "2026-11-08T16:44:11.566486+00:00",
+      "last_success": "2026-11-08T18:51:53.846246+00:00",
+      "last_attempt": "2026-11-08T18:51:53.846246+00:00",
       "state": "ok",
       "count": 27,
       "note": "Free local family events, including festivals, workshops, and San Leandro / Castro Valley activities."
@@ -42,7 +42,7 @@
       "url": "https://www.510families.com/calendar/",
       "mode": "automatic",
       "last_success": "2026-11-04T19:51:07.662754+00:00",
-      "last_attempt": "2026-11-08T16:44:11.566486+00:00",
+      "last_attempt": "2026-11-08T18:51:53.846246+00:00",
       "state": "error",
       "note": "Could not refresh (HTTPError); retained recent listings. Check the source directly."
     },
@@ -51,8 +51,8 @@
       "name": "SF Funcheap · East Bay",
       "url": "https://sf.funcheap.com/region/east-bay/",
       "mode": "automatic",
-      "last_success": "2026-11-08T16:44:11.566486+00:00",
-      "last_attempt": "2026-11-08T16:44:11.566486+00:00",
+      "last_success": "2026-11-08T18:51:53.846246+00:00",
+      "last_attempt": "2026-11-08T18:51:53.846246+00:00",
       "state": "ok",
       "count": 0,
       "note": "Family-keyword candidates only; events without a structured local address are skipped."
@@ -63,7 +63,7 @@
       "url": "https://stores.barnesandnoble.com/store/2072",
       "mode": "automatic",
       "last_success": "2026-11-04T23:20:18.476324+00:00",
-      "last_attempt": "2026-11-08T16:44:11.566486+00:00",
+      "last_attempt": "2026-11-08T18:51:53.846246+00:00",
       "state": "error",
       "note": "Could not refresh (HTTPError); retained recent listings. Check the source directly."
     },
@@ -257,7 +257,7 @@
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67721/",
       "desc": "Did you know that some dogs love to listen when new or experienced readers practice reading aloud? Our furry friends Navi and Barley are gentle, trained therapy dogs who patiently listen to reading-age kids & tweens as they gain confidence to read out loud. Drop by on the second Monday of each month to read with Navi and Barley! Get accessibility information .",
       "cancelled": false,
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -324,7 +324,7 @@
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206aea/",
       "desc": "Children of all ages are welcome; the content is geared toward ages 1 to 5. Please plan to park your stroller in the community meeting room, as the program takes place in the children's area where space is limited. The building has an elevator on the west side for accessibility. If you have any questions, please call the branch during open hours. Get accessibility information .",
       "cancelled": false,
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -412,7 +412,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/beaded-pumpkin-keychain--107f1b92-430c-4795-83ad-6c7b9fdd1b0b/",
       "desc": "IKEA Family signup required. Create your own colorful fusible beaded pumpkin keychain in a welcoming, creative space where everyone can express themselves. Each participant will create one (1) pumpkin keychain from PYSSLA fusible beads*. Supplies cannot be provided for crafters who are not present. *For safety reasons, all projects will be ironed by IKEA co-workers. The IKEA Family member creating the registration is automatically included in the guest count. Please select the number of additional adults and children.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -458,7 +458,7 @@
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6adfdb13de685359098bc000/",
       "desc": "Have you ever wondered how to sew by hand? Do you want to learn how to attach 2 pieces of fabric together to make something? Do you have a sewing project you want to work on or finish? Well, then come to the Kids' Hand Sewing Circle this November! Join us at the Temescal Branch Library to learn basic hand sewing skills and create fun little projects. All materials will be provided at the library. Recommended for ages 8-12, but larger plastic needles and yarn for ages as young as 5 years will also be available to develop early skills. No prior experience required. If you have any questions, ple",
       "cancelled": false,
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -483,7 +483,7 @@
       "also_listed_at": [
         "https://www.alamedakids.org/castro-valley-%E2%80%93-castro-valley-light-parade-0/"
       ],
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -505,7 +505,7 @@
       "status": "Local family calendar",
       "url": "https://www.alamedakids.org/berkeley-%E2%80%93-dazzling-holiday-lights-festival/",
       "desc": "Welcome in the holiday season at Fourth Street. Enjoy 3 blocks of sparkling lights plus complimentary hot beverages, cookies and entertainment! This event marks the beginning of the holiday season on Fourth Street. Free activities include a magic show, art projects, say hi to the glowing Snow Fairy on stilts and more!",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -552,7 +552,7 @@
       "also_listed_at": [
         "https://www.homedepot.com/c/kids-workshop"
       ],
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -574,7 +574,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-ornament-decorating--66c5b267-ba0f-4bb1-aae0-5c4a59165fd7/",
       "desc": "IKEA Family signup required. Join us for our Holiday Ornament Decorating, where you’ll decorate your own festive ornament to add a personal touch to your holiday décor. We’ll provide the ornament and decorating materials—you bring the creativity! Make something for your own tree, create a handmade gift for someone special, or simply enjoy a relaxing evening of holiday crafting. No crafting experience needed—just come ready to make something merry!",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -619,7 +619,7 @@
       "status": "No registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/celebrate-the-holidays-at-ikea--6366cc2f-a20c-4065-955c-1b32a69c6c2c/",
       "desc": "Join us on Saturday, November 28th for a festive day of holiday fun and family-friendly activities. Enjoy holiday cookie decorating, create handmade holiday cards, personalize a picture frame to bring home, and discover helpful pantry organizing tips for the season ahead. Whether you're creating new traditions, making memories with loved ones, or looking for holiday inspiration, there's something for everyone to enjoy. Check out what we're hosting: Holiday Cookie Decorating Holiday Card Crafting Holiday Pantry Organizing 101 Gnome in the Home Scavenger Hunt IKEA Family Member Holiday Giveaway ",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -641,7 +641,7 @@
       "status": "Registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-card-making--de99e7ae-03de-40d6-a08c-95de089bcf3c/",
       "desc": "IKEA Family signup required. Let your creativity shine at our Holiday Card-Making Activity! Using colorful MÅLA arts and crafts supplies, you can design and personalize your own holiday cards to share with family and friends. This simple, self-guided activity is perfect for creators of all ages and offers a fun way to celebrate the holiday season. Drop in anytime during event hours and create a unique keepsake to take home. Located at the Children's Department upstairs in the Showroom. Open to all customers while supplies last.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -663,7 +663,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-cookie-decorating--08b6d636-8a1b-4ca8-95e0-f785f3f2ded6/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -708,7 +708,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-photo-frame-decorating--4fa55662-8eba-4569-ab05-952bdd4e905b/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! One complimentary frame per IKEA Family membership, while supplies last. Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -730,7 +730,7 @@
       "status": "Local family calendar",
       "url": "https://www.alamedakids.org/oakland-holiday-tree-lighting-ceremony/",
       "desc": "Jack London Squares invites the community to attend the center’s spectacular tree lighting. The event will include the lighting of the tree facilitated by Santa Claus himself. Immediately following the tree lighting will be the center’s annual laser light show set to festive, crowd-pleasing holiday music. Enjoy laser shoes, faux snow, selfies with Frosty, Santa, and a Christmas Teddy Bear.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -752,7 +752,7 @@
       "status": "Local family calendar",
       "url": "https://www.alamedakids.org/oakland-magic-christmas-lighting-concert/",
       "desc": "Enjoy a holiday concert and Christmas lighting. Magic of Christmas will feature soloists, the Temple Hill Choir, orchestra, and dancers to open the traditional Christmas lighting concert on Oakland’s Temple Hill, and will include audience sing-alongs with the Temple Hill Choir.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -774,7 +774,7 @@
       "status": "No registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/celebrate-the-holidays-at-ikea--6366cc2f-a20c-4065-955c-1b32a69c6c2c/",
       "desc": "Join us on Saturday, November 28th for a festive day of holiday fun and family-friendly activities. Enjoy holiday cookie decorating, create handmade holiday cards, personalize a picture frame to bring home, and discover helpful pantry organizing tips for the season ahead. Whether you're creating new traditions, making memories with loved ones, or looking for holiday inspiration, there's something for everyone to enjoy. Check out what we're hosting: Holiday Cookie Decorating Holiday Card Crafting Holiday Pantry Organizing 101 Gnome in the Home Scavenger Hunt IKEA Family Member Holiday Giveaway ",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -796,7 +796,7 @@
       "status": "Registration required",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-card-making--de99e7ae-03de-40d6-a08c-95de089bcf3c/",
       "desc": "IKEA Family signup required. Let your creativity shine at our Holiday Card-Making Activity! Using colorful MÅLA arts and crafts supplies, you can design and personalize your own holiday cards to share with family and friends. This simple, self-guided activity is perfect for creators of all ages and offers a fun way to celebrate the holiday season. Drop in anytime during event hours and create a unique keepsake to take home. Located at the Children's Department upstairs in the Showroom. Open to all customers while supplies last.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -818,7 +818,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-cookie-decorating--08b6d636-8a1b-4ca8-95e0-f785f3f2ded6/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -840,7 +840,7 @@
       "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-photo-frame-decorating--4fa55662-8eba-4569-ab05-952bdd4e905b/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! One complimentary frame per IKEA Family membership, while supplies last. Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     },
     {
@@ -1216,7 +1216,7 @@
       "endDate": "2026-12-31",
       "ongoing": true,
       "hoursLabel": "Check daily hours",
-      "checked_at": "2026-11-08T16:44:11.566486+00:00",
+      "checked_at": "2026-11-08T18:51:53.846246+00:00",
       "stale": false
     }
   ],
