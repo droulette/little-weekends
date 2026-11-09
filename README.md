@@ -161,3 +161,13 @@ Discover groups dated events by weekday and date. Weekend views show Saturday an
 Sunday separately, including an empty-day message when a filter excludes all
 events on one day. Looking ahead groups each date chronologically. Ongoing and
 multi-day activities appear once in a separate section at the bottom.
+
+
+### Hiding events
+
+Use Hide event on a card to exclude it from Discover on this browser. Turn on
+Show hidden events to include hidden cards in the current date and filters;
+Restore event makes the card visible again. Saved plans remain saved and visible
+in My plans. Hidden IDs follow known duplicate aliases and are included in new
+plan backups; older backups without hidden IDs still import. Hidden choices are
+local to the browser unless transferred via a backup.

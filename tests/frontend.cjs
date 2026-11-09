@@ -192,6 +192,35 @@ setImmediate(async()=>{
   assert(grouped.indexOf('Next Saturday')<grouped.indexOf('Ongoing &amp; multi-day activities'));
   vm.runInContext("view='saved';saved=new Set(['sun']);render()",ctx);
   assert(!elements['#cards'].innerHTML.includes('day-heading'));
-  console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, and visit badges.');
+  // Hide choices survive refresh, can be restored, and do not remove saved plans.
+  vm.runInContext("seed=groupFixtures;custom=[];saved=new Set(['sat1']);hiddenIds=new Set();planStates={sat1:'booked'};planSnapshots={};view='discover';period='weekend';$('#show-hidden').checked=false;$('#new-only').checked=false;render()",ctx);
+  assert.match(elements['#cards'].innerHTML,/data-hide="sat1"/);
+  vm.runInContext("toggleHidden('sat1')",ctx);
+  assert(!elements['#cards'].innerHTML.includes('data-save="sat1"'));
+  assert.equal(vm.runInContext("saved.has('sat1')&&statusFor('sat1')==='booked'",ctx),true);
+  assert.deepEqual(JSON.parse(storage.get('lw-hidden')),['sat1']);
+  vm.runInContext("view='saved';render()",ctx);
+  assert.match(elements['#cards'].innerHTML,/data-save="sat1"/);
+  assert.match(elements['#cards'].innerHTML,/Restore event/);
+  vm.runInContext("view='discover';$('#show-hidden').checked=true;render()",ctx);
+  assert.match(elements['#cards'].innerHTML,/data-save="sat1"/);
+  assert.match(elements['#cards'].innerHTML,/Restore event/);
+  vm.runInContext("toggleHidden('sat1');$('#show-hidden').checked=false;render()",ctx);
+  assert.match(elements['#cards'].innerHTML,/data-save="sat1"/);
+  assert.deepEqual(JSON.parse(storage.get('lw-hidden')),[]);
+  vm.runInContext("toggleHidden('sat1')",ctx);
+  const nextCtx={...ctx};vm.createContext(nextCtx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),nextCtx);
+  assert.equal(vm.runInContext("hiddenIds.has('sat1')",nextCtx),true);
+  // Known duplicate IDs migrate even if the event was never saved.
+  vm.runInContext("seed=[{...groupFixtures[0],id:'canonical-hidden',alternate_ids:['old-hidden']}];hiddenIds=new Set(['old-hidden']);saved=new Set();migrateSavedIds()",ctx);
+  assert.equal(vm.runInContext("hiddenIds.has('canonical-hidden')&&!hiddenIds.has('old-hidden')",ctx),true);
+  ctx.hideBackup=vm.runInContext('JSON.stringify(backupPayload())',ctx);
+  vm.runInContext("hiddenIds=new Set();restorePlans(hideBackup)",ctx);
+  assert.equal(vm.runInContext("hiddenIds.has('canonical-hidden')",ctx),true);
+  const badHide=JSON.parse(ctx.hideBackup);badHide.hidden_ids=['__proto__'];ctx.badHide=JSON.stringify(badHide);
+  const unchanged=vm.runInContext('JSON.stringify(backupPayload())',ctx);
+  assert.throws(()=>vm.runInContext('restorePlans(badHide)',ctx),/invalid hidden IDs/);
+  assert.equal(vm.runInContext('JSON.stringify(backupPayload())',ctx),unchanged);
+  console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });
