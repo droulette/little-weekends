@@ -128,6 +128,64 @@ class CollectTests(unittest.TestCase):
         self.assertEqual(len(rows),1)
         self.assertEqual(rows[0]['url'],OPL['url']+'/t/')
 
+    def test_duplicate_sources_keep_provenance_and_saved_ids(self):
+        official = parse_ikea(ikea_html(ikea_fixture()), IKEA)[0]
+        official['checked_at'] = NOW.isoformat()
+        calendar = dict(official, id='saved-calendar-card', source_id='510', source='510 Families',
+                        url='https://example.org/cookie-decorating/')
+        result = dedupe([calendar, official])
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['source_id'], 'ikea')
+        self.assertIn('saved-calendar-card', result[0]['alternate_ids'])
+        self.assertEqual({item['source_id'] for item in result[0]['listings']}, {'ikea', '510'})
+        # Future runs keep the secondary URL and saved ID, even if that source fails.
+        refreshed = merge_events(result, [], [official], NOW)
+        self.assertIn('saved-calendar-card', refreshed[0]['alternate_ids'])
+        self.assertEqual(len(refreshed[0]['listings']), 2)
+        self.assertEqual(dedupe(refreshed), refreshed)
+
+    def test_refreshing_both_duplicate_sources_keeps_official_details(self):
+        official = parse_ikea(ikea_html(ikea_fixture()), IKEA)[0]
+        official['checked_at'] = NOW.isoformat()
+        calendar = dict(official, id='calendar-id', source_id='510', source='510 Families',
+                        url='https://example.org/same-session/')
+        previous = dedupe([calendar, official])
+        # Identity aliases resolve both fresh sources to the same saved ID.
+        refreshed = merge_events(previous, [], [official, calendar], NOW, full_sources={'ikea'})
+        self.assertEqual(len(refreshed), 1)
+        self.assertEqual(refreshed[0]['source_id'], 'ikea')
+        self.assertIn('calendar-id', refreshed[0]['alternate_ids'])
+        self.assertEqual(len(refreshed[0]['listings']), 2)
+
+    def test_same_title_at_different_venues_or_sessions_stays_separate(self):
+        base = parse_ikea(ikea_html(ikea_fixture()), IKEA)[0]
+        other = dict(base, id='other-place', venue='Another venue', source_id='510',
+                     url='https://example.org/another-venue/')
+        later = dict(base, id='later', start='16:00', end='17:00')
+        self.assertEqual(len(dedupe([base, other, later])), 3)
+        # Missing venues cannot establish an exact venue match.
+        left = dict(base, venue='')
+        right = dict(other, venue='')
+        self.assertEqual(len(dedupe([left, right])), 2)
+
+    def test_verified_alias_bridges_group_without_losing_provenance(self):
+        base = parse_ikea(ikea_html(ikea_fixture()), IKEA)[0]
+        one = dict(base, id='one', source_id='510', source='510 Families', url='https://example.org/one/', title='Calendar title')
+        two = dict(base, id='two', source_id='alamedakids', source='Alameda Kids', url='https://example.org/two/', title='Other title')
+        bridge = dict(base, also_listed_at=[one['url'], two['url']])
+        result = dedupe([one, two, bridge])
+        self.assertEqual(len(result), 1)
+        self.assertEqual(set(result[0]['alternate_ids']), {'one', 'two'})
+        self.assertEqual(len(result[0]['listings']), 3)
+
+    def test_unsafe_provenance_rejected(self):
+        base = parse_ikea(ikea_html(ikea_fixture()), IKEA)[0]
+        base['listings'] = [dict(source_id='test', source='Test', url='javascript:alert(1)')]
+        with self.assertRaises(ValueError): validate_event(base)
+        base.pop('listings')
+        base['alternate_ids'] = [123]
+        with self.assertRaises(ValueError): validate_event(base)
+
     def test_unsafe_urls_rejected(self):
         e=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0];e['url']='javascript:alert(1)'
         with self.assertRaises(ValueError):validate_event(e)

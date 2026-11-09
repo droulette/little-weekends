@@ -89,3 +89,22 @@ A separate daily ChatGPT maintenance task, “Keep Little Weekends current”, c
 Curated records may include `also_listed_at`, a list of hand-verified exact event URLs. The merge uses these aliases only for the same date and start time, preserving the curated card ID when an automatic calendar imports the same outing under another title. Do not add guessed URLs or general venue aliases across unrelated sessions.
 
 Library outings are limited to Temescal Branch, including listings from family calendars. A checked-by-default Saturday/Sunday filter also applies to Looking ahead; turn it off to see weekdays. Saved plans remain accessible, and ongoing events that overlap a weekend remain at the bottom.
+
+
+### Listing freshness and duplicate handling
+
+Cards and saved plans show their own last-check timestamp. Browser time determines
+when a listing needs rechecking, including when using a cached feed. Missing or
+invalid check dates stay out of the confirmed view; personal additions remain
+available as user-entered ideas. The source summary counts successful automatic
+scans within 48 hours, flags failed/overdue scans, and distinguishes zero matching
+events from a failed import. Hand-checked sources are labeled explicitly.
+Reload collection downloads the latest published JSON; it does not start a scan.
+
+Duplicates combine only for exact URL/verified-alias + date/start matches, or an
+exact normalized title + venue + city + date/start match. Different venues and
+sessions remain separate. The preferred source's check date is retained; another
+calendar's timestamp does not imply that the organizer was checked. Optional
+`listings` preserve other matched sources and `alternate_ids` preserve older IDs.
+Saved IDs migrate to the canonical card when loading a live or cached collection.
+No fuzzy title matching is used, so uncertain duplicates can remain separate.

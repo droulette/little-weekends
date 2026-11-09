@@ -143,6 +143,19 @@ def validate_event(e):
         raise ValueError('Invalid verified URL aliases')
     for url in e.get('also_listed_at', []):
         canonical(url)
+    if not isinstance(e.get('alternate_ids', []), list) or any(
+            not isinstance(value, str) or not value for value in e.get('alternate_ids', [])):
+        raise ValueError('Invalid alternate IDs')
+    if not isinstance(e.get('listings', []), list):
+        raise ValueError('Invalid listing provenance')
+    for listing in e.get('listings', []):
+        if not isinstance(listing, dict) or not isinstance(listing.get('source_id'), str) or not isinstance(listing.get('source'), str):
+            raise ValueError('Invalid listing provenance')
+        canonical(listing.get('url'))
+        if listing.get('checked_at'):
+            checked = datetime.fromisoformat(listing['checked_at'].replace('Z', '+00:00'))
+            if checked.tzinfo is None:
+                raise ValueError('Listing timestamp needs timezone')
     for key in ['min', 'max']:
         if e.get(key) is not None and (type(e[key]) is not int or not 0 <= e[key] <= 99):
             raise ValueError('Invalid age')
@@ -472,46 +485,85 @@ def load_json(path, fallback):
 
 
 def event_urls(event):
-    """Only hand-verified exact aliases; never fuzzy-match unrelated outings."""
-    return {canonical(url) for url in [event["url"]] + event.get("also_listed_at", [])}
+    """Exact aliases and URLs from previously matched listings, never venue URLs."""
+    return {canonical(url) for url in [event["url"]] + event.get("also_listed_at", [])
+            + [item['url'] for item in event.get('listings', [])]}
 
 
 def dedupe(events):
-    """Prefer live official sources, but retain old IDs when refreshing a card."""
+    """Combine exact matches, keeping provenance and every previously saved ID.
+
+    Different URLs require the same title, venue, city, date and start. Similar
+    titles or a shared city alone are not enough to merge two family outings.
+    """
     priority = {'ikea':0,'opl':0,'bn':0,'alamedakids':1,'curated':2,'510':3,'funcheap':4}
-    output, seen = [], set()
-    for e in sorted(events, key=lambda x: (priority.get(x['source_id'], 5), -datetime.fromisoformat(x.get('checked_at','2000-01-01T00:00:00Z').replace('Z','+00:00')).timestamp())):
-        keys = {(url, e['date'], e['start']) for url in event_urls(e)}
-        title_key = (re.sub(r'[^a-z0-9]', '', e['title'].lower()), e['date'], e['start'], e['city'])
-        if keys & seen or title_key in seen:
-            continue
-        seen.update(keys | {title_key})
-        output.append(e)
+    def normalized(value):
+        return re.sub(r'[^a-z0-9]', '', str(value).lower())
+    def keys(e):
+        session = (e['date'], e['start'])
+        result = {('url', url, *session) for url in event_urls(e)}
+        if normalized(e.get('venue', '')):
+            result.add(('title', normalized(e['title']), normalized(e['venue']), e['city'], *session))
+        return result
+    groups = []
+    for event in events:
+        event_keys = keys(event)
+        matches = [g for g in groups if g['keys'] & event_keys]
+        group = {'keys':set(event_keys), 'events':[event]}
+        for match in matches:
+            group['keys'].update(match['keys'])
+            group['events'].extend(match['events'])
+            groups.remove(match)
+        groups.append(group)
+    output = []
+    for group in groups:
+        ranked = sorted(group['events'], key=lambda x: (
+            priority.get(x['source_id'], 5),
+            -datetime.fromisoformat(x.get('checked_at','2000-01-01T00:00:00Z').replace('Z','+00:00')).timestamp()))
+        winner = dict(ranked[0])
+        ids, listings = set(), {}
+        for e in ranked:
+            ids.update([e['id'], *e.get('alternate_ids', [])])
+            provenance = [dict(source_id=e['source_id'], source=e.get('source', e['source_id']),
+                               url=e['url'], checked_at=e.get('checked_at'))] + e.get('listings', [])
+            for item in provenance:
+                key = (item['source_id'], canonical(item['url']))
+                if key not in listings or (item.get('checked_at') or '') > (listings[key].get('checked_at') or ''):
+                    listings[key] = dict(item)
+        winner['alternate_ids'] = sorted(ids - {winner['id']})
+        winner['listings'] = list(listings.values())
+        output.append(winner)
     return sorted(output, key=lambda e: (bool(e.get('ongoing', e.get('endDate'))), e['date'], e['start'], e['title']))
 
 
 def merge_events(previous, curated, fresh, now, full_sources=()):
     today = now.astimezone(PACIFIC).date().isoformat()
     identity = {(url,e['date'],e['start']):e['id'] for e in previous+curated for url in event_urls(e)}
-    aliases = {e['id']: e.get('also_listed_at', []) for e in curated}
+    aliases = {e['id']: e.get('also_listed_at', []) for e in previous+curated}
+    history = {e['id']:e for e in curated+previous}
     live_opl_urls = {canonical(e['url']) for e in fresh if e['source_id'] in {'opl','bn'}}
     cancelled = {(canonical(e['url']),e['date']) for e in fresh if e.get('cancelled')}
     by_id = {e['id']:dict(e) for e in previous if e.get('source_id') != 'curated'
              and e.get('source_id') not in full_sources
              and canonical(e['url']) not in live_opl_urls}
+    fresh_rows = []
     for event in fresh:
         event = dict(event)
         key = (canonical(event['url']),event['date'],event['start'])
         event['id'] = identity.get(key,event['id'])
+        prior = history.get(event['id'], {})
+        for field in ('alternate_ids', 'listings'):
+            if prior.get(field):
+                event[field] = prior[field]
         if aliases.get(event['id']):
             event['also_listed_at'] = aliases[event['id']]
         if event.get('cancelled'):
             continue
         event['checked_at'] = now.isoformat()
         event.pop('stale',None)
-        by_id[event['id']] = event
+        fresh_rows.append(event)
     pool = []
-    for event in list(by_id.values())+curated:
+    for event in list(by_id.values())+fresh_rows+curated:
         event = dict(event)
         if event['source_id'] != 'curated':
             event['id'] = identity.get((canonical(event['url']),event['date'],event['start']),event['id'])
