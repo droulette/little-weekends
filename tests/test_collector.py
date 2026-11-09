@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, merge_events, dedupe, validate_event, parse_bn, parse_alamedakids
+from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, merge_events, dedupe, validate_event, parse_bn, parse_alamedakids, library_page_url
 
 NOW=datetime(2026,11,4,20,tzinfo=timezone.utc)
 IKEA={'id':'ikea','name':'IKEA Emeryville'}
@@ -112,6 +112,21 @@ class CollectTests(unittest.TestCase):
         html='<table class="views-table">'+row('Castro Valley','Free','Kids craft')+row('Castro Valley','$5','Paid kids craft')+row('Fremont','Free','Faraway kids craft')+'</table>'
         events=parse_alamedakids(html,{'id':'alamedakids','name':'Alameda Kids','url':'https://www.alamedakids.org/calendar'})
         self.assertEqual(len(events),1);self.assertEqual(events[0]['start'],'15:00')
+
+    def test_library_pagination_preserves_branch_filter(self):
+        url='https://oaklandlibrary.bibliocommons.com/v2/events?locations=TMA'
+        self.assertEqual(library_page_url(url,1),url)
+        self.assertEqual(library_page_url(url,2),url+'&page=2')
+        self.assertEqual(library_page_url(OPL['url'],2),OPL['url']+'?page=2')
+        data={'entities':{'eventAudiences':{'kids':{'name':'Kids'}},
+            'locations':{'t':{'name':'Temescal Branch','address':{'city':'Oakland','number':'5205','street':'Telegraph'}},
+                         'r':{'name':'Rockridge Branch','address':{'city':'Oakland'}}},'events':{}}}
+        for branch in ['t','r']:
+            data['entities']['events'][branch]={'id':branch,'definition':{'title':'Family craft','start':'2026-12-05T11:00',
+                'end':'2026-12-05T12:30','audienceIds':['kids'],'branchLocationId':branch}}
+        rows=parse_opl('<script data-iso-key="_0">'+json.dumps(data)+'</script>',dict(OPL,url=url))
+        self.assertEqual(len(rows),1)
+        self.assertEqual(rows[0]['url'],OPL['url']+'/t/')
 
     def test_unsafe_urls_rejected(self):
         e=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0];e['url']='javascript:alert(1)'

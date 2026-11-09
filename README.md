@@ -16,7 +16,7 @@ A free family-outing planner for Oakland and nearby East Bay cities. Static HTML
 | Source | Collection method | Limits |
 | --- | --- | --- |
 | IKEA Emeryville | Official store page's embedded public event data | Store `sto165` only; free family activities; individual sessions and registration capacity |
-| Temescal Branch Library | Public calendar's embedded event data | First six pages; Temescal Branch only; kids/family audiences; not the entire library calendar |
+| Temescal Branch Library | Public calendar's embedded event data | First six pages of the public Temescal-filtered calendar; Temescal Branch only; kids/family audiences; not the entire library calendar |
 | 510 Families | Calendar pages plus individual structured event pages | First six list pages, at most 90 unique details; exact free-admission labels and supported cities only |
 | Funcheap East Bay | Structured event listings and family-keyword detail pages | Conservative: requires free price, a local structured address, and family wording; can find zero matching events |
 | Barnes & Noble Emeryville | Official store page’s embedded calendar | Local store 2072 only; regular storytimes and explicitly free children’s events. Missing end times stay unknown. |

@@ -190,27 +190,6 @@
     "checked_at": "2026-11-03T20:00:00Z"
   },
   {
-    "id": "michaels-foam",
-    "title": "Holiday ornament craft",
-    "date": "2026-11-08",
-    "start": "13:00",
-    "end": "15:00",
-    "city": "Emeryville",
-    "venue": "Michaels · East Bay Bridge · 3991 Hollis St (confirm store)",
-    "price": "Confirm cost",
-    "min": null,
-    "max": null,
-    "cat": "Art & crafts",
-    "icon": "🎨",
-    "color": "#f1dfdf",
-    "source": "Michaels national schedule",
-    "status": "Confirm local participation",
-    "url": "https://www.michaelspressroom.com/news/detail/5107/michaels-and-hallmark-bring-the-screen-free-spirit-of",
-    "desc": "National event date and time; East Bay Bridge participation and local hours are not yet confirmed. Call (510) 658-4830 before going. Check the project age requirement with the store.",
-    "source_id": "curated",
-    "checked_at": "2026-11-03T20:00:00Z"
-  },
-  {
     "id": "michaels-clay",
     "title": "Kids Club: Air-dry clay figurines",
     "date": "2026-11-14",

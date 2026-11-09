@@ -27,7 +27,7 @@ FAMILY = re.compile(r'\b(kids?|child(?:ren)?|famil(?:y|ies)|story\s?time|prescho
 ADULT = re.compile(r'\b(21\+|18\+|adults? only|adult-only|happy hour|nightclub|beer tasting|wine tasting|comedy night)\b', re.I)
 SOURCES = [
  {'id':'ikea','name':'IKEA Emeryville','url':'https://www.ikea.com/us/en/stores/emeryville/','mode':'automatic'},
- {'id':'opl','name':'Temescal Branch Library','url':'https://oaklandlibrary.bibliocommons.com/v2/events','mode':'automatic'},
+ {'id':'opl','name':'Temescal Branch Library','url':'https://oaklandlibrary.bibliocommons.com/v2/events?locations=TMA','mode':'automatic'},
  {'id':'alamedakids','name':'Alameda Kids · free family events','url':'https://www.alamedakids.org/calendar','mode':'automatic'},
  {'id':'510','name':'510 Families','url':'https://www.510families.com/calendar/','mode':'automatic'},
  {'id':'funcheap','name':'SF Funcheap · East Bay','url':'https://sf.funcheap.com/region/east-bay/','mode':'automatic'},
@@ -275,7 +275,7 @@ def parse_opl(html, source):
             status = 'Registration closed'
         venue = location.get('name', 'Oakland Public Library')+' · '+(clean(d.get('locationDetails')) or ' '.join(str(address.get(k, '')) for k in ['number','street']))
         row = make_event(source, d['title'], d['start'], d['end'], city, venue,
-                         source['url']+'/'+event['id'], desc, status=status, min_age=lo, max_age=hi)
+                         canonical(source['url'])+'/'+event['id'], desc, status=status, min_age=lo, max_age=hi)
         row['cancelled'] = bool(d.get('isCancelled'))
         rows.append(row)
     return rows
@@ -535,6 +535,11 @@ def merge_events(previous, curated, fresh, now, full_sources=()):
     return dedupe(pool)
 
 
+def library_page_url(url, page):
+    # Keep the public branch filter on every page. Detail URLs omit filters.
+    return url if page == 1 else url + ('&' if '?' in url else '?') + f'page={page}'
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sources', nargs='*', default=['ikea','opl','bn','alamedakids','510','funcheap'])
@@ -564,8 +569,8 @@ def main():
                 elif source['id'] == 'opl':
                     rows = []
                     for page in range(1,args.pages+1):
-                        rows += parse_opl(client.get(source['url']+(f'?page={page}' if page>1 else '')),source)
-                    note = f'First {args.pages} calendar pages; Temescal Branch only; children/family audiences.'
+                        rows += parse_opl(client.get(library_page_url(source['url'],page)),source)
+                    note = f'First {args.pages} pages of the Temescal-filtered calendar; Temescal Branch only; children/family audiences.'
                 elif source['id'] == 'bn':
                     rows = parse_bn(client.get(source['url']),source)
                     note = 'Emeryville store calendar; individual dates and start times.'
