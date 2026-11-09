@@ -12,7 +12,7 @@ const feed={schema_version:1,generated_at:'2026-11-04T20:00:00Z',last_successful
  {...common,id:'ikea-gnomes',title:'Gnome in the Home',date:'2026-11-01',endDate:'2026-12-31',ongoing:true,start:'10:00',end:'18:00'}
 ]};
 const elements={};const storage=new Map();
-function node(){return {value:'',textContent:'',innerHTML:'',style:{},classList:{toggle(){}},addEventListener(){},showModal(){},close(){}}}
+function node(){return {value:'',textContent:'',innerHTML:'',style:{},listeners:{},classList:{toggle(){}},addEventListener(type,fn){this.listeners[type]=fn},showModal(){},close(){},click(){}}}
 let captured;
 class TestURL extends URL {static createObjectURL(b){captured=b;return 'blob:test'}static revokeObjectURL(){}}
 class TestDate extends Date { constructor(...args){super(...(args.length?args:['2026-11-04T20:00:00Z']))} static now(){return Date.parse('2026-11-04T20:00:00Z')} }
@@ -85,6 +85,88 @@ setImmediate(async()=>{
   assert(!elements['#cards'].innerHTML.includes('bn-old'));
   assert(!elements['#source-list'].innerHTML.includes('Barnes'));
   assert.equal(vm.runInContext("sourceHealth({mode:'automatic',kind:'articles',state:'ok',count:3,last_success:'2026-11-04T20:00:00Z'}).label",ctx),'RSS · 3 guides');
-  console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, and saved-ID migration.');
+  // Planning fixtures are synthetic and use Pacific wall-clock times.
+  ctx.planFixtures=[
+   {...common,id:'dated',title:'Craft one',date:'2026-11-07',start:'12:00',end:'13:00'},
+   {...common,id:'overlap',title:'Craft two',date:'2026-11-07',start:'12:30',end:'13:30'},
+   {...common,id:'adjacent',title:'Back-to-back',date:'2026-11-07',start:'13:00',end:'14:00'},
+   {...common,id:'unknown-end',title:'Start only',date:'2026-11-07',start:'12:00',end:null},
+   {...common,id:'future',title:'Later weekend',date:'2026-11-14',start:'10:00',end:'11:00'}
+  ];
+  vm.runInContext("seed=planFixtures.map(e=>({...e}));custom=[];saved=new Set();planStates={};planSnapshots={};view='discover';period='weekend';$('#include-unconfirmed').checked=false;$('#new-only').checked=false;render()",ctx);
+  assert.equal(vm.runInContext("weekendFor('2026-11-15').join(',')",ctx),'2026-11-14,2026-11-15');
+  assert.equal(vm.runInContext("weekendFor('2026-12-31').join(',')",ctx),'2027-01-02,2027-01-03');
+  assert.equal(vm.runInContext("validDate('2026-02-30')",ctx),false);
+  elements['#weekend-date'].listeners.change({target:{value:'2026-11-13'}});
+  assert.match(elements['#heading'].textContent,/Nov 14.*Nov 15/);
+  assert.match(elements['#cards'].innerHTML,/Later weekend/);
+  assert(!elements['#cards'].innerHTML.includes('data-save="dated"'));
+  vm.runInContext("toggleSaved('dated');setPlanStatus('dated','booked');toggleSaved('overlap');toggleSaved('unknown-end');",ctx);
+  assert.equal(JSON.parse(storage.get('lw-plan-status')).dated,'booked');
+  assert.match(elements['#plan'].innerHTML,/Listed times overlap with Craft two/);
+  assert.match(elements['#plan'].innerHTML,/End time unknown/);
+  assert.equal(vm.runInContext("planConflicts(seed[0],[seed[2],seed[3]]).length",ctx),0);
+  assert.equal(vm.runInContext("planConflicts({...seed[0],endDate:'2026-12-31'},seed).length",ctx),0);
+  const destination=new URL(vm.runInContext("directionsUrl(seed[0])",ctx));
+  assert.equal(destination.hostname,'www.google.com');
+  assert.equal(destination.searchParams.get('destination'),'Example venue, Emeryville, CA');
+  elements['#backup-plans'].onclick();
+  const backup=JSON.parse(await captured.text());
+  assert.equal(backup.format,'little-weekends-plans');
+  assert.equal(backup.saved.find(x=>x.id==='dated').status,'booked');
+  assert(!JSON.stringify(backup).includes('lw-feed-cache'));
+  ctx.backupText=JSON.stringify(backup);
+  vm.runInContext("saved=new Set();planStates={};planSnapshots={};",ctx);
+  assert.equal(vm.runInContext('restorePlans(backupText)',ctx),3);
+  assert.equal(vm.runInContext("statusFor('dated')",ctx),'booked');
+  // Importing the same backup twice is idempotent and keeps current status choices.
+  vm.runInContext("setPlanStatus('dated','register')",ctx);
+  assert.equal(vm.runInContext('restorePlans(backupText)',ctx),0);
+  assert.equal(vm.runInContext("statusFor('dated')",ctx),'register');
+  const before=vm.runInContext('JSON.stringify(backupPayload())',ctx);
+  const malformed=JSON.parse(JSON.stringify(backup));malformed.saved.push({id:'bad',status:'interested',event:{}});
+  ctx.badBackup=JSON.stringify(malformed);
+  assert.throws(()=>vm.runInContext('restorePlans(badBackup)',ctx),/invalid event/);
+  assert.equal(vm.runInContext('JSON.stringify(backupPayload())',ctx),before);
+  // Unsafe URLs and prototype-style IDs are rejected before mutation.
+  malformed.saved=JSON.parse(JSON.stringify(backup.saved));malformed.saved[0].event.url='javascript:alert(1)';
+  ctx.badBackup=JSON.stringify(malformed);assert.throws(()=>vm.runInContext('restorePlans(badBackup)',ctx),/invalid event/);
+  malformed.saved=[{id:'__proto__',status:'interested',event:null}];
+  ctx.badBackup=JSON.stringify(malformed);assert.throws(()=>vm.runInContext('restorePlans(badBackup)',ctx),/invalid saved plan/);
+  const hostile=JSON.parse(JSON.stringify(backup));hostile.saved[0].event.endDate='2026-11-09';hostile.saved[0].event.hoursLabel='<img src=x onerror=alert(1)>';
+  ctx.hostileBackup=JSON.stringify(hostile);
+  vm.runInContext("saved=new Set();planStates={};planSnapshots={};seed=[];restorePlans(hostileBackup)",ctx);
+  assert(!elements['#cards'].innerHTML.includes('<img'));
+  assert.match(elements['#cards'].innerHTML,/&lt;img/);
+  vm.runInContext("seed=planFixtures.map(e=>({...e}));saved=new Set();planStates={};planSnapshots={};restorePlans(backupText)",ctx);
+  // Saved copies survive feed removal, and clearly require an organizer recheck.
+  vm.runInContext("seed=seed.filter(e=>e.id!=='dated');view='saved';render()",ctx);
+  assert.match(elements['#plan'].innerHTML,/Saved copy · verify details/);
+  assert.match(elements['#cards'].innerHTML,/Craft one/);
+  // Personal events survive backup/restore too.
+  ctx.personalEvent={...common,id:'custom-example',source:'Your discovery',title:'My added outing',date:'2026-11-21',start:'10:00',end:'11:00'};
+  vm.runInContext("custom=[personalEvent];toggleSaved('custom-example')",ctx);
+  ctx.personalBackup=vm.runInContext('JSON.stringify(backupPayload())',ctx);
+  vm.runInContext("custom=[];saved=new Set();planStates={};planSnapshots={};restorePlans(personalBackup)",ctx);
+  assert.equal(vm.runInContext("custom.length",ctx),1);
+  assert.equal(vm.runInContext("saved.has('custom-example')",ctx),true);
+  // Duplicate migration preserves Booked and the plan's details.
+  vm.runInContext("seed=[{...planFixtures[0],id:'canonical',alternate_ids:['dated']}];saved=new Set(['dated']);planStates={dated:'booked'};migrateSavedIds();syncSavedSnapshots()",ctx);
+  assert.equal(vm.runInContext("statusFor('canonical')",ctx),'booked');
+  assert.equal(vm.runInContext("saved.has('canonical')&&!saved.has('dated')",ctx),true);
+  // New labels compare against the prior visit, including alias IDs.
+  vm.runInContext("visitSeen=new Set(['dated']);seed=planFixtures;custom=[];saved=new Set();planSnapshots={};view='discover';period='weekend';$('#new-only').checked=true;render()",ctx);
+  assert.equal(vm.runInContext("isNew(seed[0])",ctx),false);
+  assert.equal(vm.runInContext("isNew(seed[1])",ctx),true);
+  assert.equal(vm.runInContext("isNew({id:'canonical',alternate_ids:['dated']})",ctx),false);
+  assert(!elements['#cards'].innerHTML.includes('data-save="dated"'));
+  assert.match(elements['#cards'].innerHTML,/New since your last visit/);
+  // Recording a successful collection does not clear this visit's new labels.
+  vm.runInContext('rememberSeen()',ctx);
+  assert.equal(vm.runInContext('isNew(seed[1])',ctx),true);
+  assert(JSON.parse(storage.get('lw-seen-events')).includes('overlap'));
+  vm.runInContext('visitSeen=null;rememberSeen()',ctx);
+  assert.equal(vm.runInContext('isNew(seed[1])',ctx),false);
+  console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, and visit badges.');
  }catch(e){console.error(e);process.exitCode=1}
 });

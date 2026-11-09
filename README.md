@@ -124,3 +124,34 @@ under the existing retention rules; RSS does not reconfirm them.
 
 Barnes & Noble is removed from the active source list, collector and generated
 feed. The frontend also excludes it from older browser-cached collections.
+
+
+## Planning your outings
+
+- **Choose a weekend:** pick any date and the app shows that week's Saturday and
+  Sunday. The existing This weekend / Next weekend shortcuts remain available.
+- **Plan status:** saved outings have Interested, Need to register, and Booked
+  labels. These are personal notes; changing a label does not register or pay
+  for an event. Each plan links to its organizer.
+- **Overlapping times:** known start/end times on the same day are compared across
+  saved plans. Back-to-back sessions do not conflict. Ongoing activities and
+  unknown end times receive a timing note rather than an invented overlap.
+  These checks do not account for travel time or flexible drop-in attendance.
+- **Directions:** event cards and saved plans open a Google Maps directions query
+  using the published venue and city. No location is collected by the app.
+- **Back up plans / Restore backup:** download a JSON file with saved outings,
+  statuses, saved event copies and personal additions. Restore merges valid
+  backups with existing browser data, preserving current status choices. The
+  whole file is checked before mutation; repeated imports do not duplicate IDs.
+  Private plans are never uploaded to this repository. Transfer the backup file
+  yourself to another browser/device; this is not automatic synchronization.
+- **New since your last visit:** a badge and optional filter compare collected
+  event IDs against this browser's earlier successful visits. First visits set
+  a baseline without labeling everything new. Known duplicate aliases do not
+  receive a false new badge. This is local to the browser, not an event organizer's
+  announcement date.
+
+Saved event copies keep plan details available when an outing leaves the public
+collection. Such copies are clearly marked for organizer verification and stay
+out of Discover. A backup can retain an older saved ID without details if that
+browser never saved a copy of the event.
