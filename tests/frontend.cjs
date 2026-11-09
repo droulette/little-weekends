@@ -167,6 +167,31 @@ setImmediate(async()=>{
   assert(JSON.parse(storage.get('lw-seen-events')).includes('overlap'));
   vm.runInContext('visitSeen=null;rememberSeen()',ctx);
   assert.equal(vm.runInContext('isNew(seed[1])',ctx),false);
+  // Weekend sections group single-day events by date; ongoing events appear once at the bottom.
+  ctx.groupFixtures=[
+   {...common,id:'sun',title:'Sunday activity',date:'2026-11-08',start:'09:00',end:'10:00'},
+   {...common,id:'sat2',title:'Saturday afternoon',date:'2026-11-07',start:'14:00',end:'15:00'},
+   {...common,id:'sat1',title:'Saturday morning',date:'2026-11-07',start:'09:00',end:'10:00'},
+   {...common,id:'ongoing',title:'All-week hunt',date:'2026-11-01',endDate:'2026-12-31',ongoing:true,start:'10:00',end:'18:00'},
+   {...common,id:'future-sat',title:'Next Saturday',date:'2026-11-14',start:'09:00',end:'10:00'}
+  ];
+  vm.runInContext("seed=groupFixtures;custom=[];saved=new Set();planSnapshots={};visitSeen=new Set(groupFixtures.map(e=>e.id));view='discover';period='weekend';$('#new-only').checked=false;$('#include-unconfirmed').checked=false;$('#weekends-only').checked=true;render()",ctx);
+  let grouped=elements['#cards'].innerHTML;
+  assert(grouped.indexOf('Saturday, Nov 7, 2026')<grouped.indexOf('Saturday morning'));
+  assert(grouped.indexOf('Saturday morning')<grouped.indexOf('Saturday afternoon'));
+  assert(grouped.indexOf('Sunday, Nov 8, 2026')<grouped.indexOf('Sunday activity'));
+  assert(grouped.indexOf('Sunday activity')<grouped.indexOf('Ongoing &amp; multi-day activities'));
+  assert.equal((grouped.match(/data-save="ongoing"/g)||[]).length,1);
+  vm.runInContext("period='next';render()",ctx);
+  grouped=elements['#cards'].innerHTML;
+  assert.match(grouped,/Saturday, Nov 14, 2026/);assert.match(grouped,/Sunday, Nov 15, 2026/);
+  assert.match(grouped,/No matching events this day/);
+  vm.runInContext("period='all';render()",ctx);
+  grouped=elements['#cards'].innerHTML;
+  assert(grouped.indexOf('Sunday, Nov 8, 2026')<grouped.indexOf('Saturday, Nov 14, 2026'));
+  assert(grouped.indexOf('Next Saturday')<grouped.indexOf('Ongoing &amp; multi-day activities'));
+  vm.runInContext("view='saved';saved=new Set(['sun']);render()",ctx);
+  assert(!elements['#cards'].innerHTML.includes('day-heading'));
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, and visit badges.');
  }catch(e){console.error(e);process.exitCode=1}
 });

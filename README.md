@@ -155,3 +155,9 @@ Saved event copies keep plan details available when an outing leaves the public
 collection. Such copies are clearly marked for organizer verification and stay
 out of Discover. A backup can retain an older saved ID without details if that
 browser never saved a copy of the event.
+
+
+Discover groups dated events by weekday and date. Weekend views show Saturday and
+Sunday separately, including an empty-day message when a filter excludes all
+events on one day. Looking ahead groups each date chronologically. Ongoing and
+multi-day activities appear once in a separate section at the bottom.
