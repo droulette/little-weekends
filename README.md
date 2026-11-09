@@ -137,6 +137,7 @@ feed. The frontend also excludes it from older browser-cached collections.
   saved plans. Back-to-back sessions do not conflict. Ongoing activities and
   unknown end times receive a timing note rather than an invented overlap.
   These checks do not account for travel time or flexible drop-in attendance.
+- **Calendar:** use + Calendar on an event card to download that event, even before saving it.
 - **Directions:** event cards and saved plans open a Google Maps directions query
   using the published venue and city. No location is collected by the app.
 - **Back up plans / Restore backup:** download a JSON file with saved outings,

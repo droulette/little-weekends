@@ -11,13 +11,13 @@ const feed={schema_version:1,generated_at:'2026-11-04T20:00:00Z',last_successful
  {...common,id:'future',title:'Future craft',date:'2026-11-14',start:'10:00',end:'11:00'},
  {...common,id:'ikea-gnomes',title:'Gnome in the Home',date:'2026-11-01',endDate:'2026-12-31',ongoing:true,start:'10:00',end:'18:00'}
 ]};
-const elements={};const storage=new Map();
+const elements={};const storage=new Map();const documentListeners={};
 function node(){return {value:'',textContent:'',innerHTML:'',style:{},listeners:{},classList:{toggle(){}},addEventListener(type,fn){this.listeners[type]=fn},showModal(){},close(){},click(){}}}
 let captured;
 class TestURL extends URL {static createObjectURL(b){captured=b;return 'blob:test'}static revokeObjectURL(){}}
 class TestDate extends Date { constructor(...args){super(...(args.length?args:['2026-11-04T20:00:00Z']))} static now(){return Date.parse('2026-11-04T20:00:00Z')} }
 const ctx={Intl,Date:TestDate,Set,URL:TestURL,Blob,
- document:{querySelector(s){return elements[s]??=node()},querySelectorAll(){return []},addEventListener(){},createElement(){return {click(){}}}},
+ document:{querySelector(s){return elements[s]??=node()},querySelectorAll(){return []},addEventListener(type,fn){documentListeners[type]??=fn},createElement(){return {click(){}}}},
  localStorage:{getItem(k){return storage.get(k)??null},setItem(k,v){storage.set(k,v)}},setTimeout(){},fetch:async()=>({ok:true,json:async()=>feed})};
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),ctx);
 setImmediate(async()=>{
@@ -221,6 +221,14 @@ setImmediate(async()=>{
   const unchanged=vm.runInContext('JSON.stringify(backupPayload())',ctx);
   assert.throws(()=>vm.runInContext('restorePlans(badHide)',ctx),/invalid hidden IDs/);
   assert.equal(vm.runInContext('JSON.stringify(backupPayload())',ctx),unchanged);
+  // The card's calendar button exports that event without saving it first.
+  vm.runInContext("seed=groupFixtures;custom=[];saved=new Set();hiddenIds=new Set();view='discover';period='weekend';$('#show-hidden').checked=false;render()",ctx);
+  assert.match(elements['#cards'].innerHTML,/data-calendar="sat1"/);
+  documentListeners.click({target:{closest(){return {dataset:{calendar:'sat1'}}}}});
+  const cardCalendar=await captured.text();
+  assert.match(cardCalendar,/SUMMARY:Saturday morning/);
+  assert.match(cardCalendar,/DTSTART;TZID=America\/Los_Angeles:20261107T090000/);
+  assert.equal(vm.runInContext("saved.has('sat1')",ctx),false);
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });
