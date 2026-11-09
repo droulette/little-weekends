@@ -5,7 +5,7 @@ A free family-outing planner for Oakland and nearby East Bay cities. Static HTML
 ## What works
 
 - This weekend, next weekend, and future events; city, age, activity, and price filters.
-- Free-only is selected by default. Imported events require free admission; regular Barnes & Noble in-store storytime is treated as its free storytime program when no ticket or purchase requirement is listed.
+- Free-only is selected by default. Imported events require free admission. RSS guide articles are separate reading links and can include paid activities.
 - Save plans and personal additions in your browser; export them to an `.ics` calendar file.
 - Ongoing activities, such as IKEA's gnome hunt, sort below dated activities.
 - Source-specific refresh status, timestamps, stale-listing labels, and manual-source notes.
@@ -17,9 +17,8 @@ A free family-outing planner for Oakland and nearby East Bay cities. Static HTML
 | --- | --- | --- |
 | IKEA Emeryville | Official store page's embedded public event data | Store `sto165` only; free family activities; individual sessions and registration capacity |
 | Temescal Branch Library | Public calendar's embedded event data | First six pages of the public Temescal-filtered calendar; Temescal Branch only; kids/family audiences; not the entire library calendar |
-| 510 Families | Calendar pages plus individual structured event pages | First six list pages, at most 90 unique details; exact free-admission labels and supported cities only |
+| 510 Families | Official publisher-linked RSS feed | Recent weekend/budget articles shown as guide links, not event cards; no full calendar import or inferred event dates |
 | Funcheap East Bay | Structured event listings and family-keyword detail pages | Conservative: requires free price, a local structured address, and family wording; can find zero matching events |
-| Barnes & Noble Emeryville | Official store page’s embedded calendar | Local store 2072 only; regular storytimes and explicitly free children’s events. Missing end times stay unknown. |
 | Alameda Kids | Public local family calendar | Explicitly free activities in supported cities; includes San Leandro, Castro Valley, and local Home Depot listings. |
 | Home Depot Emeryville | Hand-checked starter dates | Confirm participation and registration at the local store |
 | Michaels East Bay Bridge | Hand-checked national starter dates | Local participation is unconfirmed; store 1538 only |
@@ -108,3 +107,20 @@ calendar's timestamp does not imply that the organizer was checked. Optional
 `listings` preserve other matched sources and `alternate_ids` preserve older IDs.
 Saved IDs migrate to the canonical card when loading a live or cached collection.
 No fuzzy title matching is used, so uncertain duplicates can remain separate.
+
+
+### 510 RSS and retired Barnes & Noble source
+
+510's footer advertises `https://www.510families.com/feed/` as its RSS export.
+It supplies articles rather than structured calendar records. One bounded request
+consumes that explicit syndication URL with an RSS client identity; it does not
+follow article links or crawl the calendar. `robots.txt` is still enforced for
+page crawling. Guides use publication timestamps labeled as such, are separate
+from free dated events, and cannot be saved/exported as calendar appointments.
+Only recent weekend/budget articles are selected. Failed RSS requests remain
+visible, retain guide links for at most fourteen days since their last successful
+check, and never generate placeholder events. Existing dated 510 records expire
+under the existing retention rules; RSS does not reconfirm them.
+
+Barnes & Noble is removed from the active source list, collector and generated
+feed. The frontend also excludes it from older browser-cached collections.

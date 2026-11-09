@@ -5,6 +5,8 @@ ages stay unknown. Source failures are visible and never erase the last feed.
 """
 from __future__ import annotations
 import argparse
+from email.utils import parsedate_to_datetime
+import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 from html import unescape
@@ -29,9 +31,8 @@ SOURCES = [
  {'id':'ikea','name':'IKEA Emeryville','url':'https://www.ikea.com/us/en/stores/emeryville/','mode':'automatic'},
  {'id':'opl','name':'Temescal Branch Library','url':'https://oaklandlibrary.bibliocommons.com/v2/events?locations=TMA','mode':'automatic'},
  {'id':'alamedakids','name':'Alameda Kids · free family events','url':'https://www.alamedakids.org/calendar','mode':'automatic'},
- {'id':'510','name':'510 Families','url':'https://www.510families.com/calendar/','mode':'automatic'},
+ {'id':'510','name':'510 Families · RSS guides','url':'https://www.510families.com/feed/','mode':'automatic','kind':'articles'},
  {'id':'funcheap','name':'SF Funcheap · East Bay','url':'https://sf.funcheap.com/region/east-bay/','mode':'automatic'},
- {'id':'bn','name':'Barnes & Noble · Emeryville','url':'https://stores.barnesandnoble.com/store/2072','mode':'automatic'},
  {'id':'homedepot','name':'Home Depot · Emeryville','url':'https://www.homedepot.com/c/kids-workshop','mode':'manual','note':'Starter dates only; confirm local registration.'},
  {'id':'michaels','name':'Michaels · East Bay Bridge, Emeryville','url':'https://locations.michaels.com/CA/EMERYVILLE/1538','mode':'manual','note':'National starter dates only; confirm store 1538.'},
  {'id':'sanleandro','name':'Downtown San Leandro','url':'https://downtownsanleandro.com/special-events/','mode':'manual','note':'Festival calendar; current dates are hand-checked.'},
@@ -334,34 +335,58 @@ def parse_schema_event(obj, source, soup=None):
     return make_event(source, title, start, end, city, venue, obj['url'], desc, min_age=lo, max_age=hi)
 
 
-def collect_510(client, source, pages, max_details):
-    links = []
-    for page in range(1, pages+1):
-        url = source['url'] + (f'?pno={page}' if page > 1 else '')
-        soup = BeautifulSoup(client.get(url), 'html.parser')
-        found = soup.select('.em-item-title a[href]')
-        if not found:
-            raise ValueError('510 Families event list missing')
-        links.extend(a['href'] for a in found)
-    rows, failures, attempted = [], 0, 0
-    for url in dict.fromkeys(links):
-        if attempted >= max_details:
-            break
-        if urlparse(url).netloc != urlparse(source['url']).netloc:
+def parse_510_rss(xml, now):
+    """Read articles as articles. Publication dates are never event dates."""
+    try:
+        doc = ET.fromstring(xml)
+    except ET.ParseError as exc:
+        raise ValueError('510 RSS is not valid XML') from exc
+    channel = doc.find('channel') if doc.tag == 'rss' else None
+    if channel is None or not channel.findtext('title'):
+        raise ValueError('510 RSS channel missing')
+    output, seen = [], set()
+    for item in channel.findall('item'):
+        title, url = clean(item.findtext('title')), item.findtext('link', '').strip()
+        if not title or urlparse(url).hostname != 'www.510families.com':
             continue
-        attempted += 1
         try:
-            soup = BeautifulSoup(client.get(url), 'html.parser')
-            for obj in jsonld(soup):
-                event = parse_schema_event(obj, source, soup)
-                if event:
-                    rows.append(event)
-        except (requests.RequestException, ValueError, KeyError) as exc:
-            failures += 1
-            logging.warning('510 detail skipped: %s', type(exc).__name__)
-    if failures == attempted and attempted:
-        raise ValueError('All event detail requests failed')
-    return rows, f'Checked {attempted} event pages; {failures} failed. Bounded sample, not the full calendar.'
+            canonical(url)
+            published = parsedate_to_datetime(item.findtext('pubDate', ''))
+            if published.tzinfo is None:
+                raise ValueError('RSS publication date needs timezone')
+        except (ValueError, TypeError):
+            continue
+        if not now-timedelta(days=30) <= published <= now+timedelta(hours=24):
+            continue
+        categories = [clean(c.text) for c in item.findall('category')]
+        # Prefer weekend roundups and budget ideas, rather than every blog post.
+        if not any(c.lower() in {'free & cheap', 'weekend', 'weekend planner'} for c in categories) and not re.search(r'weekend|things to do', title, re.I):
+            continue
+        key = canonical(url)
+        if key in seen:
+            continue
+        seen.add(key)
+        output.append(dict(id='guide-'+sha256(key.encode()).hexdigest()[:18],
+            title=title[:180], url=key+'/', published_at=published.isoformat(),
+            checked_at=now.isoformat(), source='510 Families', source_id='510',
+            summary=clean(item.findtext('description'))[:350], categories=categories[:8]))
+    return sorted(output, key=lambda g:g['published_at'], reverse=True)[:8]
+
+
+def fetch_510_rss(client, source, now):
+    """One request to the RSS URL explicitly advertised in the publisher footer.
+
+    This consumes the published syndication export, not calendar/blog crawling.
+    No article links are followed and no browser impersonation is used.
+    Page crawling by PublicClient continues to enforce robots.txt.
+    """
+    response = client.session.get(source['url'], timeout=(10, 25),
+        headers={'Accept':'application/rss+xml, application/xml;q=0.9',
+                 'User-Agent':'LittleWeekendsRSS/1.0 (personal RSS subscription)'})
+    response.raise_for_status()
+    if urlparse(response.url).hostname != 'www.510families.com' or len(response.content)>3_000_000:
+        raise ValueError('Unexpected RSS response')
+    return parse_510_rss(response.text, now)
 
 
 def collect_funcheap(client, source, pages, max_details):
@@ -383,51 +408,6 @@ def collect_funcheap(client, source, pages, max_details):
             if event:
                 rows.append(event)
     return rows, 'Family-keyword candidates only; events without a structured local address are skipped.'
-
-
-def next_flight_objects(html):
-    """Decode public Next.js server data as JSON, never execute page scripts."""
-    parts = []
-    for tag in BeautifulSoup(html, 'html.parser').select('script'):
-        match = re.fullmatch(r'self\.__next_f\.push\((\[.*\])\)\s*;?', tag.get_text(), re.S)
-        if match:
-            payload = json.loads(match[1])
-            if len(payload) > 1 and isinstance(payload[1], str):
-                parts.append(payload[1])
-    for line in ''.join(parts).splitlines():
-        try:
-            yield from walk(json.loads(line.split(':',1)[1]))
-        except (ValueError, IndexError):
-            continue
-
-
-def parse_bn(html, source):
-    items = {}
-    for obj in next_flight_objects(html):
-        if obj.get('eventId') and obj.get('storeId') == 2072 and obj.get('isInstoreEvent') and not obj.get('isVirtualEvent'):
-            items[obj['eventId']] = obj
-    if not items:
-        raise ValueError('Emeryville calendar data not found')
-    rows = []
-    for obj in items.values():
-        desc = clean(obj.get('descriptionText'))
-        # Regular in-store Storytime is the free B&N program. Other events need
-        # explicit free wording. Never import ticketed, purchase-required events.
-        if obj.get('eventbriteEventId') or re.search(r'\b(ticket|purchase|required fee|sold out|reservations are full)\b',desc,re.I):
-            continue
-        if not obj.get('isStoryTime') and not re.search(r'\bfree\b',desc,re.I):
-            continue
-        if not FAMILY.search(obj.get('name','')+' '+desc):
-            continue
-        lo,hi = ages(desc)
-        row = make_event(source,obj['name'],obj['date']+'T'+obj['time24'],None,'Emeryville',
-                         'Barnes & Noble · '+obj['storeAddress1'],
-                         'https://stores.barnesandnoble.com/event/'+obj['eventId'],desc,
-                         status='Store calendar',min_age=lo,max_age=hi)
-        if obj.get('isStoryTime'):
-            row['price_basis'] = 'Regular in-store storytime; no ticket or purchase requirement listed.'
-        rows.append(row)
-    return rows
 
 
 def parse_clock(text):
@@ -496,7 +476,7 @@ def dedupe(events):
     Different URLs require the same title, venue, city, date and start. Similar
     titles or a shared city alone are not enough to merge two family outings.
     """
-    priority = {'ikea':0,'opl':0,'bn':0,'alamedakids':1,'curated':2,'510':3,'funcheap':4}
+    priority = {'ikea':0,'opl':0,'alamedakids':1,'curated':2,'510':3,'funcheap':4}
     def normalized(value):
         return re.sub(r'[^a-z0-9]', '', str(value).lower())
     def keys(e):
@@ -538,10 +518,13 @@ def dedupe(events):
 
 def merge_events(previous, curated, fresh, now, full_sources=()):
     today = now.astimezone(PACIFIC).date().isoformat()
+    previous = [e for e in previous if e.get('source_id') != 'bn']
+    curated = [e for e in curated if e.get('source_id') != 'bn']
+    fresh = [e for e in fresh if e.get('source_id') != 'bn']
     identity = {(url,e['date'],e['start']):e['id'] for e in previous+curated for url in event_urls(e)}
     aliases = {e['id']: e.get('also_listed_at', []) for e in previous+curated}
     history = {e['id']:e for e in curated+previous}
-    live_opl_urls = {canonical(e['url']) for e in fresh if e['source_id'] in {'opl','bn'}}
+    live_opl_urls = {canonical(e['url']) for e in fresh if e['source_id'] in {'opl'}}
     cancelled = {(canonical(e['url']),e['date']) for e in fresh if e.get('cancelled')}
     by_id = {e['id']:dict(e) for e in previous if e.get('source_id') != 'curated'
              and e.get('source_id') not in full_sources
@@ -594,7 +577,7 @@ def library_page_url(url, page):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sources', nargs='*', default=['ikea','opl','bn','alamedakids','510','funcheap'])
+    parser.add_argument('--sources', nargs='*', default=['ikea','opl','alamedakids','510','funcheap'])
     parser.add_argument('--pages', type=int, default=4)
     parser.add_argument('--max-details', type=int, default=90)
     parser.add_argument('--output', type=Path, default=DATA/'events.json')
@@ -604,9 +587,12 @@ def main():
     previous = load_json(args.output, {})
     prior_status = {s['id']:s for s in previous.get('sources',[])}
     fresh, statuses, successes = [], [], 0
+    guides = previous.get('guides', [])
     for source in SOURCES:
         status = dict(source)
         prior = prior_status.get(source['id'],{})
+        if prior.get('kind') != source.get('kind'):
+            prior = {}  # A calendar scan does not count as a successful RSS refresh.
         status['last_success'] = prior.get('last_success')
         if source['mode'] == 'manual':
             status['state'] = 'manual'
@@ -623,30 +609,32 @@ def main():
                     for page in range(1,args.pages+1):
                         rows += parse_opl(client.get(library_page_url(source['url'],page)),source)
                     note = f'First {args.pages} pages of the Temescal-filtered calendar; Temescal Branch only; children/family audiences.'
-                elif source['id'] == 'bn':
-                    rows = parse_bn(client.get(source['url']),source)
-                    note = 'Emeryville store calendar; individual dates and start times.'
                 elif source['id'] == 'alamedakids':
                     rows = parse_alamedakids(client.get(source['url']),source)
                     note = 'Free local family events, including festivals, workshops, and San Leandro / Castro Valley activities.'
                 elif source['id'] == '510':
-                    rows,note = collect_510(client,source,args.pages,args.max_details)
+                    guides = fetch_510_rss(client,source,now)
+                    rows = []
+                    note = 'Publisher RSS: recent weekend and budget articles, not a calendar feed. Article publication dates are not event dates; guides can include paid ideas.'
                 else:
                     rows,note = collect_funcheap(client,source,args.pages,args.max_details)
                 for e in rows:
                     validate_event(e)
                 fresh += rows
-                status.update(state='ok', count=len(rows), last_success=now.isoformat(), note=note)
+                status.update(state='ok', count=len(guides) if source['id']=='510' else len(rows), last_success=now.isoformat(), note=note)
                 successes += 1
             except Exception as exc:
                 logging.exception('Source failed: %s',source['id'])
                 status.update(state='error', note=f'Could not refresh ({type(exc).__name__}); retained recent listings. Check the source directly.')
+        if source['id']=='510' and status.get('state')=='error':
+            status['note']='RSS refresh failed; retained recent guide links. The full 510 calendar is not being imported.'
         statuses.append(status)
-        print(f'{source["id"]}: {status["state"]} ({status.get("count",0)} events)',flush=True)
+        unit = "guides" if source.get("kind")=="articles" else "events"
+        print(f'{source["id"]}: {status["state"]} ({status.get("count",0)} {unit})',flush=True)
     curated = load_json(DATA/'curated.json', [])
     merged = merge_events(previous.get('events', []),curated,fresh,now, full_sources={s['id'] for s in statuses if s['id']=='ikea' and s['state']=='ok'})
     result = dict(schema_version=1, generated_at=now.isoformat(), last_successful_collection=now.isoformat() if successes else previous.get('last_successful_collection'),
-                  sources=statuses, events=merged, note='Public, free family listings. Collection is bounded and may miss events. Check organizer details before attending.')
+                  sources=statuses, events=merged, guides=[g for g in guides if now-datetime.fromisoformat(g['checked_at'].replace('Z','+00:00'))<=timedelta(days=14)], note='Public, free family listings. Collection is bounded and may miss events. Check organizer details before attending.')
     args.output.parent.mkdir(parents=True,exist_ok=True)
     temporary = args.output.with_suffix('.tmp')
     temporary.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')

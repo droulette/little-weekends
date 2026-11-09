@@ -58,16 +58,6 @@
       "note": "Family-keyword candidates only; events without a structured local address are skipped."
     },
     {
-      "id": "bn",
-      "name": "Barnes & Noble · Emeryville",
-      "url": "https://stores.barnesandnoble.com/store/2072",
-      "mode": "automatic",
-      "last_success": "2026-11-04T23:20:18.476324+00:00",
-      "last_attempt": "2026-11-09T17:32:10.297301+00:00",
-      "state": "error",
-      "note": "Could not refresh (HTTPError); retained recent listings. Check the source directly."
-    },
-    {
       "id": "homedepot",
       "name": "Home Depot · Emeryville",
       "url": "https://www.homedepot.com/c/kids-workshop",
@@ -387,38 +377,6 @@
       ]
     },
     {
-      "id": "event-8dc4801adde7a8655e",
-      "title": "Storytime",
-      "date": "2026-11-14",
-      "start": "13:00",
-      "end": null,
-      "city": "Emeryville",
-      "venue": "Barnes & Noble · 5604 Bay Street",
-      "price": "Free",
-      "min": null,
-      "max": null,
-      "cat": "Stories & play",
-      "icon": "🧸",
-      "color": "#dce8dd",
-      "source": "Barnes & Noble · Emeryville",
-      "source_id": "bn",
-      "status": "Store calendar",
-      "url": "https://stores.barnesandnoble.com/event/9780062223538-5/",
-      "desc": "Join us for a fun storytime upstairs in the Kids' Department at the stage. See you there!",
-      "price_basis": "Regular in-store storytime; no ticket or purchase requirement listed.",
-      "checked_at": "2026-11-04T23:20:18.476324+00:00",
-      "stale": false,
-      "alternate_ids": [],
-      "listings": [
-        {
-          "source_id": "bn",
-          "source": "Barnes & Noble · Emeryville",
-          "url": "https://stores.barnesandnoble.com/event/9780062223538-5/",
-          "checked_at": "2026-11-04T23:20:18.476324+00:00"
-        }
-      ]
-    },
-    {
       "id": "event-f33c24e4aaa38d18d4",
       "title": "Kids' Hand Sewing Circle",
       "date": "2026-11-14",
@@ -688,38 +646,6 @@
       ]
     },
     {
-      "id": "event-7b75e0b6acb9572f1a",
-      "title": "Storytime",
-      "date": "2026-11-21",
-      "start": "14:00",
-      "end": null,
-      "city": "Emeryville",
-      "venue": "Barnes & Noble · 5604 Bay Street",
-      "price": "Free",
-      "min": null,
-      "max": null,
-      "cat": "Stories & play",
-      "icon": "🧸",
-      "color": "#dce8dd",
-      "source": "Barnes & Noble · Emeryville",
-      "source_id": "bn",
-      "status": "Store calendar",
-      "url": "https://stores.barnesandnoble.com/event/9780062223538-6/",
-      "desc": "Join us for a fun storytime upstairs in the Kids' Department at the stage. See you there!",
-      "price_basis": "Regular in-store storytime; no ticket or purchase requirement listed.",
-      "checked_at": "2026-11-04T23:20:18.476324+00:00",
-      "stale": false,
-      "alternate_ids": [],
-      "listings": [
-        {
-          "source_id": "bn",
-          "source": "Barnes & Noble · Emeryville",
-          "url": "https://stores.barnesandnoble.com/event/9780062223538-6/",
-          "checked_at": "2026-11-04T23:20:18.476324+00:00"
-        }
-      ]
-    },
-    {
       "id": "event-b07d394379d0980d34",
       "title": "Kids' Hand Sewing Circle",
       "date": "2026-11-21",
@@ -841,38 +767,6 @@
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-cookie-decorating--08b6d636-8a1b-4ca8-95e0-f785f3f2ded6/",
           "checked_at": "2026-11-09T17:32:10.297301+00:00"
-        }
-      ]
-    },
-    {
-      "id": "event-1b56078007f1d7412c",
-      "title": "Storytime",
-      "date": "2026-11-28",
-      "start": "14:00",
-      "end": null,
-      "city": "Emeryville",
-      "venue": "Barnes & Noble · 5604 Bay Street",
-      "price": "Free",
-      "min": null,
-      "max": null,
-      "cat": "Stories & play",
-      "icon": "🧸",
-      "color": "#dce8dd",
-      "source": "Barnes & Noble · Emeryville",
-      "source_id": "bn",
-      "status": "Store calendar",
-      "url": "https://stores.barnesandnoble.com/event/9780062223538-7/",
-      "desc": "Join us for a fun storytime upstairs in the Kids' Department at the stage. See you there!",
-      "price_basis": "Regular in-store storytime; no ticket or purchase requirement listed.",
-      "checked_at": "2026-11-04T23:20:18.476324+00:00",
-      "stale": false,
-      "alternate_ids": [],
-      "listings": [
-        {
-          "source_id": "bn",
-          "source": "Barnes & Noble · Emeryville",
-          "url": "https://stores.barnesandnoble.com/event/9780062223538-7/",
-          "checked_at": "2026-11-04T23:20:18.476324+00:00"
         }
       ]
     },
@@ -1284,38 +1178,6 @@
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a834c85be1482002987efe1/",
           "checked_at": "2026-11-09T17:32:10.297301+00:00"
-        }
-      ]
-    },
-    {
-      "id": "event-eaf3380f8f4db69017",
-      "title": "Storytime",
-      "date": "2026-12-05",
-      "start": "14:00",
-      "end": null,
-      "city": "Emeryville",
-      "venue": "Barnes & Noble · 5604 Bay Street",
-      "price": "Free",
-      "min": null,
-      "max": null,
-      "cat": "Stories & play",
-      "icon": "🧸",
-      "color": "#dce8dd",
-      "source": "Barnes & Noble · Emeryville",
-      "source_id": "bn",
-      "status": "Store calendar",
-      "url": "https://stores.barnesandnoble.com/event/9780062223538-8/",
-      "desc": "Join us for a fun storytime upstairs in the Kids' Department at the stage. See you there!",
-      "price_basis": "Regular in-store storytime; no ticket or purchase requirement listed.",
-      "checked_at": "2026-11-04T23:20:18.476324+00:00",
-      "stale": false,
-      "alternate_ids": [],
-      "listings": [
-        {
-          "source_id": "bn",
-          "source": "Barnes & Noble · Emeryville",
-          "url": "https://stores.barnesandnoble.com/event/9780062223538-8/",
-          "checked_at": "2026-11-04T23:20:18.476324+00:00"
         }
       ]
     },

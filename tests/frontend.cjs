@@ -72,6 +72,19 @@ setImmediate(async()=>{
   assert.equal(vm.runInContext("saved.has('dated')&&!saved.has('previous-saved-id')",ctx),true);
   assert.match(elements['#cards'].innerHTML,/Also listed by 1 source/);
   assert.deepEqual(JSON.parse(storage.get('lw-saved')),['dated']);
+  // RSS guides remain reading links and cannot enter calendar event cards.
+  priorFeed.guides=[{id:'rss-guide',source_id:'510',title:'Weekend ideas <script>bad</script>',url:'https://www.510families.com/weekend/',published_at:'2026-11-04T12:00:00Z',checked_at:'2026-11-04T20:00:00Z'}];
+  priorFeed.sources.push({id:'bn',name:'Barnes & Noble',mode:'automatic',state:'error',url:'https://stores.barnesandnoble.com/store/2072'});
+  priorFeed.events.push({...common,id:'bn-old',source_id:'bn',date:'2026-11-07',start:'10:00',end:'11:00',title:'Old BN storytime'});
+  storage.set('lw-feed-cache',JSON.stringify(priorFeed));
+  await vm.runInContext('loadFeed()',ctx);
+  assert.match(elements['#guide-links'].innerHTML,/Article published/);
+  assert.match(elements['#guide-links'].innerHTML,/&lt;script&gt;/);
+  assert(!elements['#guide-links'].innerHTML.includes('data-calendar'));
+  assert(!elements['#cards'].innerHTML.includes('rss-guide'));
+  assert(!elements['#cards'].innerHTML.includes('bn-old'));
+  assert(!elements['#source-list'].innerHTML.includes('Barnes'));
+  assert.equal(vm.runInContext("sourceHealth({mode:'automatic',kind:'articles',state:'ok',count:3,last_success:'2026-11-04T20:00:00Z'}).label",ctx),'RSS · 3 guides');
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, and saved-ID migration.');
  }catch(e){console.error(e);process.exitCode=1}
 });

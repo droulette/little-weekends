@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, merge_events, dedupe, validate_event, parse_bn, parse_alamedakids, library_page_url
+from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, merge_events, dedupe, validate_event, parse_510_rss, SOURCES, parse_alamedakids, library_page_url
 
 NOW=datetime(2026,11,4,20,tzinfo=timezone.utc)
 IKEA={'id':'ikea','name':'IKEA Emeryville'}
@@ -97,14 +97,35 @@ class CollectTests(unittest.TestCase):
         merged=merge_events(events,[],[events[0]],NOW,full_sources={'ikea'})
         self.assertEqual(len(merged),1)
 
-    def test_bn_start_only_and_store_filter(self):
-        def row(id,store):
-            return dict(eventId=id,storeId=store,name='Storytime',isStoryTime=True,isInstoreEvent=True,isVirtualEvent=False,
-                        date='2026-11-07',time24='14:00',storeAddress1='5604 Bay Street',descriptionText='Storytime in the Kids Department')
-        data={'content':[row('local',2072),row('other',9005)]}
-        script='self.__next_f.push('+json.dumps([1,'a:'+json.dumps(data)])+')'
-        events=parse_bn('<script>'+script+'</script>',{'id':'bn','name':'Barnes & Noble Emeryville'})
-        self.assertEqual(len(events),1);self.assertEqual(events[0]['start'],'14:00');self.assertIsNone(events[0]['end'])
+    def test_rss_articles_stay_articles_not_calendar_events(self):
+        xml = """<rss><channel><title>510 Families</title><item>
+        <title>Things to do this weekend</title><link>https://www.510families.com/weekend/</link>
+        <pubDate>Wed, 04 Nov 2026 12:00:00 +0000</pubDate>
+        <description>&lt;p&gt;Family ideas &amp;amp; discoveries&lt;/p&gt;</description>
+        </item></channel></rss>"""
+        result = parse_510_rss(xml, NOW)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['published_at'], '2026-11-04T12:00:00+00:00')
+        self.assertNotIn('date', result[0])
+        self.assertNotIn('start', result[0])
+        self.assertEqual(result[0]['summary'], 'Family ideas & discoveries')
+
+    def test_rss_rejects_bad_responses_and_skips_invalid_items(self):
+        for xml in ['<html>Blocked</html>', '<rss>']:
+            with self.assertRaises(ValueError):parse_510_rss(xml, NOW)
+        def item(url, published, title='Weekend ideas'):
+            return f'<item><title>{title}</title><link>{url}</link><pubDate>{published}</pubDate></item>'
+        good = item('https://www.510families.com/good/', 'Wed, 04 Nov 2026 12:00:00 +0000')
+        xml = '<rss><channel><title>510 Families</title>'+good+good+item('javascript:alert(1)','bad')+item('https://example.org/','Wed, 04 Nov 2026 12:00:00 +0000')+item('https://www.510families.com/old/','Tue, 01 Sep 2026 12:00:00 +0000')+item('https://www.510families.com/class/','Wed, 04 Nov 2026 12:00:00 +0000','Sponsored classes')+'</channel></rss>'
+        self.assertEqual(len(parse_510_rss(xml, NOW)), 1)
+
+    def test_bn_removed_even_when_retained_by_old_feed(self):
+        event = parse_ikea(ikea_html(ikea_fixture()), IKEA)[0]
+        event.update(source_id='bn', checked_at=NOW.isoformat())
+        self.assertEqual(merge_events([event], [], [], NOW), [])
+        self.assertEqual(merge_events([], [event], [], NOW), [])
+        self.assertNotIn('bn', {source['id'] for source in SOURCES})
+        self.assertEqual(next(source for source in SOURCES if source['id']=='510')['kind'], 'articles')
 
     def test_local_calendar_excludes_paid_and_out_of_area(self):
         def row(city,cost,title):

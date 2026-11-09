@@ -1,6 +1,7 @@
 function overlapsWeekend(e){let start=e.date<today()?today():e.date;let a=new Date(start+"T12:00:00Z"),b=new Date((e.endDate||e.date)+"T12:00:00Z");for(let i=0;i<7&&a<=b;i++,a.setUTCDate(a.getUTCDate()+1)){if([0,6].includes(a.getUTCDay()))return true}return false}
 function allowedLibrary(e){return !/\blibrary\b|\bbranch\b/i.test(e.venue||"")||/\bTemescal\b/i.test(e.venue||"")}
-let seed=[], sourceStatuses=[], feedInfo=null;
+let seed=[], sourceStatuses=[], guides=[], feedInfo=null;
+function allowedSource(e){return e.source_id!=='bn'&&!/(^|\.)barnesandnoble\.com$/i.test((()=>{try{return new URL(e.url).hostname}catch{return ''}})())}
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function read(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}let custom=read('lw-events',[]),saved=new Set(read('lw-saved',[])),view='discover',period='weekend';const all=()=>[...seed,...custom].sort((a,b)=>Number(Boolean(a.ongoing??a.endDate))-Number(Boolean(b.ongoing??b.endDate))||(a.date+a.start).localeCompare(b.date+b.start));function persist(){try{localStorage.setItem('lw-saved',JSON.stringify([...saved]));localStorage.setItem('lw-events',JSON.stringify(custom))}catch{toast('Browser storage unavailable; changes may not persist.')}}function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',3000)}function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}function weekend(offset=0){let d=new Date(today()+'T12:00:00Z'),day=d.getUTCDay();d.setUTCDate(d.getUTCDate()+(day===0?-1:(6-day+7)%7)+offset*7);let e=new Date(d);e.setUTCDate(d.getUTCDate()+1);return[d.toISOString().slice(0,10),e.toISOString().slice(0,10)]}function dateLabel(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}function clock(t){let[h,m]=t.split(':').map(Number);return `${h%12||12}${m?':'+String(m).padStart(2,'0'):''}${h>=12?'pm':'am'}`}function range(e){if(e.endDate)return e.hoursLabel||'Check daily hours';return e.end?clock(e.start)+'–'+clock(e.end):'Starts '+clock(e.start)}function safeUrl(s){try{let u=new URL(s);return /^https?:$/.test(u.protocol)?u.href:'#'}catch{return '#'}}
 function hoursSince(value){const t=Date.parse(value);return Number.isFinite(t)?Math.max(0,(Date.now()-t)/3600000):Infinity}
 function checkedLabel(value){return Number.isFinite(Date.parse(value))?new Date(value).toLocaleString('en-US',{timeZone:'America/Los_Angeles',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' PT':'Not recorded'}
@@ -15,7 +16,7 @@ function sourceHealth(s){
  if(s.state==='error')return {label:'Refresh failed',attention:true};
  if(hoursSince(s.last_success)>48)return {label:s.last_success?'Update overdue':'Not refreshed',attention:true};
  if(s.state!=='ok')return {label:'Not refreshed this run',attention:true};
- return {label:s.count===0?'No matching events found':'Refreshed · '+s.count+' found',attention:false};
+ return {label:s.kind==='articles'?'RSS · '+s.count+' guides':s.count===0?'No matching events found':'Refreshed · '+s.count+' found',attention:false};
 }
 function migrateSavedIds(){
  let changed=false;
@@ -34,10 +35,15 @@ $('#sources-view').classList.toggle('hide',view!=='sources');$('#discovery').cla
 function icsEscape(s){return String(s).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;')}function calendar(events){if(!events.length)return;const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');let lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Little Weekends//East Bay//EN','CALSCALE:GREGORIAN','BEGIN:VTIMEZONE','TZID:America/Los_Angeles','BEGIN:STANDARD','DTSTART:19701101T020000','RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU','TZOFFSETFROM:-0700','TZOFFSETTO:-0800','TZNAME:PST','END:STANDARD','BEGIN:DAYLIGHT','DTSTART:19700308T020000','RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU','TZOFFSETFROM:-0800','TZOFFSETTO:-0700','TZNAME:PDT','END:DAYLIGHT','END:VTIMEZONE'];events.forEach(e=>lines.push('BEGIN:VEVENT','UID:'+e.id+'@littleweekends','DTSTAMP:'+stamp,...(e.endDate?['DTSTART;VALUE=DATE:'+e.date.replaceAll('-',''),'DTEND;VALUE=DATE:'+new Date(new Date(e.endDate+'T12:00:00Z').getTime()+86400000).toISOString().slice(0,10).replaceAll('-','')]:['DTSTART;TZID=America/Los_Angeles:'+e.date.replaceAll('-','')+'T'+e.start.replace(':','')+'00',...(e.end?['DTEND;TZID=America/Los_Angeles:'+e.date.replaceAll('-','')+'T'+e.end.replace(':','')+'00']:[])]),'SUMMARY:'+icsEscape(e.title),'LOCATION:'+icsEscape(e.venue+', '+e.city),'DESCRIPTION:'+icsEscape(e.desc+'\nCheck organizer: '+e.url),'URL:'+safeUrl(e.url),'END:VEVENT'));lines.push('END:VCALENDAR');const blob=new Blob([lines.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='little-weekends.ics';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function sourceHTML(){return sourceStatuses.map(s=>{const health=sourceHealth(s);return `<div class="source"><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${esc(s.name)} ↗</a><small class="${health.attention?'needs-check':''}">${esc(health.label)}</small></div>`}).join('')}
 function renderSources(){
+ renderGuides();
  $('#source-list').innerHTML=sourceHTML();
  const auto=sourceStatuses.filter(s=>s.mode==='automatic'),attention=auto.filter(s=>sourceHealth(s).attention);
  $('#source-summary').textContent=auto.length?`${auto.length-attention.length} of ${auto.length} automatic sources up to date${attention.length?' · '+attention.length+' need attention':''}.`:'';
  $('#sources-view').innerHTML='<div class="source-panel"><h2>Your family event sources</h2><p>Automatic imports collect free family activities in Oakland and nearby East Bay cities, including San Leandro and Castro Valley. Additional calendars have hand-checked listings. A successful scan can find zero matches; it does not mean there are no events at the venue.</p>'+sourceStatuses.map(s=>{const h=sourceHealth(s);return `<div class="source"><div><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${esc(s.name)} ↗</a><p class="small source-note">${esc(s.note||'')}</p>${s.mode==='automatic'?`<p class="small source-note">Last successful scan: ${esc(checkedLabel(s.last_success))}<br>Last attempt: ${esc(checkedLabel(s.last_attempt))}</p>`:'<p class="small source-note">See individual events for their check dates. This source is not an automatic feed.</p>'}</div><small class="${h.attention?'needs-check':''}">${esc(h.label)}</small></div>`}).join('')+'<p class="notice">Saving here does not register you with an organizer. Plans and personally added events stay in this browser. Listing check dates do not guarantee availability.</p></div>';
+}
+function renderGuides(){
+ const recent=guides.filter(g=>g&&g.source_id==='510'&&safeUrl(g.url)!=='#'&&hoursSince(g.checked_at)<=336&&hoursSince(g.published_at)<=720).slice(0,8);
+ $('#guide-links').innerHTML=recent.map(g=>`<div class="guide"><a href="${esc(safeUrl(g.url))}" target="_blank" rel="noopener noreferrer">${esc(g.title)} ↗</a><p class="small source-note">Article published ${esc(checkedLabel(g.published_at))}${hoursSince(g.checked_at)>168?' · Older cached guide':''}</p></div>`).join('')||'<p class="small source-note">No recent guide links available. Check the RSS source status for the latest attempt.</p>';
 }
 function validFeedEvent(e){return e&&typeof e.id==='string'&&typeof e.title==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(e.date)&&/^\d{2}:\d{2}$/.test(e.start)&&(e.end===null||/^\d{2}:\d{2}$/.test(e.end))&&typeof e.city==='string'&&safeUrl(e.url)!=='#'}
 async function loadFeed(){
@@ -48,14 +54,14 @@ async function loadFeed(){
   if(!response.ok)throw Error('Feed unavailable');
   const feed=await response.json();if(feed.schema_version!==1||!Array.isArray(feed.events)||!Array.isArray(feed.sources))throw Error('Invalid feed');
   try{localStorage.setItem('lw-feed-cache',JSON.stringify(feed))}catch{}
-  seed=feed.events.filter(e=>validFeedEvent(e)&&allowedLibrary(e));sourceStatuses=feed.sources;feedInfo=feed;migrateSavedIds();
-  const automatic=feed.sources.filter(s=>s.mode==='automatic'),attention=automatic.filter(s=>sourceHealth(s).attention);
+  seed=feed.events.filter(e=>validFeedEvent(e)&&allowedLibrary(e)&&allowedSource(e));sourceStatuses=feed.sources.filter(s=>s.id!=='bn');guides=feed.guides||[];feedInfo=feed;migrateSavedIds();
+  const automatic=sourceStatuses.filter(s=>s.mode==='automatic'),attention=automatic.filter(s=>sourceHealth(s).attention);
   const overdue=hoursSince(feed.last_successful_collection)>48;
   $('#feed-status').textContent=`Updated ${checkedLabel(feed.generated_at)}. ${overdue?'Collection updates are overdue. ':''}${attention.length?attention.length+' automatic sources need attention: '+attention.map(s=>s.name).join(', ')+'. ':''}Each card shows its own check date. Unconfirmed ideas are hidden by default.`;
   renderSources();render();
  }catch{
   const cached=read('lw-feed-cache',null);
-  if(cached&&Array.isArray(cached.events)){seed=cached.events.filter(e=>validFeedEvent(e)&&allowedLibrary(e));sourceStatuses=cached.sources||[];feedInfo=cached;migrateSavedIds();$('#feed-status').textContent='Showing the last collection saved on this browser. A new update could not be loaded; try again later.';renderSources();render();return}
+  if(cached&&Array.isArray(cached.events)){seed=cached.events.filter(e=>validFeedEvent(e)&&allowedLibrary(e)&&allowedSource(e));sourceStatuses=(cached.sources||[]).filter(s=>s.id!=='bn');guides=cached.guides||[];feedInfo=cached;migrateSavedIds();$('#feed-status').textContent='Showing the last collection saved on this browser. A new update could not be loaded; try again later.';renderSources();render();return}
   $('#feed-status').textContent='Could not load the event collection. Your saved data is still in this browser. Try refreshing the page. If you downloaded the project, serve the site folder with a local web server.';
   render();
  }finally{$('#reload-feed').disabled=false}
