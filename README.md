@@ -77,11 +77,11 @@ The app does not use an LLM to collect events. Deterministic code handles these 
 
 ## Personal saved plans
 
-Saved plans are local to the browser and website address. Plans previously saved in the downloadable HTML do not automatically move to the hosted website. Calendar export from the original app is one way to retain those choices. Cross-device synchronization would be a separate feature.
+Saved plans are local to the browser and website address. Open tabs for the same site refresh their plan state when another tab changes it. This does not sync separate browsers or devices. Plans previously saved in the downloadable HTML do not automatically move to the hosted website. Calendar export from the original app is one way to retain those choices. Cross-device synchronization would be a separate feature.
 
 ## Reliability and maintenance
 
-The main view hides stale, full, closed-registration, and unconfirmed-local listings by default. The “Include ideas that need confirmation” checkbox reveals them, and saved plans remain accessible. Events with a published start but no end time say “Starts …”; calendar export omits an invented end time. A public-feed cache keeps the last loaded collection available when a new fetch fails.
+The main view includes stale, full, closed-registration, and unconfirmed-local listings by default. Clear “Include ideas that need confirmation” to hide them; saved plans remain accessible. Events with a published start but no end time say “Starts …”; calendar export omits an invented end time. A public-feed cache keeps the last loaded collection available when a new fetch fails.
 
 A separate daily ChatGPT maintenance task, “Keep Little Weekends current”, checks source freshness and failed imports, researches public local listings for sources that cannot be scraped reliably, and can update validated curated records or make bounded adapter repairs in this repository. It is not a promise of complete coverage. Website access restrictions are respected. Routine success is quiet; user action is requested only for an unresolved material blocker.
 

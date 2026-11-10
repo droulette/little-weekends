@@ -11,12 +11,12 @@ const feed={schema_version:1,generated_at:'2026-11-04T20:00:00Z',last_successful
  {...common,id:'future',title:'Future craft',date:'2026-11-14',start:'10:00',end:'11:00'},
  {...common,id:'ikea-gnomes',title:'Gnome in the Home',date:'2026-11-01',endDate:'2026-12-31',ongoing:true,start:'10:00',end:'18:00'}
 ]};
-const elements={};const storage=new Map();const documentListeners={};
+const elements={};const storage=new Map();const documentListeners={};const windowListeners={};
 function node(){return {value:'',textContent:'',innerHTML:'',style:{},listeners:{},classList:{toggle(){}},addEventListener(type,fn){this.listeners[type]=fn},showModal(){this.open=true},close(){this.open=false},click(){}}}
 let captured;
 class TestURL extends URL {static createObjectURL(b){captured=b;return 'blob:test'}static revokeObjectURL(){}}
 class TestDate extends Date { constructor(...args){super(...(args.length?args:['2026-11-04T20:00:00Z']))} static now(){return Date.parse('2026-11-04T20:00:00Z')} }
-const ctx={Intl,Date:TestDate,Set,URL:TestURL,Blob,
+const ctx={Intl,Date:TestDate,Set,URL:TestURL,Blob,window:{addEventListener(type,fn){windowListeners[type]=fn}},
  document:{querySelector(s){return elements[s]??=node()},querySelectorAll(){return []},addEventListener(type,fn){documentListeners[type]??=fn},createElement(){return {click(){}}}},
  localStorage:{getItem(k){return storage.get(k)??null},setItem(k,v){storage.set(k,v)}},setTimeout(){},fetch:async()=>({ok:true,json:async()=>feed})};
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),ctx);
@@ -215,7 +215,7 @@ setImmediate(async()=>{
   assert.match(elements['#cards'].innerHTML,/data-save="sat1"/);
   assert.deepEqual(JSON.parse(storage.get('lw-hidden')),[]);
   vm.runInContext("toggleHidden('sat1')",ctx);
-  const nextCtx={...ctx};vm.createContext(nextCtx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),nextCtx);
+  const nextCtx={...ctx,window:{addEventListener(){}}};vm.createContext(nextCtx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),nextCtx);
   assert.equal(vm.runInContext("hiddenIds.has('sat1')",nextCtx),true);
   // Known duplicate IDs migrate even if the event was never saved.
   vm.runInContext("seed=[{...groupFixtures[0],id:'canonical-hidden',alternate_ids:['old-hidden']}];hiddenIds=new Set(['old-hidden']);saved=new Set();migrateSavedIds()",ctx);
@@ -295,6 +295,7 @@ setImmediate(async()=>{
   assert.equal(vm.runInContext("pacificClock()",ctx),'15:00');
   assert.equal(vm.runInContext("hasEnded({date:'2026-11-07',start:'09:00',end:'15:00'})",ctx),true);
   assert.equal(vm.runInContext("hasEnded({date:'2026-11-06',endDate:'2026-11-07',ongoing:false,start:'23:00',end:'16:00'})",ctx),false);
+  assert.match(vm.runInContext("conflictHTML({date:'2026-11-06',endDate:'2026-11-07',ongoing:false,start:'23:00',end:'01:00'},[])",ctx),/spans multiple dates/);
   // A selected future weekend is the default visit, clamped to activity dates.
   vm.runInContext("view='discover';period='chosen';selectedWeekend='2026-12-12';seed=[{...planFixtures[0],id:'long',title:'Long hunt',date:'2026-11-01',endDate:'2026-12-31',ongoing:true}]",ctx);
   const visit=vm.runInContext('calendar(seed)',ctx);assert.equal(elements['#visit-date'].value,'2026-12-12');
@@ -335,7 +336,7 @@ setImmediate(async()=>{
   const validCopy={...ctx.planFixtures[0],source:'Your discovery'};
   const broken=new Map([['lw-saved',JSON.stringify({broken:true})],['lw-events',JSON.stringify([null,validCopy])],['lw-plan-snapshots',JSON.stringify({dated:validCopy,bad:{id:'bad'}})],['lw-plan-alerts',JSON.stringify({dated:'bad'})]]);
   const startupNodes={};
-  const startup={...ctx,document:{querySelector(s){return startupNodes[s]??=node()},querySelectorAll(){return []},addEventListener(){},createElement(){return {click(){}}}},localStorage:{getItem(k){return broken.get(k)??null},setItem(k,v){broken.set(k,v)}},fetch:()=>new Promise(()=>{})};
+  const startup={...ctx,window:{addEventListener(){}},document:{querySelector(s){return startupNodes[s]??=node()},querySelectorAll(){return []},addEventListener(){},createElement(){return {click(){}}}},localStorage:{getItem(k){return broken.get(k)??null},setItem(k,v){broken.set(k,v)}},fetch:()=>new Promise(()=>{})};
   vm.createContext(startup);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),startup);
   assert.equal(vm.runInContext('custom.length',startup),1);
   assert.equal(vm.runInContext('saved.size',startup),0);
@@ -345,7 +346,7 @@ setImmediate(async()=>{
   const withDamagedMetadata={...validCopy,listings:{broken:true},alternate_ids:'broken'};
   const damaged=new Map([['lw-saved',JSON.stringify(['dated'])],['lw-plan-snapshots',JSON.stringify({dated:withDamagedMetadata})]]);
   const damagedNodes={};
-  const recovery={...ctx,document:{querySelector(s){return damagedNodes[s]??=node()},querySelectorAll(){return []},addEventListener(){},createElement(){return {click(){}}}},localStorage:{getItem(k){return damaged.get(k)??null},setItem(k,v){damaged.set(k,v)}},fetch:()=>new Promise(()=>{})};
+  const recovery={...ctx,window:{addEventListener(){}},document:{querySelector(s){return damagedNodes[s]??=node()},querySelectorAll(){return []},addEventListener(){},createElement(){return {click(){}}}},localStorage:{getItem(k){return damaged.get(k)??null},setItem(k,v){damaged.set(k,v)}},fetch:()=>new Promise(()=>{})};
   vm.createContext(recovery);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),recovery);
   vm.runInContext("view='saved';render()",recovery);
   assert.match(damagedNodes['#cards'].innerHTML,/Craft one/);
@@ -364,6 +365,16 @@ setImmediate(async()=>{
   assert.equal(vm.runInContext("saved.has('missing-id')",ctx),false);
   assert.equal(elements['#count'].textContent,'(1)');
   assert.match(fs.readFileSync(path.join(root,'site/index.html'),'utf8'),/id="include-unconfirmed" checked/);
+  // A second tab sees saves from the first before making its own change.
+  vm.runInContext("seed=planFixtures.map(e=>({...e}));custom=[];saved=new Set();planSnapshots={};planStates={};planAlerts={};hiddenIds=new Set();persist()",ctx);
+  storage.set('lw-saved',JSON.stringify(['dated']));
+  storage.set('lw-plan-snapshots',JSON.stringify({dated:ctx.planFixtures[0]}));
+  assert.equal(typeof windowListeners.storage,'function');
+  windowListeners.storage({key:'lw-saved'});
+  vm.runInContext("toggleSaved('overlap')",ctx);
+  assert.deepEqual(JSON.parse(storage.get('lw-saved')).sort(),['dated','overlap']);
+  vm.runInContext("refreshFromOtherTab({key:'unrelated',storageArea:localStorage})",ctx);
+  assert.equal(vm.runInContext('saved.size',ctx),2);
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });

@@ -98,7 +98,7 @@ function planConflicts(event,plans){
  return plans.filter(other=>other.id!==event.id&&!other.endDate&&other.end&&event.date===other.date&&event.start<other.end&&other.start<event.end);
 }
 function conflictHTML(e,plans){
- if(e.endDate)return '<p class="plan-note">Choose a visit day; ongoing activities are not checked for overlaps.</p>';
+ if(e.endDate)return e.ongoing===false?'<p class="plan-note">This event spans multiple dates; overlaps are not checked.</p>':'<p class="plan-note">Choose a visit day; ongoing activities are not checked for overlaps.</p>';
  if(!e.end)return '<p class="plan-note">End time unknown; check timing with your other plans.</p>';
  const conflicts=planConflicts(e,plans);
  return conflicts.length?`<p class="plan-warning">Listed times overlap with ${conflicts.map(other=>esc(other.title)).join(', ')}. Check timing before booking.</p>`:'';
@@ -135,6 +135,24 @@ function sanitizeStoredEvent(event){
  if(clean.listings!==undefined)clean.listings=Array.isArray(clean.listings)?clean.listings.filter(item=>item&&typeof item.source_id==='string'&&typeof item.source==='string'&&safeUrl(item.url)!=='#'):[];
  return clean;
 }
+// Another tab can change plans while this tab is open. Refresh from storage
+// before a later click can write an obsolete copy over those changes.
+function refreshFromOtherTab(event){
+ const keys=['lw-events','lw-saved','lw-plan-status','lw-plan-snapshots','lw-plan-alerts','lw-hidden'];
+ if(event.storageArea&&event.storageArea!==localStorage)return;
+ if(event.key!==null&&!keys.includes(event.key))return;
+ const events=read('lw-events',[]),ids=read('lw-saved',[]),statuses=read('lw-plan-status',{}),snapshots=read('lw-plan-snapshots',{}),alerts=read('lw-plan-alerts',{}),hidden=read('lw-hidden',[]);
+ custom=Array.isArray(events)?events.map(sanitizeStoredEvent).filter(Boolean):[];
+ saved=new Set(Array.isArray(ids)?ids.filter(id=>typeof id==='string'):[]);
+ planStates=statuses&&!Array.isArray(statuses)&&typeof statuses==='object'?statuses:{};
+ planSnapshots={};
+ if(snapshots&&!Array.isArray(snapshots)&&typeof snapshots==='object')for(const [id,value] of Object.entries(snapshots)){const clean=sanitizeStoredEvent(value);if(clean&&clean.id===id)planSnapshots[id]=clean}
+ planAlerts={};
+ if(alerts&&!Array.isArray(alerts)&&typeof alerts==='object')for(const [id,value] of Object.entries(alerts))if(Array.isArray(value)&&value.every(item=>typeof item==='string'))planAlerts[id]=value;
+ hiddenIds=new Set(Array.isArray(hidden)?hidden.filter(id=>typeof id==='string'):[]);
+ migrateSavedIds();render();
+}
+if(typeof window!=='undefined')window.addEventListener('storage',refreshFromOtherTab);
 function restorePlans(text){
  // Validate the entire file before changing any existing browser plans.
  if(typeof text!=='string'||text.length>2_000_000)throw Error('Choose a backup smaller than 2 MB.');
