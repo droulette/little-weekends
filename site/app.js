@@ -10,7 +10,7 @@ function allowedLibrary(e){
 }
 let seed=[], sourceStatuses=[], guides=[], feedInfo=null;
 function allowedSource(e){return e.source_id!=='bn'&&!/(^|\.)barnesandnoble\.com$/i.test((()=>{try{return new URL(e.url).hostname}catch{return ''}})())}
-const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function read(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}const storedCustom=read('lw-events',[]),storedSaved=read('lw-saved',[]);let custom=Array.isArray(storedCustom)?storedCustom.filter(validStoredEvent):[],saved=new Set(Array.isArray(storedSaved)?storedSaved.filter(id=>typeof id==='string'):[]),view='discover',period='weekend';const all=()=>allEvents();function persist(){try{localStorage.setItem('lw-saved',JSON.stringify([...saved]));localStorage.setItem('lw-events',JSON.stringify(custom));localStorage.setItem('lw-plan-status',JSON.stringify(planStates));localStorage.setItem('lw-plan-snapshots',JSON.stringify(planSnapshots));localStorage.setItem('lw-plan-alerts',JSON.stringify(planAlerts));localStorage.setItem('lw-hidden',JSON.stringify([...hiddenIds]))}catch{toast('Browser storage unavailable; changes may not persist.')}}function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',3000)}function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}function weekend(offset=0){let d=new Date(today()+'T12:00:00Z'),day=d.getUTCDay();d.setUTCDate(d.getUTCDate()+(day===0?-1:(6-day+7)%7)+offset*7);let e=new Date(d);e.setUTCDate(d.getUTCDate()+1);return[d.toISOString().slice(0,10),e.toISOString().slice(0,10)]}function dateLabel(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}function clock(t){let[h,m]=t.split(':').map(Number);return `${h%12||12}${m?':'+String(m).padStart(2,'0'):''}${h>=12?'pm':'am'}`}function range(e){if(e.endDate)return e.hoursLabel||'Check daily hours';return e.end?clock(e.start)+'–'+clock(e.end):'Starts '+clock(e.start)}function safeUrl(s){try{let u=new URL(s);return /^https?:$/.test(u.protocol)?u.href:'#'}catch{return '#'}}
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function read(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}const storedCustom=read('lw-events',[]),storedSaved=read('lw-saved',[]);let custom=Array.isArray(storedCustom)?storedCustom.map(sanitizeStoredEvent).filter(Boolean):[],saved=new Set(Array.isArray(storedSaved)?storedSaved.filter(id=>typeof id==='string'):[]),view='discover',period='weekend';const all=()=>allEvents();function persist(){try{localStorage.setItem('lw-saved',JSON.stringify([...saved]));localStorage.setItem('lw-events',JSON.stringify(custom));localStorage.setItem('lw-plan-status',JSON.stringify(planStates));localStorage.setItem('lw-plan-snapshots',JSON.stringify(planSnapshots));localStorage.setItem('lw-plan-alerts',JSON.stringify(planAlerts));localStorage.setItem('lw-hidden',JSON.stringify([...hiddenIds]))}catch{toast('Browser storage unavailable; changes may not persist.')}}function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',3000)}function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}function weekend(offset=0){let d=new Date(today()+'T12:00:00Z'),day=d.getUTCDay();d.setUTCDate(d.getUTCDate()+(day===0?-1:(6-day+7)%7)+offset*7);let e=new Date(d);e.setUTCDate(d.getUTCDate()+1);return[d.toISOString().slice(0,10),e.toISOString().slice(0,10)]}function dateLabel(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}function clock(t){let[h,m]=t.split(':').map(Number);return `${h%12||12}${m?':'+String(m).padStart(2,'0'):''}${h>=12?'pm':'am'}`}function range(e){if(e.endDate)return e.hoursLabel||'Check daily hours';return e.end?clock(e.start)+'–'+clock(e.end):'Starts '+clock(e.start)}function safeUrl(s){try{let u=new URL(s);return /^https?:$/.test(u.protocol)?u.href:'#'}catch{return '#'}}
 const storedHidden=read('lw-hidden',[]);
 let hiddenIds=new Set(Array.isArray(storedHidden)?storedHidden:[]);
 const PLAN_STATES=Object.freeze({interested:'Interested',register:'Need to register',booked:'Booked'});
@@ -18,7 +18,7 @@ let planStates=read('lw-plan-status',{}),planSnapshots=read('lw-plan-snapshots',
 if(!planStates||Array.isArray(planStates)||typeof planStates!=='object')planStates={};
 if(!planSnapshots||Array.isArray(planSnapshots)||typeof planSnapshots!=='object')planSnapshots={};
 if(!planAlerts||Array.isArray(planAlerts)||typeof planAlerts!=='object')planAlerts={};
-for(const [id,event] of Object.entries(planSnapshots))if(!validStoredEvent(event)||event.id!==id)delete planSnapshots[id];
+for(const [id,event] of Object.entries(planSnapshots)){const clean=sanitizeStoredEvent(event);if(!clean||clean.id!==id)delete planSnapshots[id];else planSnapshots[id]=clean}
 for(const [id,alerts] of Object.entries(planAlerts))if(!Array.isArray(alerts)||alerts.some(a=>typeof a!=='string'))delete planAlerts[id];
 const seenAtOpen=read('lw-seen-events',null);
 let visitSeen=Array.isArray(seenAtOpen)?new Set(seenAtOpen):null;
@@ -53,7 +53,7 @@ function rememberSeen(){
  try{const old=read('lw-seen-events',[]);localStorage.setItem('lw-seen-events',JSON.stringify([...new Set([...(Array.isArray(old)?old:[]),...current])].slice(-5000)))}catch{}
 }
 function syncSavedSnapshots(){
- const labels={date:'Date',start:'Start time',end:'End time',venue:'Venue',status:'Organizer status'};
+ const labels={date:'Date',endDate:'End date',start:'Start time',end:'End time',venue:'Venue',status:'Organizer status'};
  for(const event of [...seed,...custom])if(saved.has(event.id)){
   const old=planSnapshots[event.id];
   const oldTime=Date.parse(old?.checked_at),newTime=Date.parse(event.checked_at);
@@ -127,7 +127,14 @@ function cleanBackupEvent(e){
  if(typeof e.stale==='boolean')clean.stale=e.stale;
  return clean;
 }
-function validStoredEvent(event){try{cleanBackupEvent(event);return true}catch{return false}}
+function sanitizeStoredEvent(event){
+ try{cleanBackupEvent(event)}catch{return null}
+ // Preserve useful saved details while discarding damaged optional metadata.
+ const clean={...event};
+ if(clean.alternate_ids!==undefined)clean.alternate_ids=Array.isArray(clean.alternate_ids)?clean.alternate_ids.filter(id=>typeof id==='string'&&id):[];
+ if(clean.listings!==undefined)clean.listings=Array.isArray(clean.listings)?clean.listings.filter(item=>item&&typeof item.source_id==='string'&&typeof item.source==='string'&&safeUrl(item.url)!=='#'):[];
+ return clean;
+}
 function restorePlans(text){
  // Validate the entire file before changing any existing browser plans.
  if(typeof text!=='string'||text.length>2_000_000)throw Error('Choose a backup smaller than 2 MB.');

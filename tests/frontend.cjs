@@ -341,6 +341,18 @@ setImmediate(async()=>{
   assert.equal(vm.runInContext('saved.size',startup),0);
   assert.equal(vm.runInContext("Object.hasOwn(planSnapshots,'dated')&&!Object.hasOwn(planSnapshots,'bad')",startup),true);
   assert.equal(vm.runInContext("Object.hasOwn(planAlerts,'dated')",startup),false);
+  // Damaged optional listing metadata should not hide an otherwise valid saved plan.
+  const withDamagedMetadata={...validCopy,listings:{broken:true},alternate_ids:'broken'};
+  const damaged=new Map([['lw-saved',JSON.stringify(['dated'])],['lw-plan-snapshots',JSON.stringify({dated:withDamagedMetadata})]]);
+  const damagedNodes={};
+  const recovery={...ctx,document:{querySelector(s){return damagedNodes[s]??=node()},querySelectorAll(){return []},addEventListener(){},createElement(){return {click(){}}}},localStorage:{getItem(k){return damaged.get(k)??null},setItem(k,v){damaged.set(k,v)}},fetch:()=>new Promise(()=>{})};
+  vm.createContext(recovery);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),recovery);
+  vm.runInContext("view='saved';render()",recovery);
+  assert.match(damagedNodes['#cards'].innerHTML,/Craft one/);
+  assert.equal(vm.runInContext("planSnapshots.dated.listings.length+planSnapshots.dated.alternate_ids.length",recovery),0);
+  // Saved multi-day activities alert the user when the final date changes.
+  vm.runInContext("seed=[{...planFixtures[0],endDate:'2026-11-09'}];custom=[];saved=new Set(['dated']);planSnapshots={dated:{...seed[0],endDate:'2026-11-08'}};planAlerts={};syncSavedSnapshots()",ctx);
+  assert.match(vm.runInContext("planAlerts.dated.join(' ')",ctx),/End date: 2026-11-08 → 2026-11-09/);
   // An orphaned saved ID stays recoverable and can be removed without affecting real plans.
   vm.runInContext("seed=[{...planFixtures[0]}];custom=[];saved=new Set(['dated','missing-id']);planSnapshots={};planStates={};planAlerts={};view='saved';render()",ctx);
   assert.equal(elements['#count'].textContent,'(2)');
