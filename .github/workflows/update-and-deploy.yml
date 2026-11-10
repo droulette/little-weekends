@@ -36,6 +36,24 @@ jobs:
         run: node --check site/app.js
       - name: Check frontend behavior
         run: node tests/frontend.cjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install browser test dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser journey
+        run: npm run test:browser
+      - name: Upload browser test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Collect free family events
         id: collection
         continue-on-error: true
@@ -74,3 +92,4 @@ jobs:
         run: |
           echo 'All automatic sources failed. The retained feed was published with failure status.'
           exit 1
+

@@ -1,0 +1,32 @@
+const {test,expect}=require('@playwright/test');
+
+// Fixed time and synthetic feed keep this journey independent of live listings.
+const fixture={
+  schema_version:1,generated_at:'2026-11-04T20:00:00Z',last_successful_collection:'2026-11-04T20:00:00Z',
+  collection_summary:{previous_count:0,current_count:1,added:1,removed_expired:0,removed_other:0,retained_unchecked:0},
+  sources:[{id:'test',name:'Example source',url:'https://example.org/',mode:'automatic',state:'ok',count:1,last_success:'2026-11-04T20:00:00Z'}],
+  events:[{id:'test-craft',title:'Family craft day',date:'2026-11-07',start:'10:00',end:'11:00',
+    city:'Oakland',venue:'Example venue',price:'Free',min:null,max:null,cat:'Art & crafts',source:'Example source',
+    source_id:'test',status:'Check organizer',desc:'Synthetic event for testing.',url:'https://example.org/event',checked_at:'2026-11-04T20:00:00Z'}],
+  guides:[]
+};
+
+test('save a plan, reload, and see collection dashboard',async ({page})=>{
+  await page.clock.setFixedTime(new Date('2026-11-04T20:00:00Z'));
+  await page.route('**/data/events.json',route=>route.fulfill({json:fixture}));
+  await page.route('https://fonts.googleapis.com/**',route=>route.abort());
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const cards=page.locator('#cards');
+  await expect(cards.getByRole('heading',{name:'Family craft day'})).toBeVisible();
+  await cards.getByRole('button',{name:'Save Family craft day'}).click();
+  await page.getByRole('button',{name:/^My plans/}).click();
+  await expect(page.getByRole('heading',{name:'Your saved outings'})).toBeVisible();
+  await expect(cards.getByRole('heading',{name:'Family craft day'})).toBeVisible();
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.getByRole('button',{name:/^My plans/}).click();
+  await expect(cards.getByRole('heading',{name:'Family craft day'})).toBeVisible();
+  await expect(cards.getByRole('button',{name:'Unsave Family craft day'})).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'Sources',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Collection dashboard'})).toBeVisible();
+  await expect(page.locator('#sources-view')).toContainText('1 events found in latest scan');
+});

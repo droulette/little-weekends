@@ -5,3 +5,6 @@ __pycache__/
 .env.*
 .DS_Store
 *.tmp
+node_modules/
+test-results/
+playwright-report/

@@ -40,6 +40,9 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 node tests/frontend.cjs
+npm ci
+npx playwright install chromium
+npm run test:browser
 python scripts/collect_events.py --pages 6 --max-details 90
 python scripts/validate_feed.py
 python -m http.server 8000 --directory site
@@ -71,6 +74,7 @@ Collection and deployment happen in the same workflow. This matters because a co
 - `scripts/collect_events.py`: fetch → parse → validate → deduplicate → publish JSON.
 - `tests/test_collector.py`: synthetic parser fixtures and failure scenarios.
 - `tests/frontend.cjs`: minimal DOM test double for app behavior. This is not a visual browser test.
+- `tests/browser/planning.spec.cjs`: Chromium test of saving, reloading, and opening the dashboard, using a fixed date and synthetic feed. GitHub Actions runs it before publishing. Failed runs retain browser diagnostics for seven days.
 - `.github/workflows/update-and-deploy.yml`: daily refresh and Pages deployment.
 
 The app does not use an LLM to collect events. Deterministic code handles these sources for free. AI can help add and review adapters or interpret a flyer later, but is not required for the scheduled pipeline.
