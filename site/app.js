@@ -2,13 +2,14 @@ function overlapsWeekend(e){let start=e.date<today()?today():e.date;let a=new Da
 function allowedLibrary(e){return !/\blibrary\b|\bbranch\b/i.test(e.venue||"")||/\bTemescal\b/i.test(e.venue||"")}
 let seed=[], sourceStatuses=[], guides=[], feedInfo=null;
 function allowedSource(e){return e.source_id!=='bn'&&!/(^|\.)barnesandnoble\.com$/i.test((()=>{try{return new URL(e.url).hostname}catch{return ''}})())}
-const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function read(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}let custom=read('lw-events',[]),saved=new Set(read('lw-saved',[])),view='discover',period='weekend';const all=()=>allEvents();function persist(){try{localStorage.setItem('lw-saved',JSON.stringify([...saved]));localStorage.setItem('lw-events',JSON.stringify(custom));localStorage.setItem('lw-plan-status',JSON.stringify(planStates));localStorage.setItem('lw-plan-snapshots',JSON.stringify(planSnapshots));localStorage.setItem('lw-hidden',JSON.stringify([...hiddenIds]))}catch{toast('Browser storage unavailable; changes may not persist.')}}function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',3000)}function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}function weekend(offset=0){let d=new Date(today()+'T12:00:00Z'),day=d.getUTCDay();d.setUTCDate(d.getUTCDate()+(day===0?-1:(6-day+7)%7)+offset*7);let e=new Date(d);e.setUTCDate(d.getUTCDate()+1);return[d.toISOString().slice(0,10),e.toISOString().slice(0,10)]}function dateLabel(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}function clock(t){let[h,m]=t.split(':').map(Number);return `${h%12||12}${m?':'+String(m).padStart(2,'0'):''}${h>=12?'pm':'am'}`}function range(e){if(e.endDate)return e.hoursLabel||'Check daily hours';return e.end?clock(e.start)+'–'+clock(e.end):'Starts '+clock(e.start)}function safeUrl(s){try{let u=new URL(s);return /^https?:$/.test(u.protocol)?u.href:'#'}catch{return '#'}}
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function read(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}let custom=read('lw-events',[]),saved=new Set(read('lw-saved',[])),view='discover',period='weekend';const all=()=>allEvents();function persist(){try{localStorage.setItem('lw-saved',JSON.stringify([...saved]));localStorage.setItem('lw-events',JSON.stringify(custom));localStorage.setItem('lw-plan-status',JSON.stringify(planStates));localStorage.setItem('lw-plan-snapshots',JSON.stringify(planSnapshots));localStorage.setItem('lw-plan-alerts',JSON.stringify(planAlerts));localStorage.setItem('lw-hidden',JSON.stringify([...hiddenIds]))}catch{toast('Browser storage unavailable; changes may not persist.')}}function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',3000)}function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}function weekend(offset=0){let d=new Date(today()+'T12:00:00Z'),day=d.getUTCDay();d.setUTCDate(d.getUTCDate()+(day===0?-1:(6-day+7)%7)+offset*7);let e=new Date(d);e.setUTCDate(d.getUTCDate()+1);return[d.toISOString().slice(0,10),e.toISOString().slice(0,10)]}function dateLabel(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}function clock(t){let[h,m]=t.split(':').map(Number);return `${h%12||12}${m?':'+String(m).padStart(2,'0'):''}${h>=12?'pm':'am'}`}function range(e){if(e.endDate)return e.hoursLabel||'Check daily hours';return e.end?clock(e.start)+'–'+clock(e.end):'Starts '+clock(e.start)}function safeUrl(s){try{let u=new URL(s);return /^https?:$/.test(u.protocol)?u.href:'#'}catch{return '#'}}
 const storedHidden=read('lw-hidden',[]);
 let hiddenIds=new Set(Array.isArray(storedHidden)?storedHidden:[]);
 const PLAN_STATES=Object.freeze({interested:'Interested',register:'Need to register',booked:'Booked'});
-let planStates=read('lw-plan-status',{}),planSnapshots=read('lw-plan-snapshots',{}),selectedWeekend='';
+let planStates=read('lw-plan-status',{}),planSnapshots=read('lw-plan-snapshots',{}),planAlerts=read('lw-plan-alerts',{}),selectedWeekend='';
 if(!planStates||Array.isArray(planStates)||typeof planStates!=='object')planStates={};
 if(!planSnapshots||Array.isArray(planSnapshots)||typeof planSnapshots!=='object')planSnapshots={};
+if(!planAlerts||Array.isArray(planAlerts)||typeof planAlerts!=='object')planAlerts={};
 const seenAtOpen=read('lw-seen-events',null);
 let visitSeen=Array.isArray(seenAtOpen)?new Set(seenAtOpen):null;
 function statusFor(id){return Object.hasOwn(planStates,id)&&Object.hasOwn(PLAN_STATES,planStates[id])?planStates[id]:'interested'}
@@ -31,16 +32,37 @@ function rememberSeen(){
  try{const old=read('lw-seen-events',[]);localStorage.setItem('lw-seen-events',JSON.stringify([...new Set([...(Array.isArray(old)?old:[]),...current])].slice(-5000)))}catch{}
 }
 function syncSavedSnapshots(){
- for(const e of [...seed,...custom])if(saved.has(e.id))planSnapshots[e.id]={...e};
+ const labels={date:'Date',start:'Start time',end:'End time',venue:'Venue',status:'Organizer status'};
+ for(const event of [...seed,...custom])if(saved.has(event.id)){
+  const old=planSnapshots[event.id];
+  const oldTime=Date.parse(old?.checked_at),newTime=Date.parse(event.checked_at);
+  // A cached older feed must not overwrite a newer saved snapshot.
+  if(Number.isFinite(oldTime)&&Number.isFinite(newTime)&&newTime<oldTime)continue;
+  if(old){
+   const changes=Object.entries(labels).filter(([field])=>(old[field]??'')!==(event[field]??''))
+    .map(([field,label])=>`${label}: ${old[field]||'Not listed'} → ${event[field]||'Not listed'}`);
+   if(changes.length)planAlerts[event.id]=[...new Set([...(planAlerts[event.id]||[]),...changes])].slice(-20);
+  }
+  planSnapshots[event.id]={...event};
+ }
  persist();
 }
+function alertHTML(event){
+ const alerts=planAlerts[event.id]||[];
+ if(!alerts.length)return '';
+ return `<div class="plan-warning" role="status"><strong>Details changed since saved</strong><ul>${alerts.map(change=>`<li>${esc(change)}</li>`).join('')}</ul><button data-dismiss-change="${esc(event.id)}">Dismiss update</button></div>`;
+}
 function allEvents(){
- const current=[...seed,...custom],ids=new Set(current.map(e=>e.id));
+ const current=[...seed,...custom].map(event=>{
+  const snapshot=saved.has(event.id)?planSnapshots[event.id]:null;
+  const oldTime=Date.parse(snapshot?.checked_at),newTime=Date.parse(event.checked_at);
+  return Number.isFinite(oldTime)&&Number.isFinite(newTime)&&oldTime>newTime?{...snapshot,saved_copy:true}:event;
+ }),ids=new Set(current.map(e=>e.id));
  const copies=Object.values(planSnapshots).filter(e=>e&&saved.has(e.id)&&!ids.has(e.id)&&allowedSource(e)&&(e.source==='Your discovery'||allowedLibrary(e))).map(e=>({...e,saved_copy:true}));
  return [...current,...copies].sort((a,b)=>Number(Boolean(a.ongoing??a.endDate))-Number(Boolean(b.ongoing??b.endDate))||(a.date+a.start).localeCompare(b.date+b.start));
 }
 function toggleSaved(id){
- if(saved.has(id)){saved.delete(id);delete planStates[id];delete planSnapshots[id]}
+ if(saved.has(id)){saved.delete(id);delete planStates[id];delete planSnapshots[id];delete planAlerts[id]}
  else{const event=all().find(e=>e.id===id);if(!event)return;saved.add(id);planStates[id]='interested';planSnapshots[id]={...event}}
  persist();render();
 }
@@ -65,7 +87,7 @@ function statusSelect(e){return `<label class="plan-status-label">Plan status<se
 function downloadFile(content,type,name){const url=URL.createObjectURL(new Blob([content],{type})),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function backupPayload(){
  const events=new Map(all().map(e=>[e.id,e]));
- return {format:'little-weekends-plans',version:1,exported_at:new Date().toISOString(),saved:[...saved].map(id=>({id,status:statusFor(id),event:events.get(id)||null})),custom,hidden_ids:[...hiddenIds]};
+ return {format:'little-weekends-plans',version:1,exported_at:new Date().toISOString(),saved:[...saved].map(id=>({id,status:statusFor(id),event:events.get(id)||null})),custom,hidden_ids:[...hiddenIds],plan_alerts:Object.fromEntries([...saved].filter(id=>planAlerts[id]?.length).map(id=>[id,planAlerts[id]]))};
 }
 function cleanBackupEvent(e){
  const idOK=id=>typeof id==='string'&&/^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,159}$/.test(id);
@@ -91,6 +113,8 @@ function restorePlans(text){
  if(!data||data.format!=='little-weekends-plans'||data.version!==1||!Array.isArray(data.saved)||!Array.isArray(data.custom)||data.saved.length>1000||data.custom.length>500)throw Error('This is not a supported Little Weekends backup.');
  const backupHidden=data.hidden_ids??[];
  if(!Array.isArray(backupHidden)||backupHidden.length>5000||backupHidden.some(id=>typeof id!=='string'||!/^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,159}$/.test(id)))throw Error('Backup contains invalid hidden IDs.');
+ const backupAlerts=data.plan_alerts??{};
+ if(!backupAlerts||typeof backupAlerts!=='object'||Array.isArray(backupAlerts)||Object.keys(backupAlerts).length>1000||Object.entries(backupAlerts).some(([id,values])=>!/^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,159}$/.test(id)||!Array.isArray(values)||values.length>20||values.some(x=>typeof x!=='string'||x.length>1000)))throw Error('Backup contains invalid plan updates.');
  const cleanSaved=data.saved.map(item=>{
   if(!item||typeof item.id!=='string'||!/^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,159}$/.test(item.id)||!Object.hasOwn(PLAN_STATES,item.status))throw Error('Backup contains an invalid saved plan.');
   const event=item.event===null?null:cleanBackupEvent(item.event);
@@ -108,6 +132,7 @@ function restorePlans(text){
   if(item.event&&!Object.hasOwn(planSnapshots,item.id))planSnapshots[item.id]=item.event;
  }
  for(const id of backupHidden)hiddenIds.add(id);
+ for(const [id,alerts] of Object.entries(backupAlerts))if(saved.has(id)&&!planAlerts[id])planAlerts[id]=alerts;
  migrateSavedIds();syncSavedSnapshots();persist();view='saved';render();return added;
 }
 
@@ -135,7 +160,9 @@ function migrateSavedIds(){
   if(saved.has(id)){
    const status=statusFor(id);
    if(rank[status]>rank[statusFor(event.id)])planStates[event.id]=status;
-   saved.delete(id);saved.add(event.id);delete planStates[id];delete planSnapshots[id];changed=true;
+   if(!planSnapshots[event.id]&&planSnapshots[id])planSnapshots[event.id]={...planSnapshots[id],id:event.id};
+   if(planAlerts[id])planAlerts[event.id]=[...new Set([...(planAlerts[event.id]||[]),...planAlerts[id]])].slice(-20);
+   saved.delete(id);saved.add(event.id);delete planStates[id];delete planSnapshots[id];delete planAlerts[id];changed=true;
   }
   if(hiddenIds.has(id)){hiddenIds.delete(id);hiddenIds.add(event.id);changed=true}
  }
@@ -161,15 +188,51 @@ function renderEventGroups(events, dates, card){
  }).join('');
  return sections+(ongoing.length?'<h3 class="day-heading">Ongoing &amp; multi-day activities</h3>'+ongoing.map(card).join(''):'');
 }
-function render(){let dates=period==='chosen'&&selectedWeekend?weekendFor(selectedWeekend):weekend(period==='next'?1:0);let events=all().filter(e=>view==='saved'?saved.has(e.id):e.saved_copy?false:period==='all'?(e.endDate||e.date)>=today():(e.endDate||e.date)>=dates[0]&&e.date<=dates[1]);const q=$('#search').value.toLowerCase(),age=$('#age').value;events=events.filter(e=>(view==='saved'||$('#show-hidden').checked||!hiddenIds.has(e.id))&&(view==='saved'||!$('#new-only').checked||isNew(e))&&(view==='saved'||!$('#weekends-only').checked||overlapsWeekend(e))&&(view==='saved'||$('#include-unconfirmed').checked||readyToPlan(e))&&(!q||[e.title,e.venue,e.city,e.source].join(' ').toLowerCase().includes(q))&&(!$('#city').value||e.city===$('#city').value)&&(!$('#cost').value||e.price==='Free')&&(!$('#category').value||e.cat===$('#category').value)&&(!age||(e.min!==null&&e.max!==null&&(age==='both'?e.min<=4&&e.max>=6:e.min<=Number(age)&&e.max>=Number(age)))));
-$('#heading').textContent=view==='saved'?'Your saved outings':period==='all'?'Good things on the horizon':dateLabel(dates[0])+'–'+dateLabel(dates[1]);$('#result-count').textContent=events.length+' events · Pacific time';$('#count').textContent=saved.size?'('+saved.size+')':'';const newCount=seed.filter(e=>isNew(e)&&(e.endDate||e.date)>=today()).length;$('#new-count').textContent=newCount?newCount+' new since your last visit':'New listings will be marked here after your next visit.';$('#cards').innerHTML=renderEventGroups(events,dates,e=>`<article class="card"><div class="visual" style="background:${/^#[a-f0-9]{6}$/i.test(e.color||'')?e.color:'#e5eadd'}"><span class="symbol" aria-hidden="true">${esc(e.icon||'✳')}</span><div class="datebox">${e.endDate?'UNTIL':new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short'}).toUpperCase()}<strong>${e.endDate?esc(dateLabel(e.endDate)):Number(e.date.slice(-2))}</strong></div><button class="save ${saved.has(e.id)?'on':''}" data-save="${esc(e.id)}" aria-label="${saved.has(e.id)?'Unsave':'Save'} ${esc(e.title)}" aria-pressed="${saved.has(e.id)}">${saved.has(e.id)?'♥':'♡'}</button></div><div class="content"><div class="meta">${esc(e.city)} &nbsp;·&nbsp; ${esc(range(e))}</div><h3>${esc(e.title)}</h3><p class="venue">${esc(e.venue)}</p><p class="desc">${esc(e.desc)}</p><div class="badges">${isNew(e)?'<span class="badge new-badge">New since your last visit</span>':''}${saved.has(e.id)?`<span class="badge">${esc(PLAN_STATES[statusFor(e.id)])}</span>`:''}<span class="badge ${e.price==='Free'?'free':''}">${esc(e.price)}</span><span class="badge">${e.min===null?'Age range not listed':e.max===99?(e.min===0?'All ages':'Ages '+e.min+'+'):'Ages '+e.min+'–'+e.max}</span></div><div class="cardfoot"><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">${esc(e.source)} ↗</a><span class="status">${esc(eventFreshness(e).old?'Older listing · recheck':e.status)}</span></div><p class="checked ${eventFreshness(e).old?'old':''}">${esc(eventFreshness(e).label)}</p>${listingLinks(e)}<button class="card-calendar" data-calendar="${esc(e.id)}" aria-label="Add ${esc(e.title)} to calendar">+ Calendar</button><button class="hide-event" data-hide="${esc(e.id)}" aria-label="${hiddenIds.has(e.id)?'Restore':'Hide'} ${esc(e.title)}">${hiddenIds.has(e.id)?'Restore event':'Hide event'}</button><a class="directions" href="${esc(directionsUrl(e))}" target="_blank" rel="noopener noreferrer">Directions ↗</a></div></article>`);
+function render(){let dates=period==='chosen'&&selectedWeekend?weekendFor(selectedWeekend):weekend(period==='next'?1:0);let events=all().filter(e=>view==='saved'?saved.has(e.id):e.saved_copy?false:period==='all'?(e.endDate||e.date)>=today():(e.endDate||e.date)>=(dates[0]<today()?today():dates[0])&&e.date<=dates[1]);const q=$('#search').value.toLowerCase(),age=$('#age').value;if(view!=='saved')events=events.filter(e=>(view==='saved'||$('#show-hidden').checked||!hiddenIds.has(e.id))&&(view==='saved'||!$('#new-only').checked||isNew(e))&&(view==='saved'||!$('#weekends-only').checked||overlapsWeekend(e))&&(view==='saved'||$('#include-unconfirmed').checked||readyToPlan(e))&&(!q||[e.title,e.venue,e.city,e.source].join(' ').toLowerCase().includes(q))&&(!$('#city').value||e.city===$('#city').value)&&(!$('#cost').value||e.price==='Free')&&(!$('#category').value||e.cat===$('#category').value)&&(!age||(e.min!==null&&e.max!==null&&(age==='both'?e.min<=4&&e.max>=6:e.min<=Number(age)&&e.max>=Number(age)))));
+$('#discover-filters').classList.toggle('hide',view==='saved');
+$('#heading').textContent=view==='saved'?'Your saved outings':period==='all'?'Good things on the horizon':dateLabel(dates[0])+'–'+dateLabel(dates[1]);$('#result-count').textContent=events.length+' events · Pacific time';$('#count').textContent=saved.size?'('+saved.size+')':'';const newCount=seed.filter(e=>isNew(e)&&(e.endDate||e.date)>=today()).length;$('#new-count').textContent=newCount?newCount+' new since your last visit':'New listings will be marked here after your next visit.';$('#cards').innerHTML=renderEventGroups(events,dates,e=>`<article class="card"><div class="visual" style="background:${/^#[a-f0-9]{6}$/i.test(e.color||'')?e.color:'#e5eadd'}"><span class="symbol" aria-hidden="true">${esc(e.icon||'✳')}</span><div class="datebox">${e.endDate?'UNTIL':new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short'}).toUpperCase()}<strong>${e.endDate?esc(dateLabel(e.endDate)):Number(e.date.slice(-2))}</strong></div><button class="save ${saved.has(e.id)?'on':''}" data-save="${esc(e.id)}" aria-label="${saved.has(e.id)?'Unsave':'Save'} ${esc(e.title)}" aria-pressed="${saved.has(e.id)}">${saved.has(e.id)?'♥':'♡'}</button></div><div class="content"><div class="meta">${esc(e.city)} &nbsp;·&nbsp; ${esc(range(e))}</div><h3>${esc(e.title)}</h3><p class="venue">${esc(e.venue)}</p><p class="desc">${esc(e.desc)}</p><div class="badges">${isNew(e)?'<span class="badge new-badge">New since your last visit</span>':''}${saved.has(e.id)?`<span class="badge">${esc(PLAN_STATES[statusFor(e.id)])}</span>`:''}${planAlerts[e.id]?.length?'<span class="badge update-badge">Details changed · see My plans</span>':''}<span class="badge ${e.price==='Free'?'free':''}">${esc(e.price)}</span><span class="badge">${e.min===null?'Age range not listed':e.max===99?(e.min===0?'All ages':'Ages '+e.min+'+'):'Ages '+e.min+'–'+e.max}</span></div><div class="cardfoot"><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">${esc(e.source)} ↗</a><span class="status">${esc(eventFreshness(e).old?'Older listing · recheck':e.status)}</span></div><p class="checked ${eventFreshness(e).old?'old':''}">${esc(eventFreshness(e).label)}</p>${listingLinks(e)}<button class="card-calendar" data-calendar="${esc(e.id)}" aria-label="Add ${esc(e.title)} to calendar">+ Calendar</button><button class="hide-event" data-hide="${esc(e.id)}" aria-label="${hiddenIds.has(e.id)?'Restore':'Hide'} ${esc(e.title)}">${hiddenIds.has(e.id)?'Restore event':'Hide event'}</button><a class="directions" href="${esc(directionsUrl(e))}" target="_blank" rel="noopener noreferrer">Directions ↗</a></div></article>`);
 const plans=all().filter(e=>saved.has(e.id));
-$('#plan').innerHTML=plans.map(e=>`<div class="planitem"><span class="small">${e.endDate?'Through '+dateLabel(e.endDate):dateLabel(e.date)} · ${esc(range(e))}</span><strong>${esc(e.title)}</strong><span class="small">${esc(e.city)} · ${esc(eventFreshness(e).label)}</span>${statusSelect(e)}${conflictHTML(e,plans)}<div class="plan-links"><a href="${esc(directionsUrl(e))}" target="_blank" rel="noopener noreferrer">Directions ↗</a><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">Organizer / registration ↗</a></div><button data-calendar="${esc(e.id)}">+ Calendar</button><button data-save="${esc(e.id)}" aria-label="Remove ${esc(e.title)}">Remove</button></div>`).join('')||'<div class="empty-plan">♡ Your next adventure starts with a save.</div>';
+$('#plan').innerHTML=plans.map(e=>`<div class="planitem"><span class="small">${e.endDate?'Through '+dateLabel(e.endDate):dateLabel(e.date)} · ${esc(range(e))}</span><strong>${esc(e.title)}</strong><span class="small">${esc(e.city)} · ${esc(eventFreshness(e).label)}</span>${statusSelect(e)}${alertHTML(e)}${conflictHTML(e,plans)}<div class="plan-links"><a href="${esc(directionsUrl(e))}" target="_blank" rel="noopener noreferrer">Directions ↗</a><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">Organizer / registration ↗</a></div><button data-calendar="${esc(e.id)}">+ Calendar</button><button data-save="${esc(e.id)}" aria-label="Remove ${esc(e.title)}">Remove</button></div>`).join('')||'<div class="empty-plan">♡ Your next adventure starts with a save.</div>';
 const available=new Set(plans.map(e=>e.id)),missing=[...saved].filter(id=>!available.has(id));
 if(missing.length)$('#plan').innerHTML+=`<p class="plan-note">${missing.length} saved ${missing.length===1?'event has':'events have'} no available details in this browser. Backups preserve their IDs so they can reconnect if the listings return.</p>`;
 $('#export').disabled=!plans.length;
 $('#sources-view').classList.toggle('hide',view!=='sources');$('#discovery').classList.toggle('hide',view==='sources');$('#aside').classList.toggle('hide',view==='sources');document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===view));document.querySelectorAll('[data-period]').forEach(b=>b.classList.toggle('active',b.dataset.period===period));}
-function icsEscape(s){return String(s).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;')}function calendar(events){if(!events.length)return;const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');let lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Little Weekends//East Bay//EN','CALSCALE:GREGORIAN','BEGIN:VTIMEZONE','TZID:America/Los_Angeles','BEGIN:STANDARD','DTSTART:19701101T020000','RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU','TZOFFSETFROM:-0700','TZOFFSETTO:-0800','TZNAME:PST','END:STANDARD','BEGIN:DAYLIGHT','DTSTART:19700308T020000','RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU','TZOFFSETFROM:-0800','TZOFFSETTO:-0700','TZNAME:PDT','END:DAYLIGHT','END:VTIMEZONE'];events.forEach(e=>lines.push('BEGIN:VEVENT','UID:'+e.id+'@littleweekends','DTSTAMP:'+stamp,...(e.endDate?['DTSTART;VALUE=DATE:'+e.date.replaceAll('-',''),'DTEND;VALUE=DATE:'+new Date(new Date(e.endDate+'T12:00:00Z').getTime()+86400000).toISOString().slice(0,10).replaceAll('-','')]:['DTSTART;TZID=America/Los_Angeles:'+e.date.replaceAll('-','')+'T'+e.start.replace(':','')+'00',...(e.end?['DTEND;TZID=America/Los_Angeles:'+e.date.replaceAll('-','')+'T'+e.end.replace(':','')+'00']:[])]),'SUMMARY:'+icsEscape(e.title),'LOCATION:'+icsEscape(e.venue+', '+e.city),'DESCRIPTION:'+icsEscape(e.desc+'\nCheck organizer: '+e.url),'URL:'+safeUrl(e.url),'END:VEVENT'));lines.push('END:VCALENDAR');const blob=new Blob([lines.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='little-weekends.ics';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function icsEscape(s){return String(s).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;')}
+function chooseVisitDate(event){
+ return new Promise(resolve=>{
+  const modal=$('#visit-modal'),input=$('#visit-date'),form=$('#visit-form');
+  const earliest=today()<=event.endDate&&today()>event.date?today():event.date;
+  input.min=earliest;input.max=event.endDate;input.value=earliest;
+  $('#visit-title').textContent=event.title;
+  $('#visit-error').textContent='';
+  let settled=false;
+  const finish=value=>{if(settled)return;settled=true;modal.close();resolve(value)};
+  form.onsubmit=e=>{e.preventDefault();const date=input.value;if(!validDate(date)||date<input.min||date>input.max){$('#visit-error').textContent='Choose a date within the event dates.';return}finish(date)};
+  $('#visit-cancel').onclick=()=>finish(null);
+  modal.oncancel=e=>{e.preventDefault();finish(null)};
+  modal.showModal();
+ });
+}
+function needsVisitDay(event){return Boolean(event.endDate&&(event.ongoing??true))}
+let calendarInProgress=false;
+async function calendar(events){
+ if(!events.length||calendarInProgress)return;
+ calendarInProgress=true;
+ try{
+  const visitDates=new Map();
+  for(const event of events)if(needsVisitDay(event)){const day=await chooseVisitDate(event);if(!day)return;visitDates.set(event.id,day)}
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  let lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Little Weekends//East Bay//EN','CALSCALE:GREGORIAN','BEGIN:VTIMEZONE','TZID:America/Los_Angeles','BEGIN:STANDARD','DTSTART:19701101T020000','RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU','TZOFFSETFROM:-0700','TZOFFSETTO:-0800','TZNAME:PST','END:STANDARD','BEGIN:DAYLIGHT','DTSTART:19700308T020000','RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU','TZOFFSETFROM:-0800','TZOFFSETTO:-0700','TZNAME:PDT','END:DAYLIGHT','END:VTIMEZONE'];
+  for(const event of events){
+   const visit=visitDates.get(event.id),day=visit?.replaceAll('-','');
+   const next=visit?new Date(new Date(visit+'T12:00:00Z').getTime()+86400000).toISOString().slice(0,10).replaceAll('-',''):null;
+   lines.push('BEGIN:VEVENT','UID:'+event.id+(visit?'-'+day:'')+'@littleweekends','DTSTAMP:'+stamp,
+    ...(visit?['DTSTART;VALUE=DATE:'+day,'DTEND;VALUE=DATE:'+next]:['DTSTART;TZID=America/Los_Angeles:'+event.date.replaceAll('-','')+'T'+event.start.replace(':','')+'00',...(event.end?['DTEND;TZID=America/Los_Angeles:'+(event.endDate||event.date).replaceAll('-','')+'T'+event.end.replace(':','')+'00']:[])]),
+    'SUMMARY:'+icsEscape(event.title),'LOCATION:'+icsEscape(event.venue+', '+event.city),'DESCRIPTION:'+icsEscape(event.desc+'\nCheck organizer: '+event.url),'URL:'+safeUrl(event.url),'END:VEVENT');
+  }
+  lines.push('END:VCALENDAR');downloadFile(lines.join('\r\n')+'\r\n','text/calendar;charset=utf-8','little-weekends.ics');
+ }finally{calendarInProgress=false}
+}
 function sourceHTML(){return sourceStatuses.map(s=>{const health=sourceHealth(s);return `<div class="source"><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${esc(s.name)} ↗</a><small class="${health.attention?'needs-check':''}">${esc(health.label)}</small></div>`}).join('')}
 function renderSources(){
  renderGuides();
@@ -204,7 +267,7 @@ async function loadFeed(){
  }finally{$('#reload-feed').disabled=false}
 }
 $('#reload-feed').onclick=loadFeed;
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.save)toggleSaved(b.dataset.save);if(b.dataset.hide)toggleHidden(b.dataset.hide);if(b.dataset.nav){view=b.dataset.nav;render()}if(b.dataset.period){period=b.dataset.period;view='discover';render()}if(b.dataset.calendar)calendar(all().filter(x=>x.id===b.dataset.calendar))});['search','city','age','cost','category','include-unconfirmed','new-only','show-hidden'].forEach(id=>$('#'+id).addEventListener(id==='search'?'input':'change',render));$('#add').onclick=()=>$('#modal').showModal();$('#cancel').onclick=()=>$('#modal').close();$('#export').onclick=()=>calendar(all().filter(e=>saved.has(e.id)));$('#form').onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(d.end<=d.start){toast('End time must be after start time.');return}if(!/^https?:\/\//i.test(d.url)){toast('Use an http or https source link.');return}const min=d.min===''?null:Number(d.min),max=d.max===''?null:Number(d.max);if((min===null)!==(max===null)||min!==null&&max<min){toast('Enter both age limits, with maximum at least minimum.');return}custom.push({...d,min,max,id:'custom-'+crypto.randomUUID(),source:'Your discovery',status:'Added by you',desc:'Personally added event. Check the source for current details.',icon:'✳',color:'#e5eadd'});saved.add(custom.at(-1).id);planStates[custom.at(-1).id]='interested';syncSavedSnapshots();persist();e.target.reset();$('#modal').close();view='saved';['search','city','age','cost','category'].forEach(id=>$('#'+id).value='');render();toast('Added to your plans.')};
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.save)toggleSaved(b.dataset.save);if(b.dataset.hide)toggleHidden(b.dataset.hide);if(b.dataset.dismissChange){delete planAlerts[b.dataset.dismissChange];persist();render()}if(b.dataset.nav){view=b.dataset.nav;render()}if(b.dataset.period){period=b.dataset.period;view='discover';render()}if(b.dataset.calendar)calendar(all().filter(x=>x.id===b.dataset.calendar))});['search','city','age','cost','category','include-unconfirmed','new-only','show-hidden'].forEach(id=>$('#'+id).addEventListener(id==='search'?'input':'change',render));$('#add').onclick=()=>$('#modal').showModal();$('#cancel').onclick=()=>$('#modal').close();$('#export').onclick=()=>calendar(all().filter(e=>saved.has(e.id)));$('#form').onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(d.end<=d.start){toast('End time must be after start time.');return}if(!/^https?:\/\//i.test(d.url)){toast('Use an http or https source link.');return}const min=d.min===''?null:Number(d.min),max=d.max===''?null:Number(d.max);if((min===null)!==(max===null)||min!==null&&max<min){toast('Enter both age limits, with maximum at least minimum.');return}custom.push({...d,min,max,id:'custom-'+crypto.randomUUID(),source:'Your discovery',status:'Added by you',desc:'Personally added event. Check the source for current details.',icon:'✳',color:'#e5eadd'});saved.add(custom.at(-1).id);planStates[custom.at(-1).id]='interested';syncSavedSnapshots();persist();e.target.reset();$('#modal').close();view='saved';['search','city','age','cost','category'].forEach(id=>$('#'+id).value='');render();toast('Added to your plans.')};
 $('#weekend-date').addEventListener('change',e=>{if(e.target.value)chooseWeekend(e.target.value)});
 document.addEventListener('change',e=>{if(e.target.dataset?.planStatus)setPlanStatus(e.target.dataset.planStatus,e.target.value)});
 $('#backup-plans').onclick=()=>downloadFile(JSON.stringify(backupPayload(),null,2),'application/json','little-weekends-plans-'+today()+'.json');

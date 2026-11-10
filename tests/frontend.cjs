@@ -12,7 +12,7 @@ const feed={schema_version:1,generated_at:'2026-11-04T20:00:00Z',last_successful
  {...common,id:'ikea-gnomes',title:'Gnome in the Home',date:'2026-11-01',endDate:'2026-12-31',ongoing:true,start:'10:00',end:'18:00'}
 ]};
 const elements={};const storage=new Map();const documentListeners={};
-function node(){return {value:'',textContent:'',innerHTML:'',style:{},listeners:{},classList:{toggle(){}},addEventListener(type,fn){this.listeners[type]=fn},showModal(){},close(){},click(){}}}
+function node(){return {value:'',textContent:'',innerHTML:'',style:{},listeners:{},classList:{toggle(){}},addEventListener(type,fn){this.listeners[type]=fn},showModal(){this.open=true},close(){this.open=false},click(){}}}
 let captured;
 class TestURL extends URL {static createObjectURL(b){captured=b;return 'blob:test'}static revokeObjectURL(){}}
 class TestDate extends Date { constructor(...args){super(...(args.length?args:['2026-11-04T20:00:00Z']))} static now(){return Date.parse('2026-11-04T20:00:00Z')} }
@@ -36,8 +36,14 @@ setImmediate(async()=>{
   let cards=elements['#cards'].innerHTML;
   assert(cards.lastIndexOf('data-save="ikea-gnomes"')>cards.indexOf('class="card"'));
   const hunt=cards.indexOf('data-save="ikea-gnomes"');assert(!cards.slice(hunt+1).includes('class="card"'));
-  vm.runInContext(`calendar(seed.filter(e=>e.id==='ikea-gnomes'))`,ctx);
-  const ics=await captured.text();assert.match(ics,/DTEND;VALUE=DATE:20270101/);
+  const visitExport=vm.runInContext(`calendar(seed.filter(e=>e.id==='ikea-gnomes'))`,ctx);
+  assert.equal(elements['#visit-modal'].open,true);
+  elements['#visit-date'].value='2026-11-07';
+  elements['#visit-form'].onsubmit({preventDefault(){}});
+  await visitExport;
+  const ics=await captured.text();assert.match(ics,/DTSTART;VALUE=DATE:20261107/);assert.match(ics,/DTEND;VALUE=DATE:20261108/);assert(!ics.includes('20270101'));
+  const oldCapture=captured;const cancelledExport=vm.runInContext(`calendar(seed.filter(e=>e.id==='ikea-gnomes'))`,ctx);
+  elements['#visit-cancel'].onclick();await cancelledExport;assert.equal(captured,oldCapture);
   // Escaped source text cannot become executable markup in event cards.
   vm.runInContext(`seed=[{id:'evil',title:'<img src=x onerror=alert(1)>',date:'2026-11-07',start:'10:00',end:'11:00',city:'Oakland',venue:'Example',price:'Free',min:null,max:null,cat:'Art & crafts',source:'Test',status:'Test',checked_at:'2026-11-04T20:00:00Z',url:'javascript:alert(1)',desc:'<script>bad</script>',color:'red;position:fixed'}];render()`,ctx);
   cards=elements['#cards'].innerHTML;assert(!cards.includes('<img'));assert(!cards.includes('<script>'));assert(cards.includes('href="#"'));assert(!cards.includes('position:fixed'));
@@ -229,6 +235,57 @@ setImmediate(async()=>{
   assert.match(cardCalendar,/SUMMARY:Saturday morning/);
   assert.match(cardCalendar,/DTSTART;TZID=America\/Los_Angeles:20261107T090000/);
   assert.equal(vm.runInContext("saved.has('sat1')",ctx),false);
+  // Saved plans are not filtered by discovery filters, including price and city.
+  vm.runInContext("seed=[{...planFixtures[0],id:'paid',title:'Paid saved outing',price:'$10'}];custom=[];saved=new Set(['paid']);planStates={paid:'booked'};planSnapshots={};planAlerts={};view='saved';$('#cost').value='free';$('#city').value='Berkeley';$('#age').value='4';$('#category').value='Building';$('#search').value='no match';render()",ctx);
+  assert.match(elements['#cards'].innerHTML,/Paid saved outing/);
+  assert.match(elements['#plan'].innerHTML,/Paid saved outing/);
+  // On Sunday, past Saturday is excluded even when the weekend-only filter is off.
+  vm.runInContext("seed=[{...planFixtures[0],id:'past-saturday',title:'Yesterday',date:'2026-11-07'},{...planFixtures[0],id:'today',title:'Today',date:'2026-11-08'}];custom=[];saved=new Set();view='discover';period='weekend';$('#cost').value='';$('#city').value='';$('#age').value='';$('#category').value='';$('#search').value='';$('#weekends-only').checked=false;$('#show-hidden').checked=false;$('#include-unconfirmed').checked=false;$('#new-only').checked=false;render()",ctx);
+  ctx.Date=class extends Date {constructor(...args){super(...(args.length?args:['2026-11-08T20:00:00Z']))}static now(){return Date.parse('2026-11-08T20:00:00Z')}};
+  vm.runInContext('render()',ctx);
+  assert(!elements['#cards'].innerHTML.includes('Yesterday'));
+  assert.match(elements['#cards'].innerHTML,/Today/);
+  // Changed start and organizer status alert on the saved plan and survive reload.
+  vm.runInContext("seed=[{...planFixtures[0],id:'change',title:'My outing',start:'11:30',end:'12:30',status:'Full · check waitlist',checked_at:'2026-11-08T18:00:00Z'}];saved=new Set(['change']);planStates={change:'booked'};planAlerts={};planSnapshots={change:{...seed[0],start:'10:00',end:'11:00',status:'Registration required',checked_at:'2026-11-07T18:00:00Z'}};view='saved';syncSavedSnapshots();render()",ctx);
+  assert.match(elements['#plan'].innerHTML,/Start time: 10:00 → 11:30/);
+  assert.match(elements['#plan'].innerHTML,/Organizer status: Registration required → Full/);
+  assert.equal(vm.runInContext("statusFor('change')",ctx),'booked');
+  assert(JSON.parse(storage.get('lw-plan-alerts')).change.length>=2);
+  const alertBackup=JSON.parse(vm.runInContext('JSON.stringify(backupPayload())',ctx));
+  assert(alertBackup.plan_alerts.change.length>=2);
+  vm.runInContext('syncSavedSnapshots()',ctx);
+  assert.equal(vm.runInContext("planAlerts.change.length",ctx),3);
+  // A stale cache does not overwrite the newer snapshot or generate false changes.
+  vm.runInContext("seed=[{...seed[0],start:'10:00',end:'11:00',status:'Registration required',checked_at:'2026-11-07T18:00:00Z'}];syncSavedSnapshots()",ctx);
+  assert.equal(vm.runInContext("planSnapshots.change.start",ctx),'11:30');
+  assert.equal(vm.runInContext("all().find(e=>e.id==='change').start",ctx),'11:30');
+  assert.equal(vm.runInContext("all().find(e=>e.id==='change').saved_copy",ctx),true);
+  assert.equal(vm.runInContext("planAlerts.change.length",ctx),3);
+  documentListeners.click({target:{closest(){return {dataset:{dismissChange:'change'}}}}});
+  assert.equal(vm.runInContext("Boolean(planAlerts.change)",ctx),false);
+  // Backups round-trip saved update notices and remain compatible with old files.
+  ctx.withAlerts=JSON.stringify(alertBackup);
+  vm.runInContext("saved=new Set();planStates={};planSnapshots={};planAlerts={};seed=[];restorePlans(withAlerts)",ctx);
+  assert.equal(vm.runInContext("planAlerts.change.length",ctx),3);
+  const oldBackup=JSON.parse(ctx.withAlerts);delete oldBackup.plan_alerts;ctx.oldBackup=JSON.stringify(oldBackup);
+  assert.doesNotThrow(()=>vm.runInContext('restorePlans(oldBackup)',ctx));
+  // The chosen visit date is validated and canceled exports do not download.
+  vm.runInContext("seed=[{...planFixtures[0],id:'long',title:'Long hunt',date:'2026-11-01',endDate:'2026-12-31',ongoing:true}];saved=new Set();view='discover'",ctx);
+  const prevCapture=captured;const selected=vm.runInContext("calendar(seed)",ctx);
+  elements['#visit-date'].value='2027-01-01';elements['#visit-form'].onsubmit({preventDefault(){}});
+  assert.match(elements['#visit-error'].textContent,/within/);assert.equal(captured,prevCapture);
+  elements['#visit-date'].value='2026-12-10';elements['#visit-form'].onsubmit({preventDefault(){}});await selected;
+  const chosenIcs=await captured.text();assert.match(chosenIcs,/DTSTART;VALUE=DATE:20261210/);assert.match(chosenIcs,/DTEND;VALUE=DATE:20261211/);
+  const captureAfter=captured;const abort=vm.runInContext("calendar(seed)",ctx);elements['#visit-cancel'].onclick();await abort;assert.equal(captured,captureAfter);
+  // Genuine overnight timed events retain their actual start/end timestamps.
+  vm.runInContext("seed=[{...planFixtures[0],id:'overnight',date:'2026-11-09',start:'23:00',end:'01:00',endDate:'2026-11-10',ongoing:false}];calendar(seed)",ctx);
+  const overnight=await captured.text();assert.match(overnight,/DTSTART;TZID=America\/Los_Angeles:20261109T230000/);assert.match(overnight,/DTEND;TZID=America\/Los_Angeles:20261110T010000/);
+  // A multi-event export asks separately; canceling the second downloads nothing.
+  vm.runInContext("seed=[{...planFixtures[0],id:'hunt1',date:'2026-11-01',endDate:'2026-12-31',ongoing:true},{...planFixtures[0],id:'hunt2',title:'Second hunt',date:'2026-11-01',endDate:'2026-12-31',ongoing:true}]",ctx);
+  const beforeBatch=captured;const batch=vm.runInContext('calendar(seed)',ctx);
+  elements['#visit-date'].value='2026-11-15';elements['#visit-form'].onsubmit({preventDefault(){}});
+  await Promise.resolve();assert.equal(elements['#visit-title'].textContent,'Second hunt');
+  elements['#visit-cancel'].onclick();await batch;assert.equal(captured,beforeBatch);
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });

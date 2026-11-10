@@ -48,7 +48,7 @@ def canonical(url):
     u = urlparse(str(url))
     if u.scheme not in ('http', 'https') or not u.hostname:
         raise ValueError('Invalid source URL')
-    return urlunparse((u.scheme, u.netloc, u.path.rstrip('/'), '', '', ''))
+    return urlunparse((u.scheme, u.netloc, u.path.rstrip('/'), '', u.query, ''))
 
 
 def walk(value):
@@ -115,7 +115,7 @@ def make_event(source, title, start, end, city, venue, url, description, *, stat
     result = dict(id='event-'+sha256(key.encode()).hexdigest()[:18], title=title[:180], date=st.date().isoformat(),
                   start=st.strftime('%H:%M'), end=en.strftime('%H:%M') if en else None, city=city, venue=clean(venue)[:220],
                   price='Free', min=min_age, max=max_age, cat=cat, icon=icon, color=color, source=source['name'],
-                  source_id=source['id'], status=status, url=canonical(url)+'/', desc=description[:600])
+                  source_id=source['id'], status=status, url=str(url), desc=description[:600])
     if en is not None and st.date() != en.date():
         result['endDate'] = en.date().isoformat()
         result['ongoing'] = (en.date()-st.date()).days > 1
@@ -289,7 +289,7 @@ def parse_opl(html, source):
             status = 'Registration closed'
         venue = location.get('name', 'Oakland Public Library')+' · '+(clean(d.get('locationDetails')) or ' '.join(str(address.get(k, '')) for k in ['number','street']))
         row = make_event(source, d['title'], d['start'], d['end'], city, venue,
-                         canonical(source['url'])+'/'+event['id'], desc, status=status, min_age=lo, max_age=hi)
+                         urlparse(source['url'])._replace(query='', fragment='').geturl().rstrip('/')+'/'+event['id']+'/', desc, status=status, min_age=lo, max_age=hi)
         row['cancelled'] = bool(d.get('isCancelled'))
         rows.append(row)
     return rows
@@ -367,7 +367,7 @@ def parse_510_rss(xml, now):
             continue
         seen.add(key)
         output.append(dict(id='guide-'+sha256(key.encode()).hexdigest()[:18],
-            title=title[:180], url=key+'/', published_at=published.isoformat(),
+            title=title[:180], url=url, published_at=published.isoformat(),
             checked_at=now.isoformat(), source='510 Families', source_id='510',
             summary=clean(item.findtext('description'))[:350], categories=categories[:8]))
     return sorted(output, key=lambda g:g['published_at'], reverse=True)[:8]
@@ -482,7 +482,7 @@ def dedupe(events):
     def keys(e):
         session = (e['date'], e['start'])
         result = {('url', url, *session) for url in event_urls(e)}
-        if normalized(e.get('venue', '')):
+        if normalized(e.get('venue', '')) and not urlparse(e['url']).query:
             result.add(('title', normalized(e['title']), normalized(e['venue']), e['city'], *session))
         return result
     groups = []
@@ -516,6 +516,61 @@ def dedupe(events):
     return sorted(output, key=lambda e: (bool(e.get('ongoing', e.get('endDate'))), e['date'], e['start'], e['title']))
 
 
+def reconcile_previous_ids(previous, fresh):
+    """Reuse a prior ID only for unambiguous, same-source matches.
+
+    A URL identifies an organizer event but may contain multiple time slots, so
+    rescheduling is matched only when there is one old and one new slot for
+    that URL/date. Library detail URLs have unique event IDs, permitting a date
+    move when there is exactly one old and new record for the URL overall.
+    """
+    def norm(value):
+        return re.sub(r'[^a-z0-9]', '', str(value).lower())
+    def event_key(e):
+        return (e.get('source_id'), canonical(e['url']), e['date'])
+    old_by, new_by = {}, {}
+    for e in previous:
+        old_by.setdefault(event_key(e), []).append(e)
+    for index, e in enumerate(fresh):
+        if not e.get('cancelled'):
+            new_by.setdefault(event_key(e), []).append((index,e))
+    matches = {}
+    for key, olds in old_by.items():
+        news = new_by.get(key, [])
+        if len(olds)==len(news)==1:
+            index, new = news[0]
+            if olds[0]['start'] != new['start'] and norm(olds[0]['title'])==norm(new['title']):
+                matches[index] = olds[0]['id']
+    # The old collector stripped query strings. Preserve an old saved ID only
+    # where one old and one fresh same-session record agree on title/venue.
+    def base_key(e):
+        u=urlparse(e['url'])
+        return (e.get('source_id'), u.scheme, u.netloc, u.path.rstrip('/'), e['date'], e['start'])
+    old_base,new_base={},{}
+    for e in previous:
+        old_base.setdefault(base_key(e),[]).append(e)
+    for index,e in enumerate(fresh):
+        if not e.get('cancelled'):new_base.setdefault(base_key(e),[]).append((index,e))
+    for key,olds in old_base.items():
+        news=new_base.get(key,[])
+        if len(olds)==len(news)==1:
+            index,new=news[0];old=olds[0]
+            if not urlparse(old['url']).query and urlparse(new['url']).query and norm(old['title'])==norm(new['title']) and norm(old['venue'])==norm(new['venue']) and old['city']==new['city']:
+                matches.setdefault(index,old['id'])
+    # Library event detail URLs are unique; handle an unambiguous date move.
+    old_lib,new_lib={},{}
+    for e in previous:
+        if e.get('source_id')=='opl':old_lib.setdefault(canonical(e['url']),[]).append(e)
+    for index,e in enumerate(fresh):
+        if e.get('source_id')=='opl' and not e.get('cancelled'):new_lib.setdefault(canonical(e['url']),[]).append((index,e))
+    for key,olds in old_lib.items():
+        news=new_lib.get(key,[])
+        if len(olds)==len(news)==1:
+            index,new=news[0];old=olds[0]
+            if old['date']!=new['date'] and norm(old['title'])==norm(new['title']):matches.setdefault(index,old['id'])
+    return matches
+
+
 def merge_events(previous, curated, fresh, now, full_sources=()):
     today = now.astimezone(PACIFIC).date().isoformat()
     previous = [e for e in previous if e.get('source_id') != 'bn']
@@ -524,16 +579,19 @@ def merge_events(previous, curated, fresh, now, full_sources=()):
     identity = {(url,e['date'],e['start']):e['id'] for e in previous+curated for url in event_urls(e)}
     aliases = {e['id']: e.get('also_listed_at', []) for e in previous+curated}
     history = {e['id']:e for e in curated+previous}
+    reconciled = reconcile_previous_ids(previous, fresh)
+    moved_ids = set(reconciled.values())
     live_opl_urls = {canonical(e['url']) for e in fresh if e['source_id'] in {'opl'}}
     cancelled = {(canonical(e['url']),e['date']) for e in fresh if e.get('cancelled')}
     by_id = {e['id']:dict(e) for e in previous if e.get('source_id') != 'curated'
              and e.get('source_id') not in full_sources
+             and e['id'] not in moved_ids
              and canonical(e['url']) not in live_opl_urls}
     fresh_rows = []
-    for event in fresh:
+    for index, event in enumerate(fresh):
         event = dict(event)
         key = (canonical(event['url']),event['date'],event['start'])
-        event['id'] = identity.get(key,event['id'])
+        event['id'] = reconciled.get(index,identity.get(key,event['id']))
         prior = history.get(event['id'], {})
         for field in ('alternate_ids', 'listings'):
             if prior.get(field):

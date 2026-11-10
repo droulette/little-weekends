@@ -101,7 +101,7 @@ events from a failed import. Hand-checked sources are labeled explicitly.
 Reload collection downloads the latest published JSON; it does not start a scan.
 
 Duplicates combine only for exact URL/verified-alias + date/start matches, or an
-exact normalized title + venue + city + date/start match. Different venues and
+exact normalized title + venue + city + date/start match when neither event URL has a query string. Different venues and
 sessions remain separate. The preferred source's check date is retained; another
 calendar's timestamp does not imply that the organizer was checked. Optional
 `listings` preserve other matched sources and `alternate_ids` preserve older IDs.
@@ -137,7 +137,7 @@ feed. The frontend also excludes it from older browser-cached collections.
   saved plans. Back-to-back sessions do not conflict. Ongoing activities and
   unknown end times receive a timing note rather than an invented overlap.
   These checks do not account for travel time or flexible drop-in attendance.
-- **Calendar:** use + Calendar on an event card to download that event, even before saving it.
+- **Calendar:** use + Calendar on an event card to download that event, even before saving it. For an ongoing activity, choose a visit date; the file contains a one-day all-day reminder, with hours to check at the organizer. Canceling any date selection cancels the whole export.
 - **Directions:** event cards and saved plans open a Google Maps directions query
   using the published venue and city. No location is collected by the app.
 - **Back up plans / Restore backup:** download a JSON file with saved outings,
@@ -172,3 +172,20 @@ Restore event makes the card visible again. Saved plans remain saved and visible
 in My plans. Hidden IDs follow known duplicate aliases and are included in new
 plan backups; older backups without hidden IDs still import. Hidden choices are
 local to the browser unless transferred via a backup.
+
+
+### Event changes and link safety
+
+Source URLs retain query parameters because they can identify distinct events.
+On refresh, prior IDs are reused for a moved session only when the source, URL,
+title and one-to-one slot match are sufficiently clear. Library detail URLs also
+allow an unambiguous date move. Multiple possible sessions are not guessed; a
+saved copy remains available and marked for checking when no match is safe.
+Saved event snapshots are compared on load for changes to date, start, end, venue
+and organizer status. Updates appear in My plans until dismissed, and are included
+in backups. An older cached source cannot overwrite a newer saved snapshot. These
+are in-app notices while using the browser, not push notifications; cancellations
+not reported by a source cannot be reliably identified.
+
+My plans ignores Discover's search and filters so saved outings remain visible.
+Discover excludes past dates even when the weekend-only filter is unchecked.

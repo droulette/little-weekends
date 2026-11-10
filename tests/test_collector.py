@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, merge_events, dedupe, validate_event, parse_510_rss, SOURCES, parse_alamedakids, library_page_url
+from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, make_event, merge_events, dedupe, validate_event, parse_510_rss, SOURCES, parse_alamedakids, library_page_url
 
 NOW=datetime(2026,11,4,20,tzinfo=timezone.utc)
 IKEA={'id':'ikea','name':'IKEA Emeryville'}
@@ -206,6 +206,68 @@ class CollectTests(unittest.TestCase):
         base.pop('listings')
         base['alternate_ids'] = [123]
         with self.assertRaises(ValueError): validate_event(base)
+
+    def test_query_parameters_are_preserved_and_distinct_events_stay_distinct(self):
+        source={'id':'alamedakids','name':'Test source'}
+        def build(title,venue,url):
+            return make_event(source,title,'2026-11-14T10:00','2026-11-14T11:00','Oakland',venue,url,'For kids')
+        a=build('Art A','Venue A','https://example.org/event?id=101')
+        b=build('Art B','Venue B','https://example.org/event?id=102')
+        self.assertEqual(a['url'],'https://example.org/event?id=101')
+        self.assertNotEqual(a['id'],b['id'])
+        self.assertEqual(len(dedupe([a,b])),2)
+        # Even identical titles and venues can refer to distinct query IDs.
+        b['title']=a['title'];b['venue']=a['venue']
+        self.assertEqual(len(dedupe([a,b])),2)
+
+    def test_same_day_single_session_reschedule_preserves_id(self):
+        source={'id':'opl','name':'Library'}
+        old=make_event(source,'Kids Art','2026-11-14T10:00','2026-11-14T11:00','Oakland','Temescal Branch','https://example.org/event/abc','Kids')
+        old['checked_at']=NOW.isoformat()
+        fresh=make_event(source,'Kids Art','2026-11-14T11:30','2026-11-14T12:30','Oakland','Temescal Branch','https://example.org/event/abc','Kids')
+        merged=merge_events([old],[],[fresh],NOW)
+        self.assertEqual(len(merged),1)
+        self.assertEqual(merged[0]['id'],old['id'])
+        self.assertEqual(merged[0]['start'],'11:30')
+
+    def test_library_unique_date_move_preserves_saved_id_across_next_refresh(self):
+        source={'id':'opl','name':'Library'}
+        old=make_event(source,'Kids Art','2026-11-14T10:00','2026-11-14T11:00','Oakland','Temescal Branch','https://example.org/event/abc','Kids')
+        old['checked_at']=NOW.isoformat()
+        fresh=make_event(source,'Kids Art','2026-11-21T10:00','2026-11-21T11:00','Oakland','Temescal Branch','https://example.org/event/abc','Kids')
+        first=merge_events([old],[],[fresh],NOW)
+        second=merge_events(first,[],[fresh],NOW+timedelta(days=1))
+        self.assertEqual(len(first),1)
+        self.assertEqual(first[0]['id'],old['id'])
+        self.assertEqual(second[0]['id'],old['id'])
+
+    def test_query_migration_does_not_guess_when_multiple_results(self):
+        source={'id':'alamedakids','name':'Calendar'}
+        def make(url):
+            return make_event(source,'Kids craft','2026-11-14T10:00','2026-11-14T11:00','Oakland','Venue',url,'Kids')
+        old=make('https://example.org/event');old['checked_at']=NOW.isoformat()
+        new=[make('https://example.org/event?id=1'),make('https://example.org/event?id=2')]
+        merged=merge_events([old],[],new,NOW)
+        self.assertEqual(len(merged),3)  # old retained cautiously; two distinct new listings
+        self.assertNotEqual(new[0]['id'],new[1]['id'])
+
+    def test_ambiguous_multiple_sessions_are_not_guessed(self):
+        events=parse_ikea(ikea_html(ikea_fixture()),IKEA)
+        old=events[0];old['checked_at']=NOW.isoformat()
+        other=copy.deepcopy(old);other.update(id='other-slot',start='15:00',end='16:00')
+        new=copy.deepcopy(old);new.update(id='moved-slot',start='13:00',end='14:00')
+        merged=merge_events([old,other],[],[new,other],NOW,full_sources={'ikea'})
+        self.assertNotIn(old['id'],[e['id'] for e in merged])
+
+    def test_query_migration_preserves_unambiguous_old_id(self):
+        source={'id':'alamedakids','name':'Test source'}
+        old=make_event(source,'Kids craft','2026-11-14T10:00','2026-11-14T11:00','Oakland','Venue','https://example.org/event','Kids')
+        old['checked_at']=NOW.isoformat()
+        new=make_event(source,'Kids craft','2026-11-14T10:00','2026-11-14T11:00','Oakland','Venue','https://example.org/event?id=123','Kids')
+        merged=merge_events([old],[],[new],NOW)
+        self.assertEqual(len(merged),1)
+        self.assertEqual(merged[0]['id'],old['id'])
+        self.assertEqual(merged[0]['url'],new['url'])
 
     def test_unsafe_urls_rejected(self):
         e=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0];e['url']='javascript:alert(1)'
