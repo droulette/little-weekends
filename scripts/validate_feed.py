@@ -13,8 +13,17 @@ def main():
         validate_event(event)
         ids.append(event['id'])
     assert len(ids) == len(set(ids)), 'Duplicate event IDs'
-    assert data['sources'], 'Missing source statuses'
-    assert all(s['id'] != 'bn' for s in data['sources']), 'Retired source present'
+    assert isinstance(data['sources'], list) and data['sources'], 'Missing source statuses'
+    source_ids=[]
+    for source in data['sources']:
+        assert isinstance(source,dict), 'Invalid source status'
+        assert all(isinstance(source.get(k),str) and source[k] for k in ['id','name','url','mode','state']), 'Invalid source metadata'
+        assert source['mode'] in {'automatic','manual'}, 'Invalid source mode'
+        assert source['state'] in {'ok','error','not_run','manual'}, 'Invalid source state'
+        canonical(source['url'])
+        source_ids.append(source['id'])
+    assert len(source_ids)==len(set(source_ids)), 'Duplicate source IDs'
+    assert 'bn' not in source_ids, 'Retired source present'
     for guide in data.get('guides', []):
         assert guide['source_id'] == '510'
         assert isinstance(guide['title'], str) and guide['title']

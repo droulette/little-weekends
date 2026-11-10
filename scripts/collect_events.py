@@ -15,7 +15,7 @@ import logging
 import re
 import time
 from pathlib import Path
-from urllib.parse import urljoin, urlparse, urlunparse
+from urllib.parse import unquote_plus, urljoin, urlparse, urlunparse
 from urllib.robotparser import RobotFileParser
 from zoneinfo import ZoneInfo
 import requests
@@ -48,7 +48,30 @@ def canonical(url):
     u = urlparse(str(url))
     if u.scheme not in ('http', 'https') or not u.hostname:
         raise ValueError('Invalid source URL')
-    return urlunparse((u.scheme, u.netloc, u.path.rstrip('/'), '', u.query, ''))
+    # Drop only well-known marketing parameters for matching. Keep the actual
+    # event URL untouched and preserve all other query values, including IDs.
+    tracking={'fbclid','gclid','dclid','msclkid','mc_cid','mc_eid','_ga','_gl','igshid'}
+    parts=[]
+    for part in u.query.split('&'):
+        name=unquote_plus(part.split('=',1)[0]).lower()
+        if part and not (name.startswith('utm_') or name in tracking):
+            parts.append(part)
+    return urlunparse((u.scheme, u.netloc, u.path.rstrip('/'), '', '&'.join(parts), ''))
+
+
+# Known Oakland Public Library branch names without the word "library".
+# Source: https://oaklandlibrary.org/faqs/ and the OPL location directory.
+OPL_BRANCH = re.compile(r'\b(?:81st Avenue|Asian|Brookfield|(?:C[eé]sar(?:\s+E\.)?\s+)?Ch[aá]vez|Dimond|Eastmont|Elmhurst|Fruitvale|Golden Gate|Lakeview|Martin (?:Luther |L\. )?King(?:,?\s*Jr\.?)?|Melrose|Montclair|Piedmont(?: Avenue)?|Rockridge|Temescal|West Oakland)\s+Branch\b', re.I)
+
+
+def allowed_library(event):
+    venue=str(event.get('venue') or '')
+    source=str(event.get('source') or '')
+    host=(urlparse(str(event.get('url') or '')).hostname or '').lower()
+    is_library=(bool(re.search(r'\blibrar(?:y|ies)\b',venue+' '+source,re.I))
+                or bool(OPL_BRANCH.search(venue)) or event.get('source_id')=='opl'
+                or host.endswith('.bibliocommons.com') or host.endswith('.libnet.info'))
+    return not is_library or bool(re.search(r'\bTemescal\b',venue,re.I))
 
 
 def walk(value):
@@ -612,7 +635,7 @@ def merge_events(previous, curated, fresh, now, full_sources=()):
             continue
         if event['source_id']=='curated' and 'ikea' in full_sources and 'ikea.com/us/en/stores/events/ikea-emeryville-ca/' in event['url']:
             continue
-        if re.search(r'\blibrary\b|\bbranch\b', event.get('venue',''), re.I) and not re.search(r'\bTemescal\b',event.get('venue',''),re.I):
+        if not allowed_library(event):
             continue
         validate_event(event)
         if (event.get('endDate') or event['date']) < today:

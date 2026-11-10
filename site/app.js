@@ -1,5 +1,13 @@
 function overlapsWeekend(e){let start=e.date<today()?today():e.date;let a=new Date(start+"T12:00:00Z"),b=new Date((e.endDate||e.date)+"T12:00:00Z");for(let i=0;i<7&&a<=b;i++,a.setUTCDate(a.getUTCDate()+1)){if([0,6].includes(a.getUTCDay()))return true}return false}
-function allowedLibrary(e){return !/\blibrary\b|\bbranch\b/i.test(e.venue||"")||/\bTemescal\b/i.test(e.venue||"")}
+// Use actual library signals and known Oakland branch names; a business with
+// "Branch" in its name is not automatically a library.
+const OPL_BRANCH=/\b(?:81st Avenue|Asian|Brookfield|(?:C[eé]sar(?:\s+E\.)?\s+)?Ch[aá]vez|Dimond|Eastmont|Elmhurst|Fruitvale|Golden Gate|Lakeview|Martin (?:Luther |L\. )?King(?:,?\s*Jr\.?)?|Melrose|Montclair|Piedmont(?: Avenue)?|Rockridge|Temescal|West Oakland)\s+Branch\b/i;
+function allowedLibrary(e){
+ const venue=e.venue||'',source=e.source||'';
+ let host='';try{host=new URL(e.url).hostname.toLowerCase()}catch{}
+ const library=/\blibrar(?:y|ies)\b/i.test(venue+' '+source)||OPL_BRANCH.test(venue)||e.source_id==='opl'||host.endsWith('.bibliocommons.com')||host.endsWith('.libnet.info');
+ return !library||/\bTemescal\b/i.test(venue);
+}
 let seed=[], sourceStatuses=[], guides=[], feedInfo=null;
 function allowedSource(e){return e.source_id!=='bn'&&!/(^|\.)barnesandnoble\.com$/i.test((()=>{try{return new URL(e.url).hostname}catch{return ''}})())}
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function read(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}let custom=read('lw-events',[]),saved=new Set(read('lw-saved',[])),view='discover',period='weekend';const all=()=>allEvents();function persist(){try{localStorage.setItem('lw-saved',JSON.stringify([...saved]));localStorage.setItem('lw-events',JSON.stringify(custom));localStorage.setItem('lw-plan-status',JSON.stringify(planStates));localStorage.setItem('lw-plan-snapshots',JSON.stringify(planSnapshots));localStorage.setItem('lw-plan-alerts',JSON.stringify(planAlerts));localStorage.setItem('lw-hidden',JSON.stringify([...hiddenIds]))}catch{toast('Browser storage unavailable; changes may not persist.')}}function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',3000)}function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}function weekend(offset=0){let d=new Date(today()+'T12:00:00Z'),day=d.getUTCDay();d.setUTCDate(d.getUTCDate()+(day===0?-1:(6-day+7)%7)+offset*7);let e=new Date(d);e.setUTCDate(d.getUTCDate()+1);return[d.toISOString().slice(0,10),e.toISOString().slice(0,10)]}function dateLabel(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}function clock(t){let[h,m]=t.split(':').map(Number);return `${h%12||12}${m?':'+String(m).padStart(2,'0'):''}${h>=12?'pm':'am'}`}function range(e){if(e.endDate)return e.hoursLabel||'Check daily hours';return e.end?clock(e.start)+'–'+clock(e.end):'Starts '+clock(e.start)}function safeUrl(s){try{let u=new URL(s);return /^https?:$/.test(u.protocol)?u.href:'#'}catch{return '#'}}
@@ -12,6 +20,17 @@ if(!planSnapshots||Array.isArray(planSnapshots)||typeof planSnapshots!=='object'
 if(!planAlerts||Array.isArray(planAlerts)||typeof planAlerts!=='object')planAlerts={};
 const seenAtOpen=read('lw-seen-events',null);
 let visitSeen=Array.isArray(seenAtOpen)?new Set(seenAtOpen):null;
+function pacificClock(){
+ const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
+ const part=type=>parts.find(x=>x.type===type)?.value;
+ return part('hour')+':'+part('minute');
+}
+function hasEnded(event,currentDate=today(),currentTime=pacificClock()){
+ if(!event.end)return false; // An unknown end time must not be invented.
+ if(event.endDate&&(event.ongoing??true))return false; // Daily closing hours are unknown.
+ const endDate=event.endDate||event.date;
+ return endDate<currentDate||(endDate===currentDate&&event.end<=currentTime);
+}
 function statusFor(id){return Object.hasOwn(planStates,id)&&Object.hasOwn(PLAN_STATES,planStates[id])?planStates[id]:'interested'}
 function validDate(value){return typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T12:00:00Z'))&&new Date(value+'T12:00:00Z').toISOString().slice(0,10)===value}
 function weekendFor(value){
@@ -188,7 +207,7 @@ function renderEventGroups(events, dates, card){
  }).join('');
  return sections+(ongoing.length?'<h3 class="day-heading">Ongoing &amp; multi-day activities</h3>'+ongoing.map(card).join(''):'');
 }
-function render(){let dates=period==='chosen'&&selectedWeekend?weekendFor(selectedWeekend):weekend(period==='next'?1:0);let events=all().filter(e=>view==='saved'?saved.has(e.id):e.saved_copy?false:period==='all'?(e.endDate||e.date)>=today():(e.endDate||e.date)>=(dates[0]<today()?today():dates[0])&&e.date<=dates[1]);const q=$('#search').value.toLowerCase(),age=$('#age').value;if(view!=='saved')events=events.filter(e=>(view==='saved'||$('#show-hidden').checked||!hiddenIds.has(e.id))&&(view==='saved'||!$('#new-only').checked||isNew(e))&&(view==='saved'||!$('#weekends-only').checked||overlapsWeekend(e))&&(view==='saved'||$('#include-unconfirmed').checked||readyToPlan(e))&&(!q||[e.title,e.venue,e.city,e.source].join(' ').toLowerCase().includes(q))&&(!$('#city').value||e.city===$('#city').value)&&(!$('#cost').value||e.price==='Free')&&(!$('#category').value||e.cat===$('#category').value)&&(!age||(e.min!==null&&e.max!==null&&(age==='both'?e.min<=4&&e.max>=6:e.min<=Number(age)&&e.max>=Number(age)))));
+function render(){let dates=period==='chosen'&&selectedWeekend?weekendFor(selectedWeekend):weekend(period==='next'?1:0);let events=all().filter(e=>view==='saved'?saved.has(e.id):e.saved_copy?false:period==='all'?(e.endDate||e.date)>=today():(e.endDate||e.date)>=(dates[0]<today()?today():dates[0])&&e.date<=dates[1]);const q=$('#search').value.toLowerCase(),age=$('#age').value;if(view!=='saved'){const currentDate=today(),currentTime=pacificClock();events=events.filter(e=>!hasEnded(e,currentDate,currentTime)&&(view==='saved'||$('#show-hidden').checked||!hiddenIds.has(e.id))&&(view==='saved'||!$('#new-only').checked||isNew(e))&&(view==='saved'||!$('#weekends-only').checked||overlapsWeekend(e))&&(view==='saved'||$('#include-unconfirmed').checked||readyToPlan(e))&&(!q||[e.title,e.venue,e.city,e.source].join(' ').toLowerCase().includes(q))&&(!$('#city').value||e.city===$('#city').value)&&(!$('#cost').value||e.price==='Free')&&(!$('#category').value||e.cat===$('#category').value)&&(!age||(e.min!==null&&e.max!==null&&(age==='both'?e.min<=4&&e.max>=6:e.min<=Number(age)&&e.max>=Number(age)))));}
 $('#discover-filters').classList.toggle('hide',view==='saved');
 $('#heading').textContent=view==='saved'?'Your saved outings':period==='all'?'Good things on the horizon':dateLabel(dates[0])+'–'+dateLabel(dates[1]);$('#result-count').textContent=events.length+' events · Pacific time';$('#count').textContent=saved.size?'('+saved.size+')':'';const newCount=seed.filter(e=>isNew(e)&&(e.endDate||e.date)>=today()).length;$('#new-count').textContent=newCount?newCount+' new since your last visit':'New listings will be marked here after your next visit.';$('#cards').innerHTML=renderEventGroups(events,dates,e=>`<article class="card"><div class="visual" style="background:${/^#[a-f0-9]{6}$/i.test(e.color||'')?e.color:'#e5eadd'}"><span class="symbol" aria-hidden="true">${esc(e.icon||'✳')}</span><div class="datebox">${e.endDate?'UNTIL':new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short'}).toUpperCase()}<strong>${e.endDate?esc(dateLabel(e.endDate)):Number(e.date.slice(-2))}</strong></div><button class="save ${saved.has(e.id)?'on':''}" data-save="${esc(e.id)}" aria-label="${saved.has(e.id)?'Unsave':'Save'} ${esc(e.title)}" aria-pressed="${saved.has(e.id)}">${saved.has(e.id)?'♥':'♡'}</button></div><div class="content"><div class="meta">${esc(e.city)} &nbsp;·&nbsp; ${esc(range(e))}</div><h3>${esc(e.title)}</h3><p class="venue">${esc(e.venue)}</p><p class="desc">${esc(e.desc)}</p><div class="badges">${isNew(e)?'<span class="badge new-badge">New since your last visit</span>':''}${saved.has(e.id)?`<span class="badge">${esc(PLAN_STATES[statusFor(e.id)])}</span>`:''}${planAlerts[e.id]?.length?'<span class="badge update-badge">Details changed · see My plans</span>':''}<span class="badge ${e.price==='Free'?'free':''}">${esc(e.price)}</span><span class="badge">${e.min===null?'Age range not listed':e.max===99?(e.min===0?'All ages':'Ages '+e.min+'+'):'Ages '+e.min+'–'+e.max}</span></div><div class="cardfoot"><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">${esc(e.source)} ↗</a><span class="status">${esc(eventFreshness(e).old?'Older listing · recheck':e.status)}</span></div><p class="checked ${eventFreshness(e).old?'old':''}">${esc(eventFreshness(e).label)}</p>${listingLinks(e)}<button class="card-calendar" data-calendar="${esc(e.id)}" aria-label="Add ${esc(e.title)} to calendar">+ Calendar</button><button class="hide-event" data-hide="${esc(e.id)}" aria-label="${hiddenIds.has(e.id)?'Restore':'Hide'} ${esc(e.title)}">${hiddenIds.has(e.id)?'Restore event':'Hide event'}</button><a class="directions" href="${esc(directionsUrl(e))}" target="_blank" rel="noopener noreferrer">Directions ↗</a></div></article>`);
 const plans=all().filter(e=>saved.has(e.id));
@@ -202,7 +221,10 @@ function chooseVisitDate(event){
  return new Promise(resolve=>{
   const modal=$('#visit-modal'),input=$('#visit-date'),form=$('#visit-form');
   const earliest=today()<=event.endDate&&today()>event.date?today():event.date;
-  input.min=earliest;input.max=event.endDate;input.value=earliest;
+  input.min=earliest;input.max=event.endDate;
+  const dates=period==='chosen'&&selectedWeekend?weekendFor(selectedWeekend):weekend(period==='next'?1:0);
+  const preferred=dates[0]>earliest?dates[0]:earliest;
+  input.value=view==='discover'&&period!=='all'&&preferred<=dates[1]&&preferred<=event.endDate?preferred:earliest;
   $('#visit-title').textContent=event.title;
   $('#visit-error').textContent='';
   let settled=false;
@@ -245,23 +267,45 @@ function renderGuides(){
  const recent=guides.filter(g=>g&&g.source_id==='510'&&safeUrl(g.url)!=='#'&&hoursSince(g.checked_at)<=336&&hoursSince(g.published_at)<=720).slice(0,8);
  $('#guide-links').innerHTML=recent.map(g=>`<div class="guide"><a href="${esc(safeUrl(g.url))}" target="_blank" rel="noopener noreferrer">${esc(g.title)} ↗</a><p class="small source-note">Article published ${esc(checkedLabel(g.published_at))}${hoursSince(g.checked_at)>168?' · Older cached guide':''}</p></div>`).join('')||'<p class="small source-note">No recent guide links available. Check the RSS source status for the latest attempt.</p>';
 }
-function validFeedEvent(e){return e&&typeof e.id==='string'&&typeof e.title==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(e.date)&&/^\d{2}:\d{2}$/.test(e.start)&&(e.end===null||/^\d{2}:\d{2}$/.test(e.end))&&typeof e.city==='string'&&safeUrl(e.url)!=='#'}
+function validFeedEvent(e){
+ const clock=t=>typeof t==='string'&&/^([01]\d|2[0-3]):[0-5]\d$/.test(t);
+ const text=k=>typeof e[k]==='string'&&e[k].length>0;
+ if(!e||typeof e!=='object'||!['id','title','city','venue','source','source_id','price','status'].every(text)||typeof e.desc!=='string')return false;
+ if(!validDate(e.date)||!clock(e.start)||(e.end!==null&&!clock(e.end))||safeUrl(e.url)==='#')return false;
+ if(e.endDate&&(!validDate(e.endDate)||e.endDate<e.date))return false;
+ if(e.end!==null&&(!e.endDate||e.endDate===e.date)&&e.end<=e.start)return false;
+ if(e.min===undefined||e.max===undefined||(e.min==null)!==(e.max==null))return false;
+ if(e.min!=null&&(!Number.isInteger(e.min)||!Number.isInteger(e.max)||e.min<0||e.max>99||e.min>e.max))return false;
+ if(e.alternate_ids!==undefined&&(!Array.isArray(e.alternate_ids)||e.alternate_ids.some(id=>typeof id!=='string')))return false;
+ if(e.listings!==undefined&&(!Array.isArray(e.listings)||e.listings.some(l=>!l||typeof l.source_id!=='string'||typeof l.source!=='string'||safeUrl(l.url)==='#')))return false;
+ return true;
+}
+function validFeed(feed){
+ if(!feed||feed.schema_version!==1||!Number.isFinite(Date.parse(feed.generated_at))||!Array.isArray(feed.events)||!Array.isArray(feed.sources)||!feed.sources.length)return false;
+ if(feed.guides!==undefined&&!Array.isArray(feed.guides))return false;
+ if((feed.guides||[]).some(g=>!g||typeof g.title!=='string'||typeof g.source_id!=='string'||safeUrl(g.url)==='#'||!Number.isFinite(Date.parse(g.published_at))||!Number.isFinite(Date.parse(g.checked_at))))return false;
+ if(feed.events.some(e=>!validFeedEvent(e))||new Set(feed.events.map(e=>e.id)).size!==feed.events.length)return false;
+ if(feed.sources.some(s=>!s||typeof s.id!=='string'||!s.id||typeof s.name!=='string'||!s.name||safeUrl(s.url)==='#'||!['automatic','manual'].includes(s.mode)||!['ok','error','not_run','manual'].includes(s.state)))return false;
+ return new Set(feed.sources.map(s=>s.id)).size===feed.sources.length;
+}
 async function loadFeed(){
  $('#feed-status').textContent='Loading the latest event collection…';
  $('#reload-feed').disabled=true;
  try{
   const response=await fetch('./data/events.json',{cache:'no-store'});
   if(!response.ok)throw Error('Feed unavailable');
-  const feed=await response.json();if(feed.schema_version!==1||!Array.isArray(feed.events)||!Array.isArray(feed.sources))throw Error('Invalid feed');
-  try{localStorage.setItem('lw-feed-cache',JSON.stringify(feed))}catch{}
-  seed=feed.events.filter(e=>validFeedEvent(e)&&allowedLibrary(e)&&allowedSource(e));sourceStatuses=feed.sources.filter(s=>s.id!=='bn');guides=feed.guides||[];feedInfo=feed;migrateSavedIds();syncSavedSnapshots();rememberSeen();
+  const feed=await response.json();if(!validFeed(feed))throw Error('Invalid feed');
+  seed=feed.events.filter(e=>allowedLibrary(e)&&allowedSource(e));sourceStatuses=feed.sources.filter(s=>s.id!=='bn');guides=feed.guides||[];migrateSavedIds();syncSavedSnapshots();
   const automatic=sourceStatuses.filter(s=>s.mode==='automatic'),attention=automatic.filter(s=>sourceHealth(s).attention);
   const overdue=hoursSince(feed.last_successful_collection)>48;
   $('#feed-status').textContent=`Updated ${checkedLabel(feed.generated_at)}. ${overdue?'Collection updates are overdue. ':''}${attention.length?attention.length+' automatic sources need attention: '+attention.map(s=>s.name).join(', ')+'. ':''}Each card shows its own check date. Unconfirmed ideas are hidden by default.`;
-  renderSources();render();
+  renderSources();render();feedInfo=feed;
+  // Replace the last known-good cache only after validation and rendering succeed.
+  try{localStorage.setItem('lw-feed-cache',JSON.stringify(feed))}catch{}
+  rememberSeen();
  }catch{
-  const cached=read('lw-feed-cache',null);
-  if(cached&&Array.isArray(cached.events)){seed=cached.events.filter(e=>validFeedEvent(e)&&allowedLibrary(e)&&allowedSource(e));sourceStatuses=(cached.sources||[]).filter(s=>s.id!=='bn');guides=cached.guides||[];feedInfo=cached;migrateSavedIds();syncSavedSnapshots();$('#feed-status').textContent='Showing the last collection saved on this browser. A new update could not be loaded; try again later.';renderSources();render();return}
+  const cached=read('lw-feed-cache',null),fallback=validFeed(cached)?cached:(validFeed(feedInfo)?feedInfo:null);
+  if(fallback){seed=fallback.events.filter(e=>allowedLibrary(e)&&allowedSource(e));sourceStatuses=fallback.sources.filter(s=>s.id!=='bn');guides=fallback.guides||[];feedInfo=fallback;migrateSavedIds();syncSavedSnapshots();$('#feed-status').textContent='Showing the last collection saved on this browser. A new update could not be loaded; try again later.';renderSources();render();return}
   $('#feed-status').textContent='Could not load the event collection. Your saved data is still in this browser. Try refreshing the page. If you downloaded the project, serve the site folder with a local web server.';
   render();
  }finally{$('#reload-feed').disabled=false}

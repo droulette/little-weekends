@@ -286,6 +286,44 @@ setImmediate(async()=>{
   elements['#visit-date'].value='2026-11-15';elements['#visit-form'].onsubmit({preventDefault(){}});
   await Promise.resolve();assert.equal(elements['#visit-title'].textContent,'Second hunt');
   elements['#visit-cancel'].onclick();await batch;assert.equal(captured,beforeBatch);
+  // Ended events disappear based on Pacific time; unknown endings and ongoing listings remain.
+  ctx.Date=class extends Date {constructor(...args){super(...(args.length?args:['2026-11-07T23:00:00Z']))}static now(){return Date.parse('2026-11-07T23:00:00Z')}};
+  vm.runInContext("seed=[{...planFixtures[0],id:'ended',title:'Ended',date:'2026-11-07',start:'09:00',end:'10:00',checked_at:'2026-11-07T20:00:00Z'},{...planFixtures[0],id:'active',title:'Still running',date:'2026-11-07',start:'14:00',end:'16:00',checked_at:'2026-11-07T20:00:00Z'},{...planFixtures[0],id:'unknown',title:'Unknown end',date:'2026-11-07',start:'09:00',end:null,checked_at:'2026-11-07T20:00:00Z'},{...planFixtures[0],id:'all-day',title:'Open across days',date:'2026-11-01',endDate:'2026-12-31',ongoing:true,start:'09:00',end:'10:00',checked_at:'2026-11-07T20:00:00Z'}];custom=[];saved=new Set(['ended']);hiddenIds=new Set();planSnapshots={};planAlerts={};view='discover';period='weekend';$('#cost').value='free';$('#city').value='';$('#age').value='';$('#category').value='';$('#search').value='';$('#weekends-only').checked=true;$('#show-hidden').checked=false;$('#include-unconfirmed').checked=false;$('#new-only').checked=false;render()",ctx);
+  assert(!elements['#cards'].innerHTML.includes('data-save="ended"'));
+  assert.match(elements['#cards'].innerHTML,/Still running/);assert.match(elements['#cards'].innerHTML,/Unknown end/);assert.match(elements['#cards'].innerHTML,/Open across days/);
+  vm.runInContext("view='saved';render()",ctx);assert.match(elements['#cards'].innerHTML,/Ended/);
+  assert.equal(vm.runInContext("pacificClock()",ctx),'15:00');
+  assert.equal(vm.runInContext("hasEnded({date:'2026-11-07',start:'09:00',end:'15:00'})",ctx),true);
+  assert.equal(vm.runInContext("hasEnded({date:'2026-11-06',endDate:'2026-11-07',ongoing:false,start:'23:00',end:'16:00'})",ctx),false);
+  // A selected future weekend is the default visit, clamped to activity dates.
+  vm.runInContext("view='discover';period='chosen';selectedWeekend='2026-12-12';seed=[{...planFixtures[0],id:'long',title:'Long hunt',date:'2026-11-01',endDate:'2026-12-31',ongoing:true}]",ctx);
+  const visit=vm.runInContext('calendar(seed)',ctx);assert.equal(elements['#visit-date'].value,'2026-12-12');
+  elements['#visit-cancel'].onclick();await visit;
+  vm.runInContext("seed[0].date='2026-12-13'",ctx);
+  const sundayVisit=vm.runInContext('calendar(seed)',ctx);assert.equal(elements['#visit-date'].value,'2026-12-13');
+  elements['#visit-cancel'].onclick();await sundayVisit;
+  // Library rules distinguish actual library branches from an unrelated venue.
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Olive Branch Cafe · Oakland',source:'Calendar',url:'https://example.org/'})",ctx),true);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Rockridge Branch · Oakland',source:'Calendar',url:'https://example.org/'})",ctx),false);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Temescal Branch',source:'Oakland Public Library',url:'https://oaklandlibrary.bibliocommons.com/'})",ctx),true);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Other Branch · Oakland',source:'Oakland Public Library',url:'https://example.org/'})",ctx),false);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Olive Branch Cafe',source:'Calendar',url:'https://otherlib.bibliocommons.com/event/1'})",ctx),false);
+  // Never overwrite a good cache with malformed source metadata or event rows.
+  storage.set('lw-feed-cache',JSON.stringify(feed));
+  ctx.fetch=async()=>({ok:true,json:async()=>({schema_version:1,generated_at:'2026-11-07T20:00:00Z',events:[],sources:[null]})});
+  await vm.runInContext('loadFeed()',ctx);
+  assert.match(elements['#feed-status'].textContent,/last collection saved/);
+  assert.equal(JSON.parse(storage.get('lw-feed-cache')).sources[0].id,'test');
+  assert.equal(vm.runInContext('validFeed(feedInfo)',ctx),true);
+  ctx.fetch=async()=>({ok:true,json:async()=>({...feed,events:[{id:'bad'}]})});
+  await vm.runInContext('loadFeed()',ctx);assert.equal(JSON.parse(storage.get('lw-feed-cache')).sources[0].id,'test');
+  storage.set('lw-feed-cache',JSON.stringify({schema_version:1,generated_at:'2026-11-07T20:00:00Z',events:[],sources:[null]}));
+  vm.runInContext('feedInfo=null',ctx);await vm.runInContext('loadFeed()',ctx);
+  assert.match(elements['#feed-status'].textContent,/Could not load/);
+  assert.equal(vm.runInContext("validFeedEvent({...planFixtures[0],end:'99:30'})",ctx),false);
+  assert.equal(vm.runInContext("validFeedEvent({...planFixtures[0],end:'08:30'})",ctx),false);
+  const currentFeed=JSON.parse(fs.readFileSync(path.join(root,'site/data/events.json'),'utf8'));
+  ctx.currentFeed=currentFeed;assert.equal(vm.runInContext('validFeed(currentFeed)',ctx),true);
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });

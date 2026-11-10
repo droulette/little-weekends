@@ -189,3 +189,24 @@ not reported by a source cannot be reliably identified.
 
 My plans ignores Discover's search and filters so saved outings remain visible.
 Discover excludes past dates even when the weekend-only filter is unchecked.
+
+
+### Reliability refinements
+
+- Ongoing event calendar exports default to the first available day of the
+  currently selected weekend. My plans and Looking ahead use the earliest
+  available date. Users can choose any valid visit date.
+- Discover excludes events whose explicit end time has passed in Pacific time.
+  Events with unknown end times and ongoing activities remain visible. Saved
+  plans are retained regardless of whether they have ended.
+- Event identity ignores a short allowlist of marketing parameters such as
+  `utm_*` and `fbclid`. Other query parameters remain in matching keys, and
+  organizer links retain their original full URLs.
+- Temescal-only library filtering recognizes actual library metadata, library
+  hosting domains, and known Oakland branch names rather than excluding every
+  venue with the word Branch. An unknown library without those signals may need
+  its venue metadata corrected.
+- A downloaded feed must pass source, event, guide, timestamp, and duplicate-ID
+  checks and render successfully before it replaces the last good cache. Invalid
+  fresh feeds fall back to a validated cache; a previously corrupted cache is
+  rejected and shown as a load failure instead of crashing the page.

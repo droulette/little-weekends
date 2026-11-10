@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, make_event, merge_events, dedupe, validate_event, parse_510_rss, SOURCES, parse_alamedakids, library_page_url
+from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, make_event, merge_events, dedupe, validate_event, allowed_library, canonical, parse_510_rss, SOURCES, parse_alamedakids, library_page_url
 
 NOW=datetime(2026,11,4,20,tzinfo=timezone.utc)
 IKEA={'id':'ikea','name':'IKEA Emeryville'}
@@ -268,6 +268,44 @@ class CollectTests(unittest.TestCase):
         self.assertEqual(len(merged),1)
         self.assertEqual(merged[0]['id'],old['id'])
         self.assertEqual(merged[0]['url'],new['url'])
+
+    def test_tracking_parameters_do_not_duplicate_events_or_strip_meaningful_ids(self):
+        source={'id':'alamedakids','name':'Calendar'}
+        def build(url):return make_event(source,'Kids craft','2026-11-14T10:00','2026-11-14T11:00','Oakland','Craft Studio',url,'Kids')
+        a=build('https://example.org/craft?id=7&utm_source=calendar&fbclid=abc')
+        b=build('https://example.org/craft?id=7&utm_source=newsletter')
+        c=build('https://example.org/craft?id=8&utm_source=calendar')
+        self.assertEqual(len(dedupe([a,b,c])),2)
+        self.assertEqual(a['id'],b['id'])
+        self.assertNotEqual(a['id'],c['id'])
+        self.assertIn('utm_source=calendar',a['url'])  # Organizer link remains intact.
+        self.assertEqual(canonical(a['url']),'https://example.org/craft?id=7')
+
+    def test_matching_normalization_keeps_existing_saved_id_across_tracking_change(self):
+        source={'id':'alamedakids','name':'Calendar'}
+        def build(url):return make_event(source,'Kids craft','2026-11-14T10:00','2026-11-14T11:00','Oakland','Craft Studio',url,'Kids')
+        old=build('https://example.org/craft?id=7&utm_source=old')
+        old['id']='existing-saved-id';old['checked_at']=NOW.isoformat()
+        new=build('https://example.org/craft?id=7&utm_source=new')
+        merged=merge_events([old],[],[new],NOW)
+        self.assertEqual(len(merged),1)
+        self.assertEqual(merged[0]['id'],'existing-saved-id')
+        self.assertIn('utm_source=new',merged[0]['url'])
+
+    def test_nonlibrary_branch_venue_allowed_but_libraries_remain_temescal_only(self):
+        def event(venue,source='Calendar',source_id='alamedakids',url='https://example.org/event'):
+            e=make_event({'id':source_id,'name':source},'Kids craft','2026-11-14T10:00','2026-11-14T11:00','Oakland',venue,url,'Kids')
+            e['checked_at']=NOW.isoformat();return e
+        cafe=event('Olive Branch Cafe · Oakland')
+        rockridge=event('Rockridge Branch · Oakland')
+        other=event('Other Library · Oakland')
+        temescal=event('Temescal Branch · Oakland',source='Oakland Public Library',source_id='opl')
+        self.assertTrue(allowed_library(cafe))
+        self.assertFalse(allowed_library(rockridge))
+        self.assertFalse(allowed_library(other))
+        self.assertTrue(allowed_library(temescal))
+        for value,expected in [(cafe,1),(rockridge,0),(other,0),(temescal,1)]:
+            self.assertEqual(len(merge_events([],[],[value],NOW)),expected)
 
     def test_unsafe_urls_rejected(self):
         e=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0];e['url']='javascript:alert(1)'
