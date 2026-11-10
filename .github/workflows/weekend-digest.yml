@@ -1,0 +1,48 @@
+name: Weekend digest
+
+on:
+  workflow_dispatch:
+    inputs:
+      send_email:
+        description: 'Send email using configured secrets (leave off for preview)'
+        type: boolean
+        default: false
+  schedule:
+    - cron: '17 8 * * 5'
+      timezone: America/Los_Angeles
+
+permissions:
+  contents: read
+
+concurrency:
+  group: little-weekends-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    # Scheduled mail is disabled until the repository variable is enabled.
+    if: github.event_name == 'workflow_dispatch' || vars.DIGEST_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Generate digest preview
+        run: python scripts/weekend_digest.py > digest-preview.txt
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekend-digest-preview
+          path: digest-preview.txt
+          retention-days: 7
+      - name: Send digest
+        if: github.event_name == 'schedule' || inputs.send_email == true
+        env:
+          SMTP_HOST: ${{ secrets.DIGEST_SMTP_HOST }}
+          SMTP_USER: ${{ secrets.DIGEST_SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.DIGEST_SMTP_PASSWORD }}
+          DIGEST_TO: ${{ secrets.DIGEST_TO }}
+        run: python scripts/weekend_digest.py --send

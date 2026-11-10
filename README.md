@@ -85,6 +85,14 @@ Saved plans are local to the browser and website address. Open tabs for the same
 
 The weekend digest preview is a separate, in-app summary of up to eight free published events for the current coming weekend. It excludes events hidden in this browser and already-ended events; it does not apply the Discover filters or include personal additions. It uses the most recently loaded feed, including a clearly labeled cached copy when offline. It does not send email or schedule delivery.
 
+### Optional email delivery
+
+The separate **Weekend digest** workflow can send a plain-text digest using an SMTP account with SSL on port 465. No email is sent by default. Its Friday 8:17 a.m. Pacific schedule runs only after the repository variable `DIGEST_ENABLED` is set to `true`. Scheduled GitHub runs can be delayed, and inactive public-repository schedules can be disabled. The email uses the public feed and cannot see browser-only hidden events, saved plans, or filters; it includes a reminder. A feed older than 48 hours is not sent. Each card includes its source status and last-check timestamp.
+
+To configure sending, add repository Actions secrets `DIGEST_SMTP_HOST`, `DIGEST_SMTP_USER`, `DIGEST_SMTP_PASSWORD`, and `DIGEST_TO`. For example, Gmail uses `smtp.gmail.com`; Google may require an app password and two-step verification. Never put passwords in the repository. Run the workflow manually with **Send email** unchecked first and download the preview artifact. A manual run with **Send email** checked sends one copy; repeated runs can send duplicates. Once satisfied, set the Actions variable `DIGEST_ENABLED` to `true` for scheduled delivery. Set it to `false` to stop scheduled sends. The workflow does not subscribe other users or share addresses.
+
+Run `python scripts/weekend_digest.py` to preview locally. `--send` requires the four SMTP values in environment variables (`SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, `DIGEST_TO`); it sends real email and should only be used when intended.
+
 ## Reliability and maintenance
 
 The **Sources** page includes a collection dashboard for the latest run. The collector compares the current public feed with the previous one by event IDs and known aliases, then records counts for new records, past events removed, other removals, and previously listed events not rechecked in this run. “Other removals” is not a cancellation count. A retained event can be a manual listing or an earlier result that was not reconfirmed. Merges can affect the comparison, and the dashboard does not store a history of earlier runs. Source counts are raw matches before deduplication; the 510 count is guides rather than events. Failed scans and successful scans with no matching results are distinct. Cached dashboards show the timestamp of their collection.

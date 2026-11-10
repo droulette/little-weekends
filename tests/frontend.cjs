@@ -324,6 +324,7 @@ setImmediate(async()=>{
   elements['#visit-cancel'].onclick();await sundayVisit;
   // Library rules distinguish actual library branches from an unrelated venue.
   assert.equal(vm.runInContext("allowedLibrary({venue:'Olive Branch Cafe · Oakland',source:'Calendar',url:'https://example.org/'})",ctx),true);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Manor Branch, 1241 Manor Blvd.',city:'San Leandro',source:'Calendar',url:'https://example.org/'})",ctx),false);
   assert.equal(vm.runInContext("allowedLibrary({venue:'Rockridge Branch · Oakland',source:'Calendar',url:'https://example.org/'})",ctx),false);
   assert.equal(vm.runInContext("allowedLibrary({venue:'Temescal Branch',source:'Oakland Public Library',url:'https://oaklandlibrary.bibliocommons.com/'})",ctx),true);
   assert.equal(vm.runInContext("allowedLibrary({venue:'Other Branch · Oakland',source:'Oakland Public Library',url:'https://example.org/'})",ctx),false);

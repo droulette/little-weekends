@@ -69,7 +69,7 @@ def allowed_library(event):
     source=str(event.get('source') or '')
     host=(urlparse(str(event.get('url') or '')).hostname or '').lower()
     is_library=(bool(re.search(r'\blibrar(?:y|ies)\b',venue+' '+source,re.I))
-                or bool(OPL_BRANCH.search(venue)) or event.get('source_id')=='opl'
+                or bool(OPL_BRANCH.search(venue)) or (event.get('city')=='San Leandro' and bool(re.search(r'\bManor Branch\b',venue,re.I))) or event.get('source_id')=='opl'
                 or host.endswith('.bibliocommons.com') or host.endswith('.libnet.info'))
     return not is_library or bool(re.search(r'\bTemescal\b',venue,re.I))
 

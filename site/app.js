@@ -5,7 +5,7 @@ const OPL_BRANCH=/\b(?:81st Avenue|Asian|Brookfield|(?:C[eé]sar(?:\s+E\.)?\s+)?
 function allowedLibrary(e){
  const venue=e.venue||'',source=e.source||'';
  let host='';try{host=new URL(e.url).hostname.toLowerCase()}catch{}
- const library=/\blibrar(?:y|ies)\b/i.test(venue+' '+source)||OPL_BRANCH.test(venue)||e.source_id==='opl'||host.endsWith('.bibliocommons.com')||host.endsWith('.libnet.info');
+ const library=/\blibrar(?:y|ies)\b/i.test(venue+' '+source)||OPL_BRANCH.test(venue)||(e.city==='San Leandro'&&/\bManor Branch\b/i.test(venue))||e.source_id==='opl'||host.endsWith('.bibliocommons.com')||host.endsWith('.libnet.info');
  return !library||/\bTemescal\b/i.test(venue);
 }
 let seed=[], sourceStatuses=[], guides=[], feedInfo=null, collectionSummary=null, collectionRunAt=null, collectionCached=false;

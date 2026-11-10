@@ -23,6 +23,11 @@ def ikea_html(item):
     return '<script type="text/hydrate">'+json.dumps({'events':[item]})+'</script>'
 
 class CollectTests(unittest.TestCase):
+    def test_san_leandro_manor_library_is_not_a_temescal_event(self):
+        event={'venue':'Manor Branch, 1241 Manor Blvd.','city':'San Leandro','source':'Local calendar','url':'https://example.org'}
+        self.assertFalse(allowed_library(event))
+        self.assertTrue(allowed_library({**event,'venue':'Olive Branch Cafe'}))
+
     def test_collection_summary_distinguishes_expiration_retention_and_aliases(self):
         template=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0]
         def row(id, day='2026-11-28', checked=NOW):
