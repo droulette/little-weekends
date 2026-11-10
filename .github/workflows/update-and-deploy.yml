@@ -42,8 +42,8 @@ jobs:
           cache: npm
       - name: Install browser test dependencies
         run: npm ci
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium and Firefox
+        run: npx playwright install --with-deps chromium firefox
       - name: Run browser journey
         run: npm run test:browser
       - name: Upload browser test diagnostics

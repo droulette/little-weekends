@@ -11,11 +11,14 @@ const fixture={
   guides:[]
 };
 
-test('save a plan, reload, and see collection dashboard',async ({page})=>{
+test.beforeEach(async ({page})=>{
   await page.clock.setFixedTime(new Date('2026-11-04T20:00:00Z'));
   await page.route('**/data/events.json',route=>route.fulfill({json:fixture}));
   await page.route('https://fonts.googleapis.com/**',route=>route.abort());
   await page.goto('/',{waitUntil:'domcontentloaded'});
+});
+
+test('save a plan, reload, and see collection dashboard',async ({page})=>{
   const cards=page.locator('#cards');
   await expect(cards.getByRole('heading',{name:'Family craft day'})).toBeVisible();
   await cards.getByRole('button',{name:'Save Family craft day'}).click();
@@ -29,4 +32,30 @@ test('save a plan, reload, and see collection dashboard',async ({page})=>{
   await page.getByRole('button',{name:'Sources',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Collection dashboard'})).toBeVisible();
   await expect(page.locator('#sources-view')).toContainText('1 events found in latest scan');
+});
+
+test('download a calendar event with the right date and time',async ({page})=>{
+  const button=page.locator('#cards').getByRole('button',{name:'Add Family craft day to calendar'});
+  await expect(button).toBeVisible();
+  const [download]=await Promise.all([page.waitForEvent('download'),button.click()]);
+  expect(download.suggestedFilename()).toBe('little-weekends.ics');
+  const stream=await download.createReadStream();
+  const chunks=[];for await(const chunk of stream)chunks.push(chunk);
+  const calendar=Buffer.concat(chunks).toString('utf8').replace(/\r\n /g,'');
+  expect(calendar).toContain('BEGIN:VCALENDAR');
+  expect(calendar).toContain('DTSTART;TZID=America/Los_Angeles:20261107T100000');
+  expect(calendar).toContain('DTEND;TZID=America/Los_Angeles:20261107T110000');
+  expect(calendar).toContain('SUMMARY:Family craft day');
+  expect(calendar).toContain('END:VCALENDAR');
+});
+
+test('phone layout fits and main controls can be used',async ({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='mobile-chromium','Phone-sized viewport only');
+  await expect(page.locator('#cards').getByRole('heading',{name:'Family craft day'})).toBeVisible();
+  const dimensions=await page.evaluate(()=>({screen:document.documentElement.clientWidth,content:document.documentElement.scrollWidth}));
+  expect(dimensions.content).toBeLessThanOrEqual(dimensions.screen);
+  await page.getByRole('button',{name:'Sources',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Collection dashboard'})).toBeVisible();
+  const sourcesDimensions=await page.evaluate(()=>({screen:document.documentElement.clientWidth,content:document.documentElement.scrollWidth}));
+  expect(sourcesDimensions.content).toBeLessThanOrEqual(sourcesDimensions.screen);
 });
