@@ -353,15 +353,20 @@
     "cat": "Celebrations",
     "icon": "🎉",
     "color": "#f0e3ca",
-    "source": "Festival organizer",
+    "source": "Castro Valley/Eden Area Chamber · organizer",
     "source_id": "curated",
     "status": "Organizer and local calendar",
     "url": "https://www.edenareachamber.com/cvlightparade/",
-    "desc": "November 14: family festivities, bands and kids activities from 3–9pm; the light parade starts after dark. Free admission confirmed by Alameda Kids; date and festival hours confirmed by the Chamber. Castro Valley Boulevard between Lake Chabot Road and Redwood Road closes for the event.",
-    "checked_at": "2026-11-05T16:29:11.996940+00:00",
+    "desc": "Holiday Sweet Street Spectacular: family festivities, bands and kids activities November 14, 3–9pm. The light parade begins after dark, not necessarily at 3pm. Alameda Kids confirms free admission. Castro Valley Boulevard closes between Lake Chabot Road and Redwood Road. Vendor spaces being sold out does not mean public attendance is full.",
+    "checked_at": "2026-11-10T16:48:09.050633+00:00",
     "also_listed_at": [
       "https://www.alamedakids.org/castro-valley-%E2%80%93-castro-valley-light-parade-0/"
-    ]
+    ],
+    "evidence_urls": [
+      "https://www.edenareachamber.com/cvlightparade/",
+      "https://alamedakids.org/castro-valley-%E2%80%93-castro-valley-light-parade-0"
+    ],
+    "price_basis": "Alameda Kids explicitly lists Cost: Free for the family parade; vendor fees are separate."
   },
   {
     "id": "sl-holidays-2026",
@@ -399,12 +404,16 @@
     "cat": "Celebrations",
     "icon": "🎉",
     "color": "#f0e3ca",
-    "source": "Festival organizer",
+    "source": "Downtown San Leandro · organizer",
     "source_id": "curated",
     "status": "Organizer listing",
     "url": "https://downtownsanleandro.com/special-events/",
-    "desc": "Free family night market on November 13, 4–9pm at 1446 Washington Avenue. Music, vendors and food; purchases cost extra. The organizer’s heading and main description say November 13, although one leftover line incorrectly says October 13.",
-    "checked_at": "2026-11-05T16:29:11.996940+00:00"
+    "desc": "Free family night market November 13, 4–9pm at 1446 Washington Avenue. Music, vendors and food; purchases cost extra. The organizer’s current 2026 heading and main description confirm November 13; a leftover line still says October 13. This Friday event appears when the weekend-only filter is turned off.",
+    "checked_at": "2026-11-10T16:48:09.050633+00:00",
+    "price_basis": "Organizer explicitly calls this a FREE family event with no admission charge listed.",
+    "evidence_urls": [
+      "https://downtownsanleandro.com/special-events/"
+    ]
   },
   {
     "id": "emeryville-tree-parade-2026",
