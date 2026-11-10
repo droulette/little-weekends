@@ -341,6 +341,17 @@ setImmediate(async()=>{
   assert.equal(vm.runInContext('saved.size',startup),0);
   assert.equal(vm.runInContext("Object.hasOwn(planSnapshots,'dated')&&!Object.hasOwn(planSnapshots,'bad')",startup),true);
   assert.equal(vm.runInContext("Object.hasOwn(planAlerts,'dated')",startup),false);
+  // An orphaned saved ID stays recoverable and can be removed without affecting real plans.
+  vm.runInContext("seed=[{...planFixtures[0]}];custom=[];saved=new Set(['dated','missing-id']);planSnapshots={};planStates={};planAlerts={};view='saved';render()",ctx);
+  assert.equal(elements['#count'].textContent,'(2)');
+  assert.match(elements['#cards'].innerHTML,/Saved event details unavailable/);
+  assert.match(elements['#cards'].innerHTML,/data-remove-missing="missing-id"/);
+  documentListeners.click({target:{closest(){return {dataset:{removeMissing:'dated'}}}}});
+  assert.equal(vm.runInContext("saved.has('dated')",ctx),true);
+  documentListeners.click({target:{closest(){return {dataset:{removeMissing:'missing-id'}}}}});
+  assert.equal(vm.runInContext("saved.has('missing-id')",ctx),false);
+  assert.equal(elements['#count'].textContent,'(1)');
+  assert.match(fs.readFileSync(path.join(root,'site/index.html'),'utf8'),/id="include-unconfirmed" checked/);
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });
