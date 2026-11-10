@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, make_event, merge_events, dedupe, validate_event, allowed_library, canonical, parse_510_rss, SOURCES, parse_alamedakids, library_page_url
+from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, make_event, merge_events, dedupe, validate_event, allowed_library, canonical, parse_510_rss, SOURCES, parse_alamedakids, library_page_url, collection_summary
 
 NOW=datetime(2026,11,4,20,tzinfo=timezone.utc)
 IKEA={'id':'ikea','name':'IKEA Emeryville'}
@@ -23,6 +23,22 @@ def ikea_html(item):
     return '<script type="text/hydrate">'+json.dumps({'events':[item]})+'</script>'
 
 class CollectTests(unittest.TestCase):
+    def test_collection_summary_distinguishes_expiration_retention_and_aliases(self):
+        template=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0]
+        def row(id, day='2026-11-28', checked=NOW):
+            return {**copy.deepcopy(template),'id':id,'date':day,'checked_at':checked.isoformat()}
+        previous=[row('same'),row('old-id'),row('expired','2026-11-03'),row('removed'),row('retained')]
+        current=[row('same'),{**row('new-id'),'alternate_ids':['old-id']},row('retained',checked=NOW-timedelta(days=2)),row('added')]
+        self.assertEqual(collection_summary(previous,current,NOW),{
+            'previous_count':5,'current_count':4,'added':1,'removed_expired':1,
+            'removed_other':1,'retained_unchecked':1})
+
+    def test_collection_summary_empty_and_missing_checked_timestamp(self):
+        event=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0]
+        result=collection_summary([event],[event],NOW)
+        self.assertEqual(result['retained_unchecked'],1)
+        self.assertEqual(collection_summary([],[],NOW)['added'],0)
+
     def test_rejects_rows_the_browser_cannot_render(self):
         event=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0]
         for key in ('source','status','cat','desc','end','min','max'):

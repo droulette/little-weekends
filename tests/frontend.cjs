@@ -23,6 +23,19 @@ vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.j
 setImmediate(async()=>{
  try{
   await vm.runInContext('loadFeed()',ctx);
+  assert.match(elements['#sources-view'].innerHTML,/Run-to-run counts will appear/);
+  ctx.feedWithSummary={...feed,collection_summary:{previous_count:4,current_count:3,added:1,removed_expired:1,removed_other:1,retained_unchecked:1}};
+  ctx.fetch=async()=>({ok:true,json:async()=>ctx.feedWithSummary});
+  await vm.runInContext('loadFeed()',ctx);
+  assert.match(elements['#sources-view'].innerHTML,/Collection dashboard/);
+  assert.match(elements['#sources-view'].innerHTML,/Past events removed/);
+  assert.match(elements['#sources-view'].innerHTML,/3 events found in latest scan/);
+  ctx.fetch=async()=>{throw Error('offline')};await vm.runInContext('loadFeed()',ctx);
+  assert.match(elements['#sources-view'].innerHTML,/Showing a saved collection/);
+  assert.match(elements['#sources-view'].innerHTML,/Past events removed/);
+  assert.equal(vm.runInContext("validSummary({...collectionSummary,added:-1})",ctx),false);
+  ctx.fetch=async()=>({ok:true,json:async()=>feed});
+  await vm.runInContext('loadFeed()',ctx);
   vm.runInContext(`$('#weekends-only').checked=true;$('#cost').value='free';period='all';render();`,ctx);
   assert.equal(vm.runInContext("overlapsWeekend({date:'2026-11-06'})",ctx),false);
   assert.equal(vm.runInContext("overlapsWeekend({date:'2026-11-07'})",ctx),true);

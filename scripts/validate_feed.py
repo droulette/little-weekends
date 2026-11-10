@@ -13,6 +13,14 @@ def main():
         validate_event(event)
         ids.append(event['id'])
     assert len(ids) == len(set(ids)), 'Duplicate event IDs'
+    summary=data.get('collection_summary')
+    if summary is not None:
+        assert isinstance(summary,dict), 'Invalid collection summary'
+        for key in ('previous_count','current_count','added','removed_expired','removed_other','retained_unchecked'):
+            assert type(summary.get(key)) is int and summary[key]>=0, 'Invalid collection summary count'
+        assert summary['current_count']==len(ids), 'Collection total does not match feed'
+        assert summary['added']<=summary['current_count'] and summary['retained_unchecked']<=summary['current_count'], 'Invalid current collection counts'
+        assert summary['removed_expired']+summary['removed_other']<=summary['previous_count'], 'Invalid removal counts'
     assert isinstance(data['sources'], list) and data['sources'], 'Missing source statuses'
     source_ids=[]
     for source in data['sources']:

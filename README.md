@@ -81,6 +81,8 @@ Saved plans are local to the browser and website address. Open tabs for the same
 
 ## Reliability and maintenance
 
+The **Sources** page includes a collection dashboard for the latest run. The collector compares the current public feed with the previous one by event IDs and known aliases, then records counts for new records, past events removed, other removals, and previously listed events not rechecked in this run. “Other removals” is not a cancellation count. A retained event can be a manual listing or an earlier result that was not reconfirmed. Merges can affect the comparison, and the dashboard does not store a history of earlier runs. Source counts are raw matches before deduplication; the 510 count is guides rather than events. Failed scans and successful scans with no matching results are distinct. Cached dashboards show the timestamp of their collection.
+
 The main view includes stale, full, closed-registration, and unconfirmed-local listings by default. Clear “Include ideas that need confirmation” to hide them; saved plans remain accessible. Events with a published start but no end time say “Starts …”; calendar export omits an invented end time. A public-feed cache keeps the last loaded collection available when a new fetch fails.
 
 A separate daily ChatGPT maintenance task, “Keep Little Weekends current”, checks source freshness and failed imports, researches public local listings for sources that cannot be scraped reliably, and can update validated curated records or make bounded adapter repairs in this repository. It is not a promise of complete coverage. Website access restrictions are respected. Routine success is quiet; user action is requested only for an unresolved material blocker.

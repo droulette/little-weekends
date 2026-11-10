@@ -666,6 +666,28 @@ def library_page_url(url, page):
     return url if page == 1 else url + ('&' if '?' in url else '?') + f'page={page}'
 
 
+def collection_summary(previous, current, now):
+    """Compare feed records by ID or known aliases, without inferring cancellations."""
+    def ids(event):
+        return {event['id'], *event.get('alternate_ids', [])}
+    previous_ids = set().union(*(ids(e) for e in previous)) if previous else set()
+    current_ids = set().union(*(ids(e) for e in current)) if current else set()
+    added = [e for e in current if not ids(e) & previous_ids]
+    removed = [e for e in previous if not ids(e) & current_ids]
+    today = now.astimezone(PACIFIC).date().isoformat()
+    expired = [e for e in removed if (e.get('endDate') or e['date']) < today]
+    retained_unchecked = []
+    for event in current:
+        if not ids(event) & previous_ids:
+            continue
+        checked = event.get('checked_at')
+        if not checked or datetime.fromisoformat(checked.replace('Z', '+00:00')) < now:
+            retained_unchecked.append(event)
+    return {'previous_count':len(previous), 'current_count':len(current),
+            'added':len(added), 'removed_expired':len(expired),
+            'removed_other':len(removed)-len(expired), 'retained_unchecked':len(retained_unchecked)}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sources', nargs='*', default=['ikea','opl','alamedakids','510','funcheap'])
@@ -726,6 +748,8 @@ def main():
     merged = merge_events(previous.get('events', []),curated,fresh,now, full_sources={s['id'] for s in statuses if s['id']=='ikea' and s['state']=='ok'})
     result = dict(schema_version=1, generated_at=now.isoformat(), last_successful_collection=now.isoformat() if successes else previous.get('last_successful_collection'),
                   sources=statuses, events=merged, guides=[g for g in guides if now-datetime.fromisoformat(g['checked_at'].replace('Z','+00:00'))<=timedelta(days=14)], note='Public, free family listings. Collection is bounded and may miss events. Check organizer details before attending.')
+    if isinstance(previous.get('events'), list):
+        result['collection_summary'] = collection_summary(previous['events'], merged, now)
     args.output.parent.mkdir(parents=True,exist_ok=True)
     temporary = args.output.with_suffix('.tmp')
     temporary.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
