@@ -49,6 +49,16 @@ test('download a calendar event with the right date and time',async ({page})=>{
   expect(calendar).toContain('END:VCALENDAR');
 });
 
+test('preview the coming weekend without sending email',async ({page})=>{
+  await page.getByText('Preview this weekend’s digest').click();
+  const digest=page.locator('#digest-content');
+  await expect(digest).toContainText('Family craft day');
+  await expect(digest).toContainText('Preview only—no email is sent');
+  await page.locator('#cards').getByRole('button',{name:'Hide Family craft day'}).click();
+  await expect(digest).not.toContainText('Family craft day');
+  await expect(digest).toContainText('No visible free events');
+});
+
 test('phone layout fits and main controls can be used',async ({page},testInfo)=>{
   test.skip(testInfo.project.name!=='mobile-chromium','Phone-sized viewport only');
   await expect(page.locator('#cards').getByRole('heading',{name:'Family craft day'})).toBeVisible();

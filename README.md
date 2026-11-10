@@ -83,6 +83,8 @@ The app does not use an LLM to collect events. Deterministic code handles these 
 
 Saved plans are local to the browser and website address. Open tabs for the same site refresh their plan state when another tab changes it. This does not sync separate browsers or devices. Plans previously saved in the downloadable HTML do not automatically move to the hosted website. Calendar export from the original app is one way to retain those choices. Cross-device synchronization would be a separate feature.
 
+The weekend digest preview is a separate, in-app summary of up to eight free published events for the current coming weekend. It excludes events hidden in this browser and already-ended events; it does not apply the Discover filters or include personal additions. It uses the most recently loaded feed, including a clearly labeled cached copy when offline. It does not send email or schedule delivery.
+
 ## Reliability and maintenance
 
 The **Sources** page includes a collection dashboard for the latest run. The collector compares the current public feed with the previous one by event IDs and known aliases, then records counts for new records, past events removed, other removals, and previously listed events not rechecked in this run. “Other removals” is not a cancellation count. A retained event can be a manual listing or an earlier result that was not reconfirmed. Merges can affect the comparison, and the dashboard does not store a history of earlier runs. Source counts are raw matches before deduplication; the 510 count is guides rather than events. Failed scans and successful scans with no matching results are distinct. Cached dashboards show the timestamp of their collection.

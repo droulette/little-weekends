@@ -23,6 +23,12 @@ vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.j
 setImmediate(async()=>{
  try{
   await vm.runInContext('loadFeed()',ctx);
+  assert.match(elements['#digest-content'].innerHTML,/Holiday Cookie Decorating/);
+  assert(!elements['#digest-content'].innerHTML.includes('Future craft'));
+  vm.runInContext("hiddenIds.add('dated');render()",ctx);
+  assert(!elements['#digest-content'].innerHTML.includes('Holiday Cookie Decorating'));
+  vm.runInContext("hiddenIds.delete('dated');render()",ctx);
+  assert.match(elements['#digest-content'].innerHTML,/Holiday Cookie Decorating/);
   assert.match(elements['#sources-view'].innerHTML,/Run-to-run counts will appear/);
   ctx.feedWithSummary={...feed,collection_summary:{previous_count:4,current_count:3,added:1,removed_expired:1,removed_other:1,retained_unchecked:1}};
   ctx.fetch=async()=>({ok:true,json:async()=>ctx.feedWithSummary});
