@@ -148,17 +148,27 @@ def make_event(source, title, start, end, city, venue, url, description, *, stat
 
 
 def validate_event(e):
-    for key in ['id', 'title', 'date', 'start', 'city', 'venue', 'price', 'url', 'source_id']:
+    for key in ['id', 'title', 'date', 'start', 'city', 'venue', 'price', 'url', 'source_id', 'source', 'status', 'cat']:
         if not isinstance(e.get(key), str) or not e[key]:
             raise ValueError('Missing/invalid '+key)
+    if not isinstance(e.get('desc'), str) or any(key not in e for key in ('end','min','max')):
+        raise ValueError('Missing event details')
+    if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', e['date']):
+        raise ValueError('Invalid event date')
     date.fromisoformat(e['date'])
+    if not re.fullmatch(r'\d{2}:\d{2}', e['start']):
+        raise ValueError('Invalid start time')
     datetime.strptime(e['start'], '%H:%M')
     if e.get('end') is not None:
+        if not isinstance(e['end'],str) or not re.fullmatch(r'\d{2}:\d{2}', e['end']):
+            raise ValueError('Invalid end time')
         datetime.strptime(e['end'], '%H:%M')
     if e.get('endDate'):
+        if not isinstance(e['endDate'],str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', e['endDate']):
+            raise ValueError('Invalid end date')
         if date.fromisoformat(e['endDate']) < date.fromisoformat(e['date']):
             raise ValueError('End date before start')
-    elif e.get('end') is not None and e['end'] <= e['start']:
+    if (not e.get('endDate') or e['endDate']==e['date']) and e.get('end') is not None and e['end'] <= e['start']:
         raise ValueError('End time before start')
     if e['city'] not in CITIES:
         raise ValueError('Unsupported city')

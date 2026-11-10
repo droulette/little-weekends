@@ -23,6 +23,16 @@ def ikea_html(item):
     return '<script type="text/hydrate">'+json.dumps({'events':[item]})+'</script>'
 
 class CollectTests(unittest.TestCase):
+    def test_rejects_rows_the_browser_cannot_render(self):
+        event=parse_ikea(ikea_html(ikea_fixture()),IKEA)[0]
+        for key in ('source','status','cat','desc','end','min','max'):
+            bad=copy.deepcopy(event);del bad[key]
+            with self.subTest(missing=key), self.assertRaises(ValueError):validate_event(bad)
+        for changes in ({'date':'20261107'},{'endDate':'20261107'},{'start':'9:00'},{'end':'9:30'},
+                        {'endDate':event['date'],'end':event['start']}):
+            bad=copy.deepcopy(event);bad.update(changes)
+            with self.subTest(changes=changes), self.assertRaises(ValueError):validate_event(bad)
+
     def test_ikea_multisession_ages_and_registration(self):
         events=parse_ikea(ikea_html(ikea_fixture()),IKEA)
         self.assertEqual([e['date'] for e in events],['2026-11-28','2026-11-29'])

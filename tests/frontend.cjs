@@ -324,6 +324,23 @@ setImmediate(async()=>{
   assert.equal(vm.runInContext("validFeedEvent({...planFixtures[0],end:'08:30'})",ctx),false);
   const currentFeed=JSON.parse(fs.readFileSync(path.join(root,'site/data/events.json'),'utf8'));
   ctx.currentFeed=currentFeed;assert.equal(vm.runInContext('validFeed(currentFeed)',ctx),true);
+  // UTF-8 calendar lines fold without splitting characters and unfold losslessly.
+  const longLine='SUMMARY:'+('🌻éA'.repeat(50));ctx.longLine=longLine;
+  const folded=vm.runInContext('foldCalendarLine(longLine)',ctx);
+  assert.equal(folded.replace(/\r\n /g,''),longLine);
+  for(const line of folded.split('\r\n'))assert(Buffer.byteLength(line,'utf8')<=75);
+  assert.equal(vm.runInContext("icsEscape('one\\rtwo\\nthree')",ctx),'one\\ntwo\\nthree');
+  assert.equal(vm.runInContext("validFeedEvent({...planFixtures[0],cat:undefined})",ctx),false);
+  // Wrong-shaped browser data must not stop startup; valid saved copies survive.
+  const validCopy={...ctx.planFixtures[0],source:'Your discovery'};
+  const broken=new Map([['lw-saved',JSON.stringify({broken:true})],['lw-events',JSON.stringify([null,validCopy])],['lw-plan-snapshots',JSON.stringify({dated:validCopy,bad:{id:'bad'}})],['lw-plan-alerts',JSON.stringify({dated:'bad'})]]);
+  const startupNodes={};
+  const startup={...ctx,document:{querySelector(s){return startupNodes[s]??=node()},querySelectorAll(){return []},addEventListener(){},createElement(){return {click(){}}}},localStorage:{getItem(k){return broken.get(k)??null},setItem(k,v){broken.set(k,v)}},fetch:()=>new Promise(()=>{})};
+  vm.createContext(startup);vm.runInContext(fs.readFileSync(path.join(root,'site/app.js'),'utf8'),startup);
+  assert.equal(vm.runInContext('custom.length',startup),1);
+  assert.equal(vm.runInContext('saved.size',startup),0);
+  assert.equal(vm.runInContext("Object.hasOwn(planSnapshots,'dated')&&!Object.hasOwn(planSnapshots,'bad')",startup),true);
+  assert.equal(vm.runInContext("Object.hasOwn(planAlerts,'dated')",startup),false);
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });
