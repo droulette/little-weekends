@@ -1,10 +1,11 @@
 """Build a weekend email from the public feed; sending requires explicit --send."""
 import argparse
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from email.message import EmailMessage
 import json
 import os
 from pathlib import Path
+import re
 import smtplib
 import ssl
 from urllib.parse import urlsplit
@@ -14,6 +15,8 @@ from collect_events import allowed_library
 PACIFIC = ZoneInfo('America/Los_Angeles')
 SITE = 'https://droulette.github.io/little-weekends/'
 ROOT = Path(__file__).resolve().parents[1]
+DONATION_DRIVE = re.compile(r'\b(?:(?:toy|food|clothing|coat|book|gift|supply|donation|school supplies)\s+(?:donation\s+)?drive)\b', re.I)
+ACTIVITY = re.compile(r'\b(?:craft|workshop|story\s?time|festival|parade|concert|performance|play|sewing|class|show)\b', re.I)
 
 
 def weekend(now):
@@ -41,6 +44,9 @@ def make_digest(feed, now):
         if (e.get('price')!='Free' or not allowed_library(e) or e.get('source_id')=='bn' or not e.get('date') or not e.get('start')
                 or url.scheme not in ('http','https') or not url.hostname):
             continue
+        title=e.get('title','')
+        if DONATION_DRIVE.search(title) and not ACTIVITY.search(title):
+            continue  # A collection drive alone is not an outing; keep mixed activities.
         if (e.get('endDate') or e['date'])<first or e['date']>sunday.isoformat():
             continue
         if (e.get('end') and not (e.get('endDate') and e.get('ongoing',True))
@@ -52,6 +58,36 @@ def make_digest(feed, now):
     return saturday,sunday,selected
 
 
+def display_date(value):
+    day=date.fromisoformat(value)
+    return f'{day:%a, %b} {day.day}'
+
+
+def display_time(value):
+    hour,minute=map(int,value.split(':'))
+    return f'{hour%12 or 12}{":"+str(minute).zfill(2) if minute else ""} {"pm" if hour>=12 else "am"}'
+
+
+def display_checked(value):
+    try:
+        timestamp=datetime.fromisoformat(value.replace('Z','+00:00'))
+        if timestamp.tzinfo is None:return 'Not recorded'
+        local=timestamp.astimezone(PACIFIC)
+        return f'{local:%b} {local.day}, {display_time(local.strftime("%H:%M"))} PT'
+    except (AttributeError,TypeError,ValueError):
+        return 'Not recorded'
+
+
+def display_event_time(e):
+    if e.get('endDate') and e.get('ongoing',True):
+        return f'Through {display_date(e["endDate"])} · {e.get("hoursLabel") or "Check daily hours"}'
+    day=display_date(e['date'])
+    if e.get('endDate') and e['endDate']!=e['date']:
+        day+=f'–{display_date(e["endDate"])}'
+    start=display_time(e['start'])
+    return f'{day} · '+(start+'–'+display_time(e['end']) if e.get('end') else 'Starts '+start)
+
+
 def message_for(feed, now):
     saturday,sunday,events=make_digest(feed,now)
     label=f'{saturday.strftime("%b %d")}–{sunday.strftime("%b %d")}'
@@ -61,11 +97,9 @@ def message_for(feed, now):
     failed=[s.get('name','Unknown source') for s in feed.get('sources',[]) if s.get('mode')=='automatic' and s.get('state')!='ok']
     if failed:lines.extend(['Some sources need attention: '+', '.join(failed), ''])
     for e in events[:8]:
-        day=('Through '+e['endDate']) if e.get('endDate') else e['date']
-        clock=e.get('hoursLabel') or ('Starts '+e['start'] if not e.get('end') else e['start']+'–'+e['end'])
-        lines.extend([e['title'],f"{day} · {clock} · {e['venue']} · {e['city']}",
+        lines.extend([e['title'],f"{display_event_time(e)} · {e['venue']} · {e['city']}",
                       f"Organizer status: {e.get('status') or 'Check organizer'}",
-                      f"Listing checked: {e.get('checked_at') or 'Not recorded'}",e['url'],''])
+                      f"Listing checked: {display_checked(e.get('checked_at'))}",e['url'],''])
     if not events:lines.extend(['No matching events were found in this collection.',''])
     lines.extend(['Check the organizer for current details and registration.',
                   'Browser-only hidden events and personal plans are not reflected in this email.',

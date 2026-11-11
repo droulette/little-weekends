@@ -6,7 +6,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from weekend_digest import deliver, make_digest, message_for, weekend
+from weekend_digest import deliver, make_digest, message_for, weekend, display_checked, display_event_time
 
 NOW=datetime(2026,11,4,20,tzinfo=timezone.utc)
 EVENT={'id':'craft','title':'Craft time','date':'2026-11-07','start':'10:00','end':'11:00',
@@ -15,6 +15,25 @@ FEED={'generated_at':NOW.isoformat(),'events':[EVENT],'sources':[]}
 
 
 class DigestTests(unittest.TestCase):
+    def test_excludes_standalone_donation_drives_but_keeps_activities(self):
+        drive={**EVENT,'id':'drive','title':'Holiday Toy Drive at IKEA'}
+        mixed={**EVENT,'id':'mixed','title':'Craft Workshop and Toy Drive'}
+        ordinary={**EVENT,'id':'drive-in','title':'Drive-in Movie Night'}
+        result=make_digest({**FEED,'events':[drive,mixed,ordinary]},NOW)[2]
+        self.assertEqual([e['id'] for e in result],['mixed','drive-in'])
+
+    def test_friendly_dates_and_pacific_timestamps(self):
+        event={**EVENT,'checked_at':'2026-11-10T22:49:45.135620+00:00'}
+        self.assertEqual(display_event_time(event),'Sat, Nov 7 · 10 am–11 am')
+        self.assertEqual(display_checked(event['checked_at']),'Nov 10, 2:49 pm PT')
+        self.assertEqual(display_checked(None),'Not recorded')
+        self.assertEqual(display_checked('2026-11-10T22:49:45'),'Not recorded')
+        self.assertEqual(display_checked('2026-07-10T22:49:45Z'),'Jul 10, 3:49 pm PT')
+        ongoing={**event,'endDate':'2026-12-01','ongoing':True}
+        self.assertEqual(display_event_time(ongoing),'Through Tue, Dec 1 · Check daily hours')
+        overnight={**event,'endDate':'2026-11-08','ongoing':False,'start':'23:00','end':'01:30'}
+        self.assertEqual(display_event_time(overnight),'Sat, Nov 7–Sun, Nov 8 · 11 pm–1:30 am')
+
     def test_weekend_selection_and_order(self):
         old={**EVENT,'id':'old','date':'2026-11-06'}
         paid={**EVENT,'id':'paid','price':'$10'}
