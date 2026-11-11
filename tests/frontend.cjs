@@ -44,6 +44,19 @@ setImmediate(async()=>{
   assert.match(elements['#sources-view'].innerHTML,/2 guides/);
   assert.match(elements['#sources-view'].innerHTML,/Example &lt;script&gt;/);
   assert(elements['#sources-view'].innerHTML.indexOf('Nov 4')<elements['#sources-view'].innerHTML.indexOf('Nov 3'));
+  // A sudden drop is compared with distinct prior Pacific days, not repeated runs.
+  const scan=(date,state,count,unit='events')=>({generated_at:date,event_count:20,sources:[{id:'ikea',name:'IKEA',state,count,unit}]});
+  ctx.changeFixture=[scan('2026-11-01T20:00:00Z','ok',12),scan('2026-11-02T20:00:00Z','ok',14),scan('2026-11-03T20:00:00Z','ok',16),scan('2026-11-04T20:00:00Z','ok',0)];
+  let change=JSON.parse(vm.runInContext('JSON.stringify(sourceChanges(changeFixture))',ctx));
+  assert.equal(change.compared,1);assert.equal(change.alerts.length,1);assert.equal(change.alerts[0].typical,14);
+  ctx.changeFixture[3].sources[0].state='error';ctx.changeFixture[3].sources[0].count=null;
+  change=JSON.parse(vm.runInContext('JSON.stringify(sourceChanges(changeFixture))',ctx));assert.equal(change.alerts.length,0);assert.equal(change.compared,0);
+  ctx.changeFixture=[scan('2026-11-03T18:00:00Z','ok',12),scan('2026-11-03T19:00:00Z','ok',14),scan('2026-11-03T20:00:00Z','ok',16),scan('2026-11-04T20:00:00Z','ok',0)];
+  assert.equal(vm.runInContext('sourceChanges(changeFixture).compared',ctx),0);
+  ctx.changeFixture=[scan('2026-11-01T20:00:00Z','ok',2),scan('2026-11-02T20:00:00Z','ok',3),scan('2026-11-03T20:00:00Z','ok',2),scan('2026-11-04T20:00:00Z','ok',0)];
+  assert.equal(vm.runInContext('sourceChanges(changeFixture).alerts.length',ctx),0);
+  ctx.changeFixture=[scan('2026-11-01T20:00:00Z','ok',12,'guides'),scan('2026-11-02T20:00:00Z','ok',14,'guides'),scan('2026-11-03T20:00:00Z','ok',16,'guides'),scan('2026-11-04T20:00:00Z','ok',0,'events')];
+  assert.equal(vm.runInContext('sourceChanges(changeFixture).compared',ctx),0);
   ctx.fetch=async()=>{throw Error('offline')};await vm.runInContext('loadFeed()',ctx);
   assert.match(elements['#sources-view'].innerHTML,/Showing a saved collection/);
   assert.match(elements['#sources-view'].innerHTML,/Past events removed/);

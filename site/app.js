@@ -310,6 +310,36 @@ function validHistorySnapshot(row){
  if(row.sources.some(s=>!s||typeof s.id!=='string'||!s.id||typeof s.name!=='string'||!s.name||!['events','guides'].includes(s.unit)||!['ok','error','not_run'].includes(s.state)||(s.state==='ok'?(!Number.isSafeInteger(s.count)||s.count<0):s.count!==null)))return false;
  return new Set(row.sources.map(s=>s.id)).size===row.sources.length;
 }
+function pacificDay(value){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(value))}
+function sourceChanges(history){
+ const rows=history.filter(validHistorySnapshot).slice().sort((a,b)=>Date.parse(a.generated_at)-Date.parse(b.generated_at));
+ if(!rows.length)return {alerts:[],compared:0};
+ const current=rows.at(-1),currentTime=Date.parse(current.generated_at),currentDay=pacificDay(current.generated_at),alerts=[];
+ let compared=0;
+ for(const source of current.sources){
+  if(source.state!=='ok')continue;
+  const days=new Map();
+  for(const row of rows.slice(0,-1).reverse()){
+   const time=Date.parse(row.generated_at),day=pacificDay(row.generated_at);
+   if(time>=currentTime||day>=currentDay||days.has(day))continue;
+   const prior=row.sources.find(s=>s.id===source.id&&s.unit===source.unit&&s.state==='ok');
+   if(prior)days.set(day,prior.count);
+   if(days.size===7)break;
+  }
+  if(days.size<3)continue;
+  compared++;
+  const values=[...days.values()].sort((a,b)=>a-b),mid=Math.floor(values.length/2);
+  const typical=values.length%2?values[mid]:(values[mid-1]+values[mid])/2;
+  if(typical>=6&&source.count<=typical/2&&typical-source.count>=3)alerts.push({name:source.name,count:source.count,unit:source.unit,typical,days:values.length});
+ }
+ return {alerts,compared};
+}
+function sourceChangesHTML(){
+ const {alerts,compared}=sourceChanges(collectionHistory);
+ const details='Compares the latest successful scan with the median of up to 7 previous days with successful scans. Alerts need at least 3 prior days, a typical count of 6 or more, and a drop of at least half and 3 listings.';
+ const content=alerts.length?`<ul>${alerts.map(a=>`<li><strong>${esc(a.name)}</strong>: ${a.count} ${esc(a.unit)} found; typical count was ${a.typical} across ${a.days} previous days. The scan succeeded—check the source for changes.</li>`).join('')}</ul>`:compared?'<p>No unusual drops detected among sources with enough history.</p>':'<p>Not enough previous successful scan days to compare yet.</p>';
+ return `<section class="change-panel"><h2>Unusual changes</h2><p>${compared} ${compared===1?'source has':'sources have'} enough history to compare. Refresh failures appear in the source statuses below.</p>${content}<p>${details} A change is a prompt to investigate, not proof of a problem.</p></section>`;
+}
 function historyHTML(){
  if(!collectionHistory.length)return '<section class="history-panel"><h2>Collection history</h2><p>No history is available yet. It will appear after a collection run.</p></section>';
  const rows=[...collectionHistory].reverse();
@@ -327,7 +357,7 @@ function renderSources(){
  $('#source-list').innerHTML=sourceHTML();
  const auto=sourceStatuses.filter(s=>s.mode==='automatic'),attention=auto.filter(s=>sourceHealth(s).attention);
  $('#source-summary').textContent=auto.length?`${auto.length-attention.length} of ${auto.length} automatic sources up to date${attention.length?' · '+attention.length+' need attention':''}.`:'';
- $('#sources-view').innerHTML=collectionDashboard()+historyHTML()+'<div class="source-panel"><h2>Your family event sources</h2><p>Automatic imports collect free family activities in Oakland and nearby East Bay cities, including San Leandro and Castro Valley. Additional calendars have hand-checked listings. A successful scan can find zero matches; it does not mean there are no events at the venue. Source counts are matches before duplicates are combined; RSS counts articles, not events.</p>'+sourceStatuses.map(s=>{const h=sourceHealth(s);const found=s.mode==='automatic'&&s.state==='ok'&&Number.isSafeInteger(s.count)&&s.count>=0?`${s.count} ${s.kind==='articles'?'guides':'events'} found in latest scan`:(s.mode==='automatic'?'No successful result for this scan':'Manually maintained');return `<div class="source"><div><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${esc(s.name)} ↗</a><p class="small source-note">${esc(found)}<br>${esc(s.note||'')}</p>${s.mode==='automatic'?`<p class="small source-note">Last successful scan: ${esc(checkedLabel(s.last_success))}<br>Last attempt: ${esc(checkedLabel(s.last_attempt))}</p>`:'<p class="small source-note">See individual events for their check dates. This source is not an automatic feed.</p>'}</div><small class="${h.attention?'needs-check':''}">${esc(h.label)}</small></div>`}).join('')+'<p class="notice">Saving here does not register you with an organizer. Plans and personally added events stay in this browser. Listing check dates do not guarantee availability.</p></div>';
+ $('#sources-view').innerHTML=collectionDashboard()+sourceChangesHTML()+historyHTML()+'<div class="source-panel"><h2>Your family event sources</h2><p>Automatic imports collect free family activities in Oakland and nearby East Bay cities, including San Leandro and Castro Valley. Additional calendars have hand-checked listings. A successful scan can find zero matches; it does not mean there are no events at the venue. Source counts are matches before duplicates are combined; RSS counts articles, not events.</p>'+sourceStatuses.map(s=>{const h=sourceHealth(s);const found=s.mode==='automatic'&&s.state==='ok'&&Number.isSafeInteger(s.count)&&s.count>=0?`${s.count} ${s.kind==='articles'?'guides':'events'} found in latest scan`:(s.mode==='automatic'?'No successful result for this scan':'Manually maintained');return `<div class="source"><div><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${esc(s.name)} ↗</a><p class="small source-note">${esc(found)}<br>${esc(s.note||'')}</p>${s.mode==='automatic'?`<p class="small source-note">Last successful scan: ${esc(checkedLabel(s.last_success))}<br>Last attempt: ${esc(checkedLabel(s.last_attempt))}</p>`:'<p class="small source-note">See individual events for their check dates. This source is not an automatic feed.</p>'}</div><small class="${h.attention?'needs-check':''}">${esc(h.label)}</small></div>`}).join('')+'<p class="notice">Saving here does not register you with an organizer. Plans and personally added events stay in this browser. Listing check dates do not guarantee availability.</p></div>';
 }
 function renderGuides(){
  const recent=guides.filter(g=>g&&g.source_id==='510'&&safeUrl(g.url)!=='#'&&hoursSince(g.checked_at)<=336&&hoursSince(g.published_at)<=720).slice(0,8);
