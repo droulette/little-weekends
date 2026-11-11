@@ -1,7 +1,7 @@
 """Check the exact JSON that Pages will serve, without network access."""
 import json
 from pathlib import Path
-from collect_events import validate_event, canonical
+from collect_events import validate_event, canonical, valid_history_snapshot
 from datetime import datetime
 
 def main():
@@ -13,6 +13,9 @@ def main():
         validate_event(event)
         ids.append(event['id'])
     assert len(ids) == len(set(ids)), 'Duplicate event IDs'
+    if 'collection_history' in data:
+        history=data['collection_history']
+        assert isinstance(history,list) and len(history)<=30 and all(valid_history_snapshot(item) for item in history), 'Invalid collection history'
     summary=data.get('collection_summary')
     if summary is not None:
         assert isinstance(summary,dict), 'Invalid collection summary'

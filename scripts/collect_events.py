@@ -688,6 +688,54 @@ def collection_summary(previous, current, now):
             'removed_other':len(removed)-len(expired), 'retained_unchecked':len(retained_unchecked)}
 
 
+def history_snapshot(timestamp, sources, total):
+    """Store source outcomes, never treating a failed scan as zero matches."""
+    recorded=[]
+    for source in sources:
+        if source.get('mode')!='automatic':continue
+        state=source.get('state')
+        count=source.get('count') if state=='ok' else None
+        if state not in {'ok','error','not_run'} or (state=='ok' and (type(count) is not int or count<0)):
+            raise ValueError('Invalid source history')
+        recorded.append({'id':source['id'],'name':source['name'],'state':state,'count':count,
+                         'unit':'guides' if source.get('kind')=='articles' else 'events'})
+    if not recorded:raise ValueError('No automatic source history')
+    return {'generated_at':timestamp,'event_count':total,'sources':recorded}
+
+
+def valid_history_snapshot(item):
+    if not isinstance(item,dict) or type(item.get('event_count')) is not int or item['event_count']<0:
+        return False
+    try:
+        if datetime.fromisoformat(item['generated_at'].replace('Z','+00:00')).tzinfo is None:return False
+    except (ValueError,TypeError,KeyError,AttributeError):return False
+    sources=item.get('sources')
+    if not isinstance(sources,list) or not sources:return False
+    ids=set()
+    for s in sources:
+        if not isinstance(s,dict) or not isinstance(s.get('id'),str) or not s['id'] or s['id'] in ids or not isinstance(s.get('name'),str) or not s['name'] or s.get('unit') not in {'events','guides'}:return False
+        if s.get('state')=='ok':
+            if type(s.get('count')) is not int or s['count']<0:return False
+        elif s.get('state') not in {'error','not_run'} or s.get('count') is not None:return False
+        ids.add(s['id'])
+    return True
+
+
+def collection_history(previous, sources, current_count, now, limit=30):
+    """Retain recent runs, optionally seeding the last actual prior feed."""
+    history=previous.get('collection_history',[])
+    history=[item for item in history if valid_history_snapshot(item)][-(limit-1):] if isinstance(history,list) else []
+    if not history and previous.get('generated_at') and isinstance(previous.get('events'),list):
+        try:
+            stamp=datetime.fromisoformat(previous['generated_at'].replace('Z','+00:00'))
+            if stamp.tzinfo and stamp<=now:
+                history.append(history_snapshot(previous['generated_at'],previous.get('sources',[]),len(previous['events'])))
+        except (ValueError,TypeError,KeyError,AttributeError):
+            pass # Older feeds may lack usable scan metadata; start with this run.
+    history.append(history_snapshot(now.isoformat(),sources,current_count))
+    return history[-limit:]
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sources', nargs='*', default=['ikea','opl','alamedakids','510','funcheap'])
@@ -750,6 +798,7 @@ def main():
                   sources=statuses, events=merged, guides=[g for g in guides if now-datetime.fromisoformat(g['checked_at'].replace('Z','+00:00'))<=timedelta(days=14)], note='Public, free family listings. Collection is bounded and may miss events. Check organizer details before attending.')
     if isinstance(previous.get('events'), list):
         result['collection_summary'] = collection_summary(previous['events'], merged, now)
+    result['collection_history'] = collection_history(previous,statuses,len(merged),now)
     args.output.parent.mkdir(parents=True,exist_ok=True)
     temporary = args.output.with_suffix('.tmp')
     temporary.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')

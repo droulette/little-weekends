@@ -30,12 +30,20 @@ setImmediate(async()=>{
   vm.runInContext("hiddenIds.delete('dated');render()",ctx);
   assert.match(elements['#digest-content'].innerHTML,/Holiday Cookie Decorating/);
   assert.match(elements['#sources-view'].innerHTML,/Run-to-run counts will appear/);
-  ctx.feedWithSummary={...feed,collection_summary:{previous_count:4,current_count:3,added:1,removed_expired:1,removed_other:1,retained_unchecked:1}};
+  ctx.feedWithSummary={...feed,collection_summary:{previous_count:4,current_count:3,added:1,removed_expired:1,removed_other:1,retained_unchecked:1},collection_history:[
+   {generated_at:'2026-11-03T20:00:00Z',event_count:2,sources:[{id:'test',name:'Example <script>',state:'ok',count:0,unit:'events'}]},
+   {generated_at:'2026-11-04T20:00:00Z',event_count:3,sources:[{id:'test',name:'Example source',state:'error',count:null,unit:'events'},{id:'510',name:'510 Families',state:'ok',count:2,unit:'guides'}]}]};
   ctx.fetch=async()=>({ok:true,json:async()=>ctx.feedWithSummary});
   await vm.runInContext('loadFeed()',ctx);
   assert.match(elements['#sources-view'].innerHTML,/Collection dashboard/);
   assert.match(elements['#sources-view'].innerHTML,/Past events removed/);
   assert.match(elements['#sources-view'].innerHTML,/3 events found in latest scan/);
+  assert.match(elements['#sources-view'].innerHTML,/Collection history/);
+  assert.match(elements['#sources-view'].innerHTML,/Refresh failed/);
+  assert.match(elements['#sources-view'].innerHTML,/0 events/);
+  assert.match(elements['#sources-view'].innerHTML,/2 guides/);
+  assert.match(elements['#sources-view'].innerHTML,/Example &lt;script&gt;/);
+  assert(elements['#sources-view'].innerHTML.indexOf('Nov 4')<elements['#sources-view'].innerHTML.indexOf('Nov 3'));
   ctx.fetch=async()=>{throw Error('offline')};await vm.runInContext('loadFeed()',ctx);
   assert.match(elements['#sources-view'].innerHTML,/Showing a saved collection/);
   assert.match(elements['#sources-view'].innerHTML,/Past events removed/);

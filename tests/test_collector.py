@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, make_event, merge_events, dedupe, validate_event, allowed_library, canonical, parse_510_rss, SOURCES, parse_alamedakids, library_page_url, collection_summary
+from collect_events import parse_ikea, parse_opl, parse_schema_event, ages, make_event, merge_events, dedupe, validate_event, allowed_library, canonical, parse_510_rss, SOURCES, parse_alamedakids, library_page_url, collection_summary, collection_history, valid_history_snapshot
 
 NOW=datetime(2026,11,4,20,tzinfo=timezone.utc)
 IKEA={'id':'ikea','name':'IKEA Emeryville'}
@@ -23,6 +23,31 @@ def ikea_html(item):
     return '<script type="text/hydrate">'+json.dumps({'events':[item]})+'</script>'
 
 class CollectTests(unittest.TestCase):
+    def test_history_preserves_prior_run_and_distinguishes_errors_from_zero(self):
+        previous_source={'id':'ikea','name':'IKEA','mode':'automatic','state':'ok','count':12}
+        previous={'generated_at':(NOW-timedelta(days=1)).isoformat(),'events':[{}]*12,'sources':[previous_source]}
+        statuses=[{**previous_source,'state':'error','count':99},
+                  {'id':'funcheap','name':'Funcheap','mode':'automatic','state':'ok','count':0},
+                  {'id':'510','name':'510','mode':'automatic','kind':'articles','state':'not_run'},
+                  {'id':'manual','name':'Manual','mode':'manual','state':'manual'}]
+        history=collection_history(previous,statuses,8,NOW)
+        self.assertEqual(len(history),2)
+        self.assertEqual(history[0]['sources'][0]['count'],12)
+        self.assertEqual([(s['state'],s['count'],s['unit']) for s in history[1]['sources']],
+                         [('error',None,'events'),('ok',0,'events'),('not_run',None,'guides')])
+        self.assertTrue(all(valid_history_snapshot(row) for row in history))
+
+    def test_history_is_bounded_and_discards_bad_prior_entries(self):
+        source={'id':'ikea','name':'IKEA','mode':'automatic','state':'ok','count':2}
+        prior={'collection_history':[]}
+        for day in range(35):
+            prior['collection_history']=collection_history(prior,[source],2,NOW+timedelta(days=day))
+        self.assertEqual(len(prior['collection_history']),30)
+        prior['collection_history'].append({'bad':True})
+        history=collection_history(prior,[source],2,NOW+timedelta(days=35))
+        self.assertEqual(len(history),30)
+        self.assertTrue(all(valid_history_snapshot(row) for row in history))
+
     def test_san_leandro_manor_library_is_not_a_temescal_event(self):
         event={'venue':'Manor Branch, 1241 Manor Blvd.','city':'San Leandro','source':'Local calendar','url':'https://example.org'}
         self.assertFalse(allowed_library(event))

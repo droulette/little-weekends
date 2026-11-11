@@ -4,6 +4,7 @@ const {test,expect}=require('@playwright/test');
 const fixture={
   schema_version:1,generated_at:'2026-11-04T20:00:00Z',last_successful_collection:'2026-11-04T20:00:00Z',
   collection_summary:{previous_count:0,current_count:1,added:1,removed_expired:0,removed_other:0,retained_unchecked:0},
+  collection_history:[{generated_at:'2026-11-04T20:00:00Z',event_count:1,sources:[{id:'test',name:'Example source',state:'ok',count:1,unit:'events'}]}],
   sources:[{id:'test',name:'Example source',url:'https://example.org/',mode:'automatic',state:'ok',count:1,last_success:'2026-11-04T20:00:00Z'}],
   events:[{id:'test-craft',title:'Family craft day',date:'2026-11-07',start:'10:00',end:'11:00',
     city:'Oakland',venue:'Example venue',price:'Free',min:null,max:null,cat:'Art & crafts',source:'Example source',
@@ -31,6 +32,8 @@ test('save a plan, reload, and see collection dashboard',async ({page})=>{
   await expect(cards.getByRole('button',{name:'Unsave Family craft day'})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Sources',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Collection dashboard'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Collection history'})).toBeVisible();
+  await expect(page.locator('.history-run')).toContainText('Example source');
   await expect(page.locator('#sources-view')).toContainText('1 events found in latest scan');
 });
 
