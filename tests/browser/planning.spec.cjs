@@ -67,6 +67,20 @@ test('preview the coming weekend without sending email',async ({page})=>{
   await expect(digest).toContainText('No visible free events');
 });
 
+test('recommendations explain matches and persist locally',async ({page})=>{
+  await page.getByText('Personalize recommendations').click();
+  await page.getByLabel('Preferred city').selectOption({label:'Oakland'});
+  await page.getByLabel('Preferred activity').selectOption({label:'Art & crafts'});
+  await page.getByLabel('Age match').selectOption('both');
+  await page.getByLabel('Rank by my preferences').check();
+  const card=page.locator('#cards').locator('article').filter({hasText:'Family craft day'});
+  await expect(card).toContainText('5 points');
+  await expect(card).toContainText('Preferred city');
+  await expect(card).toContainText('Age range not listed');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await expect(page.locator('#cards').locator('article').filter({hasText:'Family craft day'})).toContainText('5 points');
+});
+
 test('phone layout fits and main controls can be used',async ({page},testInfo)=>{
   test.skip(testInfo.project.name!=='mobile-chromium','Phone-sized viewport only');
   await expect(page.locator('#cards').getByRole('heading',{name:'Family craft day'})).toBeVisible();

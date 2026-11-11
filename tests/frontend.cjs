@@ -416,6 +416,16 @@ setImmediate(async()=>{
   assert.deepEqual(JSON.parse(storage.get('lw-saved')).sort(),['dated','overlap']);
   vm.runInContext("refreshFromOtherTab({key:'unrelated',storageArea:localStorage})",ctx);
   assert.equal(vm.runInContext('saved.size',ctx),2);
+  // Recommendations are opt-in, explain their score, and preserve day grouping.
+  vm.runInContext("seed=[{...planFixtures[0],id:'early',title:'Early',date:'2026-11-14',start:'09:00',end:'10:00',city:'Alameda',min:null,max:null},{...planFixtures[0],id:'match',title:'Good match',date:'2026-11-14',start:'12:00',end:'13:00',city:'Oakland',cat:'Art & crafts',min:4,max:6},{...planFixtures[0],id:'sunday',title:'Sunday match',date:'2026-11-15',start:'09:00',end:'10:00',city:'Oakland',min:4,max:6},{...planFixtures[0],id:'ongoing',title:'Ongoing match',date:'2026-11-01',endDate:'2026-11-30',ongoing:true,city:'Oakland',min:4,max:6}];custom=[];saved=new Set();hiddenIds=new Set();view='discover';period='next';$('#cost').value='';$('#city').value='';$('#age').value='';$('#category').value='';$('#search').value='';$('#weekends-only').checked=false;$('#include-unconfirmed').checked=true;$('#new-only').checked=false;$('#show-hidden').checked=false;preferences={enabled:false,city:'',activity:'',age:''};render()",ctx);
+  cards=elements['#cards'].innerHTML;assert(cards.indexOf('data-save="early"')<cards.indexOf('data-save="match"'));assert(!cards.includes('points</strong>'));
+  vm.runInContext("$('#recommend-enabled').checked=true;$('#recommend-city').value='Oakland';$('#recommend-activity').value='Art & crafts';$('#recommend-age').value='both';updatePreferences()",ctx);
+  cards=elements['#cards'].innerHTML;assert(cards.indexOf('data-save="match"')<cards.indexOf('data-save="early"'));assert(cards.indexOf('data-save="early"')<cards.indexOf('data-save="sunday"'));assert(cards.indexOf('data-save="sunday"')<cards.indexOf('data-save="ongoing"'));
+  assert.match(cards,/7 points/);assert.match(cards,/Preferred city/);assert.match(cards,/Fits ages 4 and 6/);assert.match(cards,/Age range not listed/);
+  assert.equal(JSON.parse(storage.get('lw-recommendations')).city,'Oakland');
+  assert.equal(vm.runInContext("scoreEvent({city:'Oakland',cat:'Art & crafts',min:null,max:null}).score",ctx),5);
+  vm.runInContext("$('#recommend-enabled').checked=false;updatePreferences()",ctx);
+  cards=elements['#cards'].innerHTML;assert(cards.indexOf('data-save="early"')<cards.indexOf('data-save="match"'));assert(!cards.includes('points</strong>'));
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });

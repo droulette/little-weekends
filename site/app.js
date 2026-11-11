@@ -47,6 +47,33 @@ function chooseWeekend(value){
  catch(e){toast(e.message)}
 }
 function isNew(e){return !e.saved_copy&&visitSeen!==null&&!visitSeen.has(e.id)&&!(e.alternate_ids||[]).some(id=>visitSeen.has(id))}
+const PREFERRED_CITIES=['Oakland','Emeryville','Berkeley','Albany','Alameda','El Cerrito','San Leandro','Castro Valley'];
+const PREFERRED_ACTIVITIES=['Art & crafts','Stories & play','Celebrations','Building'];
+const storedPreferences=read('lw-recommendations',{});
+let preferences={enabled:storedPreferences?.enabled===true,
+ city:PREFERRED_CITIES.includes(storedPreferences?.city)?storedPreferences.city:'',
+ activity:PREFERRED_ACTIVITIES.includes(storedPreferences?.activity)?storedPreferences.activity:'',
+ age:['4','6','both'].includes(storedPreferences?.age)?storedPreferences.age:''};
+function scoreEvent(e,p=preferences){
+ let score=0;const reasons=[];
+ if(p.city&&e.city===p.city){score+=3;reasons.push('Preferred city')}
+ if(p.activity&&e.cat===p.activity){score+=2;reasons.push('Preferred activity')}
+ if(p.age&&Number.isInteger(e.min)&&Number.isInteger(e.max)){
+  const ages=p.age==='both'?[4,6]:[Number(p.age)];
+  if(ages.every(age=>e.min<=age&&e.max>=age)){score+=2;reasons.push(p.age==='both'?'Fits ages 4 and 6':'Fits age '+p.age)}
+ }
+ return {score,reasons,ageUnknown:Boolean(p.age&&(e.min==null||e.max==null))};
+}
+function recommendationHTML(e){
+ if(!preferences.enabled)return '';
+ const result=scoreEvent(e),why=result.reasons.length?result.reasons.join(' · '):(!preferences.city&&!preferences.activity&&!preferences.age?'Choose preferences to see matches':'No preferences matched');
+ return `<p class="recommendation-note"><strong>${result.score} points</strong> · ${esc(why)}${result.ageUnknown?' · Age range not listed':''}</p>`;
+}
+function updatePreferences(){
+ preferences={enabled:$('#recommend-enabled').checked,city:$('#recommend-city').value,activity:$('#recommend-activity').value,age:$('#recommend-age').value};
+ try{localStorage.setItem('lw-recommendations',JSON.stringify(preferences))}catch{toast('Browser storage unavailable; preferences may not persist.')}
+ render();
+}
 function rememberSeen(){
  const current=seed.map(e=>e.id);
  if(visitSeen===null)visitSeen=new Set(current);
@@ -248,10 +275,11 @@ function renderDigest(){
  $('#digest-content').innerHTML=`<p>${esc(notice)}${events.length} free ${events.length===1?'event':'events'} for ${esc(label)}${events.length>shown.length?' · showing the first '+shown.length:''}. Hidden events are excluded; other filters do not apply.</p><ul>${shown.map(e=>`<li><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">${esc(e.title)} ↗</a><span>${esc(e.endDate?'Through '+dateLabel(e.endDate):dateLabel(e.date))} · ${esc(range(e))} · ${esc(e.city)}</span><span>${esc(e.venue)} · ${esc(eventFreshness(e).label)}</span></li>`).join('')}</ul><p>Preview only—no email is sent. Check the organizer before attending.</p>`;
 }
 function render(){let dates=period==='chosen'&&selectedWeekend?weekendFor(selectedWeekend):weekend(period==='next'?1:0);let events=all().filter(e=>view==='saved'?saved.has(e.id):e.saved_copy?false:period==='all'?(e.endDate||e.date)>=today():(e.endDate||e.date)>=(dates[0]<today()?today():dates[0])&&e.date<=dates[1]);const q=$('#search').value.toLowerCase(),age=$('#age').value;if(view!=='saved'){const currentDate=today(),currentTime=pacificClock();events=events.filter(e=>!hasEnded(e,currentDate,currentTime)&&(view==='saved'||$('#show-hidden').checked||!hiddenIds.has(e.id))&&(view==='saved'||!$('#new-only').checked||isNew(e))&&(view==='saved'||!$('#weekends-only').checked||overlapsWeekend(e))&&(view==='saved'||$('#include-unconfirmed').checked||readyToPlan(e))&&(!q||[e.title,e.venue,e.city,e.source].join(' ').toLowerCase().includes(q))&&(!$('#city').value||e.city===$('#city').value)&&(!$('#cost').value||e.price==='Free')&&(!$('#category').value||e.cat===$('#category').value)&&(!age||(e.min!==null&&e.max!==null&&(age==='both'?e.min<=4&&e.max>=6:e.min<=Number(age)&&e.max>=Number(age)))));}
+if(view==='discover'&&preferences.enabled)events.sort((a,b)=>scoreEvent(b).score-scoreEvent(a).score);
 renderDigest();
 $('#discover-filters').classList.toggle('hide',view==='saved');
 $('.digest-panel').classList.toggle('hide',view!=='discover');
-$('#heading').textContent=view==='saved'?'Your saved outings':period==='all'?'Good things on the horizon':dateLabel(dates[0])+'–'+dateLabel(dates[1]);$('#result-count').textContent=events.length+' events · Pacific time';$('#count').textContent=saved.size?'('+saved.size+')':'';const newCount=seed.filter(e=>isNew(e)&&(e.endDate||e.date)>=today()).length;$('#new-count').textContent=newCount?newCount+' new since your last visit':'New listings will be marked here after your next visit.';$('#cards').innerHTML=renderEventGroups(events,dates,e=>`<article class="card"><div class="visual" style="background:${/^#[a-f0-9]{6}$/i.test(e.color||'')?e.color:'#e5eadd'}"><span class="symbol" aria-hidden="true">${esc(e.icon||'✳')}</span><div class="datebox">${e.endDate?'UNTIL':new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short'}).toUpperCase()}<strong>${e.endDate?esc(dateLabel(e.endDate)):Number(e.date.slice(-2))}</strong></div><button class="save ${saved.has(e.id)?'on':''}" data-save="${esc(e.id)}" aria-label="${saved.has(e.id)?'Unsave':'Save'} ${esc(e.title)}" aria-pressed="${saved.has(e.id)}">${saved.has(e.id)?'♥':'♡'}</button></div><div class="content"><div class="meta">${esc(e.city)} &nbsp;·&nbsp; ${esc(range(e))}</div><h3>${esc(e.title)}</h3><p class="venue">${esc(e.venue)}</p><p class="desc">${esc(e.desc)}</p><div class="badges">${isNew(e)?'<span class="badge new-badge">New since your last visit</span>':''}${saved.has(e.id)?`<span class="badge">${esc(PLAN_STATES[statusFor(e.id)])}</span>`:''}${planAlerts[e.id]?.length?'<span class="badge update-badge">Details changed · see My plans</span>':''}<span class="badge ${e.price==='Free'?'free':''}">${esc(e.price)}</span><span class="badge">${e.min===null?'Age range not listed':e.max===99?(e.min===0?'All ages':'Ages '+e.min+'+'):'Ages '+e.min+'–'+e.max}</span></div><div class="cardfoot"><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">${esc(e.source)} ↗</a><span class="status">${esc(eventFreshness(e).old?'Older listing · recheck':e.status)}</span></div><p class="checked ${eventFreshness(e).old?'old':''}">${esc(eventFreshness(e).label)}</p>${listingLinks(e)}<button class="card-calendar" data-calendar="${esc(e.id)}" aria-label="Add ${esc(e.title)} to calendar">+ Calendar</button><button class="hide-event" data-hide="${esc(e.id)}" aria-label="${hiddenIds.has(e.id)?'Restore':'Hide'} ${esc(e.title)}">${hiddenIds.has(e.id)?'Restore event':'Hide event'}</button><a class="directions" href="${esc(directionsUrl(e))}" target="_blank" rel="noopener noreferrer">Directions ↗</a></div></article>`);
+$('#heading').textContent=view==='saved'?'Your saved outings':period==='all'?'Good things on the horizon':dateLabel(dates[0])+'–'+dateLabel(dates[1]);$('#result-count').textContent=events.length+' events · Pacific time';$('#count').textContent=saved.size?'('+saved.size+')':'';const newCount=seed.filter(e=>isNew(e)&&(e.endDate||e.date)>=today()).length;$('#new-count').textContent=newCount?newCount+' new since your last visit':'New listings will be marked here after your next visit.';$('#cards').innerHTML=renderEventGroups(events,dates,e=>`<article class="card"><div class="visual" style="background:${/^#[a-f0-9]{6}$/i.test(e.color||'')?e.color:'#e5eadd'}"><span class="symbol" aria-hidden="true">${esc(e.icon||'✳')}</span><div class="datebox">${e.endDate?'UNTIL':new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short'}).toUpperCase()}<strong>${e.endDate?esc(dateLabel(e.endDate)):Number(e.date.slice(-2))}</strong></div><button class="save ${saved.has(e.id)?'on':''}" data-save="${esc(e.id)}" aria-label="${saved.has(e.id)?'Unsave':'Save'} ${esc(e.title)}" aria-pressed="${saved.has(e.id)}">${saved.has(e.id)?'♥':'♡'}</button></div><div class="content"><div class="meta">${esc(e.city)} &nbsp;·&nbsp; ${esc(range(e))}</div><h3>${esc(e.title)}</h3><p class="venue">${esc(e.venue)}</p><p class="desc">${esc(e.desc)}</p>${view==='discover'?recommendationHTML(e):''}<div class="badges">${isNew(e)?'<span class="badge new-badge">New since your last visit</span>':''}${saved.has(e.id)?`<span class="badge">${esc(PLAN_STATES[statusFor(e.id)])}</span>`:''}${planAlerts[e.id]?.length?'<span class="badge update-badge">Details changed · see My plans</span>':''}<span class="badge ${e.price==='Free'?'free':''}">${esc(e.price)}</span><span class="badge">${e.min===null?'Age range not listed':e.max===99?(e.min===0?'All ages':'Ages '+e.min+'+'):'Ages '+e.min+'–'+e.max}</span></div><div class="cardfoot"><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">${esc(e.source)} ↗</a><span class="status">${esc(eventFreshness(e).old?'Older listing · recheck':e.status)}</span></div><p class="checked ${eventFreshness(e).old?'old':''}">${esc(eventFreshness(e).label)}</p>${listingLinks(e)}<button class="card-calendar" data-calendar="${esc(e.id)}" aria-label="Add ${esc(e.title)} to calendar">+ Calendar</button><button class="hide-event" data-hide="${esc(e.id)}" aria-label="${hiddenIds.has(e.id)?'Restore':'Hide'} ${esc(e.title)}">${hiddenIds.has(e.id)?'Restore event':'Hide event'}</button><a class="directions" href="${esc(directionsUrl(e))}" target="_blank" rel="noopener noreferrer">Directions ↗</a></div></article>`);
 const plans=all().filter(e=>saved.has(e.id));
 $('#plan').innerHTML=plans.map(e=>`<div class="planitem"><span class="small">${e.endDate?'Through '+dateLabel(e.endDate):dateLabel(e.date)} · ${esc(range(e))}</span><strong>${esc(e.title)}</strong><span class="small">${esc(e.city)} · ${esc(eventFreshness(e).label)}</span>${statusSelect(e)}${alertHTML(e)}${conflictHTML(e,plans)}<div class="plan-links"><a href="${esc(directionsUrl(e))}" target="_blank" rel="noopener noreferrer">Directions ↗</a><a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">Organizer / registration ↗</a></div><button data-calendar="${esc(e.id)}">+ Calendar</button><button data-save="${esc(e.id)}" aria-label="Remove ${esc(e.title)}">Remove</button></div>`).join('')||'<div class="empty-plan">♡ Your next adventure starts with a save.</div>';
 const available=new Set(plans.map(e=>e.id)),missing=[...saved].filter(id=>!available.has(id));
@@ -418,6 +446,8 @@ $('#restore-file').addEventListener('change',async e=>{
  catch(error){toast(error instanceof SyntaxError?'That file is not valid JSON.':error.message)}
  finally{e.target.value=''}
 });
+$('#recommend-enabled').checked=preferences.enabled;$('#recommend-city').value=preferences.city;$('#recommend-activity').value=preferences.activity;$('#recommend-age').value=preferences.age;
+['recommend-enabled','recommend-city','recommend-activity','recommend-age'].forEach(id=>$('#'+id).addEventListener('change',updatePreferences));
 render();loadFeed();
 
 $('#weekends-only').addEventListener('change',render);
