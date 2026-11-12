@@ -23,6 +23,14 @@ def ikea_html(item):
     return '<script type="text/hydrate">'+json.dumps({'events':[item]})+'</script>'
 
 class CollectTests(unittest.TestCase):
+    def test_berkeley_library_branches_are_not_temescal(self):
+        base={'city':'Berkeley','source':'Alameda Kids','url':'https://example.org/event'}
+        for venue in ('West Branch – Meeting Room, 1125 University Ave., Berkeley',
+                      'Tarea Hall Pittman South branch, 1901 Russell St., Berkeley',
+                      '2940 Benvenue Avenue', '1170 The Alameda', '2090 Kittredge St'):
+            with self.subTest(venue=venue):self.assertFalse(allowed_library({**base,'venue':venue}))
+        self.assertTrue(allowed_library({**base,'venue':'Olive Branch Cafe'}))
+        self.assertTrue(allowed_library({**base,'city':'Oakland','venue':'Temescal Branch'}))
     def test_history_preserves_prior_run_and_distinguishes_errors_from_zero(self):
         previous_source={'id':'ikea','name':'IKEA','mode':'automatic','state':'ok','count':12}
         previous={'generated_at':(NOW-timedelta(days=1)).isoformat(),'events':[{}]*12,'sources':[previous_source]}

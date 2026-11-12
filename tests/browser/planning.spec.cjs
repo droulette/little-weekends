@@ -22,6 +22,22 @@ test.beforeEach(async ({page})=>{
   await page.goto('/',{waitUntil:'domcontentloaded'});
 });
 
+test('default view shows weekdays within 60 days and keeps weekend shortcuts',async ({page})=>{
+  const weekday={...fixture.events[0],id:'weekday',title:'Weekday event',date:'2026-11-06'};
+  const edge={...fixture.events[0],id:'edge',title:'End of 60 days',date:'2027-01-02'};
+  const later={...fixture.events[0],id:'later',title:'After 60 days',date:'2027-01-03'};
+  await page.route('**/data/events.json',route=>route.fulfill({json:{...fixture,events:[weekday,edge,later]}}));
+  await page.reload({waitUntil:'domcontentloaded'});
+  await expect(page.getByRole('heading',{name:'Next 60 days'})).toBeVisible();
+  await expect(page.getByLabel('Weekend events only (Saturday & Sunday)')).not.toBeChecked();
+  await expect(page.getByLabel('Price')).toHaveValue('');
+  await expect(page.locator('#cards')).toContainText('Weekday event');
+  await expect(page.locator('#cards')).toContainText('End of 60 days');
+  await expect(page.locator('#cards')).not.toContainText('After 60 days');
+  await page.getByRole('button',{name:'This weekend'}).click();
+  await expect(page.locator('#cards')).not.toContainText('Weekday event');
+});
+
 test('save a plan, reload, and see collection dashboard',async ({page})=>{
   const cards=page.locator('#cards');
   await expect(cards.getByRole('heading',{name:'Family craft day'})).toBeVisible();

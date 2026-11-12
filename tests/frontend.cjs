@@ -23,6 +23,19 @@ vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'site/app.j
 setImmediate(async()=>{
  try{
   await vm.runInContext('loadFeed()',ctx);
+  assert.equal(vm.runInContext('period',ctx),'all');
+  assert.equal(elements['#heading'].textContent,'Next 60 days');
+  assert.equal(vm.runInContext('horizonEnd()',ctx),'2027-01-02');
+  ctx.windowFixture=[{...feed.events[0],id:'weekday',title:'Weekday event',date:'2026-11-06'},
+   {...feed.events[0],id:'boundary',title:'Last day event',date:'2027-01-02'},
+   {...feed.events[0],id:'beyond',title:'Beyond window',date:'2027-01-03'},
+   {...feed.events[2],id:'overlap',title:'Ongoing overlap',date:'2026-10-01',endDate:'2027-02-01'}];
+  vm.runInContext("seed=windowFixture;view='discover';period='all';$('#weekends-only').checked=false;$('#cost').value='';$('#include-unconfirmed').checked=true;render()",ctx);
+  assert.match(elements['#cards'].innerHTML,/Weekday event/);assert.match(elements['#cards'].innerHTML,/Last day event/);assert.match(elements['#cards'].innerHTML,/Ongoing overlap/);
+  assert(!elements['#cards'].innerHTML.includes('Beyond window'));
+  vm.runInContext("selectedWeekend='2027-01-02';period='chosen';render()",ctx);
+  assert.match(elements['#cards'].innerHTML,/Beyond window/);
+  vm.runInContext("period='all'",ctx);await vm.runInContext('loadFeed()',ctx);
   assert.match(elements['#digest-content'].innerHTML,/Holiday Cookie Decorating/);
   assert(!elements['#digest-content'].innerHTML.includes('Future craft'));
   vm.runInContext("hiddenIds.add('dated');render()",ctx);
@@ -345,6 +358,9 @@ setImmediate(async()=>{
   elements['#visit-cancel'].onclick();await sundayVisit;
   // Library rules distinguish actual library branches from an unrelated venue.
   assert.equal(vm.runInContext("allowedLibrary({venue:'Olive Branch Cafe · Oakland',source:'Calendar',url:'https://example.org/'})",ctx),true);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'West Branch – Meeting Room, 1125 University Ave., Berkeley',city:'Berkeley',source:'Alameda Kids',url:'https://example.org/'})",ctx),false);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Tarea Hall Pittman South branch, 1901 Russell St.',city:'Berkeley',source:'Alameda Kids',url:'https://example.org/'})",ctx),false);
+  assert.equal(vm.runInContext("allowedLibrary({venue:'Olive Branch Cafe',city:'Berkeley',source:'Calendar',url:'https://example.org/'})",ctx),true);
   assert.equal(vm.runInContext("allowedLibrary({venue:'Manor Branch, 1241 Manor Blvd.',city:'San Leandro',source:'Calendar',url:'https://example.org/'})",ctx),false);
   assert.equal(vm.runInContext("allowedLibrary({venue:'Rockridge Branch · Oakland',source:'Calendar',url:'https://example.org/'})",ctx),false);
   assert.equal(vm.runInContext("allowedLibrary({venue:'Temescal Branch',source:'Oakland Public Library',url:'https://oaklandlibrary.bibliocommons.com/'})",ctx),true);
@@ -434,6 +450,14 @@ setImmediate(async()=>{
   assert.match(vm.runInContext("recommendationHTML({city:'Oakland',cat:'Stories & play',min:8,max:12})",ctx),/Listed ages exclude one or more selected ages/);
   vm.runInContext("$('#recommend-enabled').checked=false;updatePreferences()",ctx);
   cards=elements['#cards'].innerHTML;assert(cards.indexOf('data-save="early"')<cards.indexOf('data-save="match"'));assert(!cards.includes('points</strong>'));
+  // Apply the library rule to live and cached feeds, including vague branch names.
+  ctx.libraryFeed={...feed,events:[{...feed.events[0],id:'berkeley-west',city:'Berkeley',venue:'West Branch – Meeting Room, 1125 University Ave.',title:'West library'},
+   {...feed.events[0],id:'berkeley-south',city:'Berkeley',venue:'Tarea Hall Pittman South branch, 1901 Russell St.',title:'South library'},
+   {...feed.events[0],id:'temescal',city:'Oakland',venue:'Temescal Branch',title:'Temescal library'}]};
+  ctx.fetch=async()=>({ok:true,json:async()=>ctx.libraryFeed});await vm.runInContext('loadFeed()',ctx);
+  assert.equal(vm.runInContext("seed.map(e=>e.id).join(',')",ctx),'temescal');
+  ctx.fetch=async()=>{throw Error('offline')};await vm.runInContext('loadFeed()',ctx);
+  assert.equal(vm.runInContext("seed.map(e=>e.id).join(',')",ctx),'temescal');
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
  }catch(e){console.error(e);process.exitCode=1}
 });

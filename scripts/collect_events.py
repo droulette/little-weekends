@@ -62,6 +62,8 @@ def canonical(url):
 # Known Oakland Public Library branch names without the word "library".
 # Source: https://oaklandlibrary.org/faqs/ and the OPL location directory.
 OPL_BRANCH = re.compile(r'\b(?:81st Avenue|Asian|Brookfield|(?:C[eé]sar(?:\s+E\.)?\s+)?Ch[aá]vez|Dimond|Eastmont|Elmhurst|Fruitvale|Golden Gate|Lakeview|Martin (?:Luther |L\. )?King(?:,?\s*Jr\.?)?|Melrose|Montclair|Piedmont(?: Avenue)?|Rockridge|Temescal|West Oakland)\s+Branch\b', re.I)
+# Berkeley library branches are sometimes listed only by branch name or address.
+BERKELEY_BRANCH = re.compile(r'\b(?:(?:West|North|Claremont|South|Tarea Hall Pittman South)\s+Branch|1125\s+University\s+(?:Ave(?:nue)?\.?|Avenue)|1170\s+(?:The\s+)?Alameda|2090\s+Kittredge|2940\s+Benvenue|1901\s+Russell)\b', re.I)
 
 
 def allowed_library(event):
@@ -69,7 +71,9 @@ def allowed_library(event):
     source=str(event.get('source') or '')
     host=(urlparse(str(event.get('url') or '')).hostname or '').lower()
     is_library=(bool(re.search(r'\blibrar(?:y|ies)\b',venue+' '+source,re.I))
-                or bool(OPL_BRANCH.search(venue)) or (event.get('city')=='San Leandro' and bool(re.search(r'\bManor Branch\b',venue,re.I))) or event.get('source_id')=='opl'
+                or bool(OPL_BRANCH.search(venue)) or (event.get('city')=='San Leandro' and bool(re.search(r'\bManor Branch\b',venue,re.I)))
+                or (event.get('city')=='Berkeley' and bool(BERKELEY_BRANCH.search(venue))) or event.get('source_id')=='opl'
+                or host=='berkeleypubliclibrary.org' or host.endswith('.berkeleypubliclibrary.org')
                 or host.endswith('.bibliocommons.com') or host.endswith('.libnet.info'))
     return not is_library or bool(re.search(r'\bTemescal\b',venue,re.I))
 

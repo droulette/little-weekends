@@ -4,8 +4,8 @@ A free family-outing planner for Oakland and nearby East Bay cities. Static HTML
 
 ## What works
 
-- This weekend, next weekend, and future events; city, age, activity, and price filters.
-- Free-only is selected by default. Imported events require free admission. RSS guide articles are separate reading links and can include paid activities.
+- The next 60 days by default, with weekend shortcuts and city, age, activity, and price filters.
+- Imported events require free admission; the default price filter also permits personally added paid events. RSS guide articles are separate reading links and can include paid activities.
 - Save plans and personal additions in your browser; export them to an `.ics` calendar file.
 - Ongoing activities, such as IKEA's gnome hunt, sort below dated activities.
 - Source-specific refresh status, timestamps, stale-listing labels, and manual-source notes.
@@ -105,7 +105,7 @@ A separate daily ChatGPT maintenance task, “Keep Little Weekends current”, c
 
 Curated records may include `also_listed_at`, a list of hand-verified exact event URLs. The merge uses these aliases only for the same date and start time, preserving the curated card ID when an automatic calendar imports the same outing under another title. Do not add guessed URLs or general venue aliases across unrelated sessions.
 
-Library outings are limited to Temescal Branch, including listings from family calendars. A checked-by-default Saturday/Sunday filter also applies to Looking ahead; turn it off to see weekdays. Saved plans remain accessible, and ongoing events that overlap a weekend remain at the bottom.
+Automatically collected library outings are limited to Temescal Branch, including listings from family calendars. Library detection uses source, venue, known branch names and addresses; an unrecognized library with incomplete metadata can still slip through. Discover defaults to the next 60 calendar days including today, with weekdays shown. Use the weekend shortcuts or the optional weekend-only filter to narrow it. Ongoing activities remain at the bottom.
 
 
 ### Listing freshness and duplicate handling
@@ -180,7 +180,7 @@ browser never saved a copy of the event.
 
 Discover groups dated events by weekday and date. Weekend views show Saturday and
 Sunday separately, including an empty-day message when a filter excludes all
-events on one day. Looking ahead groups each date chronologically. Ongoing and
+events on one day. Next 60 days groups each date chronologically. Ongoing and
 multi-day activities appear once in a separate section at the bottom.
 
 
@@ -214,7 +214,7 @@ Discover excludes past dates even when the weekend-only filter is unchecked.
 ### Reliability refinements
 
 - Ongoing event calendar exports default to the first available day of the
-  currently selected weekend. My plans and Looking ahead use the earliest
+  currently selected weekend. My plans and Next 60 days use the earliest
   available date. Users can choose any valid visit date.
 - Discover excludes events whose explicit end time has passed in Pacific time.
   Events with unknown end times and ongoing activities remain visible. Saved
