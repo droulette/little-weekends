@@ -74,11 +74,11 @@ test('recommendations explain matches and persist locally',async ({page})=>{
   await page.getByLabel('Age match').selectOption('both');
   await page.getByLabel('Rank by my preferences').check();
   const card=page.locator('#cards').locator('article').filter({hasText:'Family craft day'});
-  await expect(card).toContainText('5 points');
+  await expect(card).toContainText('6 points');
   await expect(card).toContainText('Preferred city');
   await expect(card).toContainText('Age range not listed');
   await page.reload({waitUntil:'domcontentloaded'});
-  await expect(page.locator('#cards').locator('article').filter({hasText:'Family craft day'})).toContainText('5 points');
+  await expect(page.locator('#cards').locator('article').filter({hasText:'Family craft day'})).toContainText('6 points');
 });
 
 test('phone layout fits and main controls can be used',async ({page},testInfo)=>{

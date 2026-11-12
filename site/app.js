@@ -56,7 +56,7 @@ let preferences={enabled:storedPreferences?.enabled===true,
  age:['4','6','both'].includes(storedPreferences?.age)?storedPreferences.age:''};
 function scoreEvent(e,p=preferences){
  let score=0;const reasons=[];
- if(p.city&&e.city===p.city){score+=3;reasons.push('Preferred city')}
+ if(p.city&&e.city===p.city){score+=4;reasons.push('Preferred city')}
  if(p.activity&&e.cat===p.activity){score+=2;reasons.push('Preferred activity')}
  if(p.age&&Number.isInteger(e.min)&&Number.isInteger(e.max)){
   const ages=p.age==='both'?[4,6]:[Number(p.age)];

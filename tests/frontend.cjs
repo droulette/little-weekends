@@ -421,9 +421,9 @@ setImmediate(async()=>{
   cards=elements['#cards'].innerHTML;assert(cards.indexOf('data-save="early"')<cards.indexOf('data-save="match"'));assert(!cards.includes('points</strong>'));
   vm.runInContext("$('#recommend-enabled').checked=true;$('#recommend-city').value='Oakland';$('#recommend-activity').value='Art & crafts';$('#recommend-age').value='both';updatePreferences()",ctx);
   cards=elements['#cards'].innerHTML;assert(cards.indexOf('data-save="match"')<cards.indexOf('data-save="early"'));assert(cards.indexOf('data-save="early"')<cards.indexOf('data-save="sunday"'));assert(cards.indexOf('data-save="sunday"')<cards.indexOf('data-save="ongoing"'));
-  assert.match(cards,/7 points/);assert.match(cards,/Preferred city/);assert.match(cards,/Fits ages 4 and 6/);assert.match(cards,/Age range not listed/);
+  assert.match(cards,/8 points/);assert.match(cards,/Preferred city/);assert.match(cards,/Fits ages 4 and 6/);assert.match(cards,/Age range not listed/);
   assert.equal(JSON.parse(storage.get('lw-recommendations')).city,'Oakland');
-  assert.equal(vm.runInContext("scoreEvent({city:'Oakland',cat:'Art & crafts',min:null,max:null}).score",ctx),5);
+  assert.equal(vm.runInContext("scoreEvent({city:'Oakland',cat:'Art & crafts',min:null,max:null}).score",ctx),6);
   vm.runInContext("$('#recommend-enabled').checked=false;updatePreferences()",ctx);
   cards=elements['#cards'].innerHTML;assert(cards.indexOf('data-save="early"')<cards.indexOf('data-save="match"'));assert(!cards.includes('points</strong>'));
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');
