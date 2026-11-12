@@ -654,5 +654,31 @@
       "https://www.510families.com/calendar/selfies-with-santa-2-2025-12-06/"
     ],
     "price_basis": "Organizer and 510 Families explicitly state free of charge and open to the public."
+  },
+  {
+    "id": "winter-on-solano-2026",
+    "title": "Winter on Solano",
+    "date": "2026-12-06",
+    "start": "12:00",
+    "end": "17:00",
+    "city": "Albany",
+    "venue": "Solano Avenue · The Alameda to San Pablo Avenue (Albany & Berkeley)",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "🎉",
+    "color": "#f0e3ca",
+    "source": "Solano Avenue Association · organizer",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://www.solanoavenueassn.org/winter-on-solano/",
+    "desc": "Free family festival along Solano Avenue in Albany and Berkeley, December 6, noon–5pm. The organizer lists a kids zone, free face painting, bubbles, music and Santa. The program is still being finalized and individual activities may have shorter hours. Rain or shine; the avenue remains open to vehicle traffic. Food and shopping cost extra. No numeric age limits are published.",
+    "checked_at": "2026-11-12T16:16:14.860367+00:00",
+    "price_basis": "Organizer explicitly states its public events are free and family friendly; GoBayArea independently lists free family admission.",
+    "evidence_urls": [
+      "https://www.solanoavenueassn.org/winter-on-solano/",
+      "https://gobayarea.com/events/winter-on-solano-santa-on-solano"
+    ]
   }
 ]
