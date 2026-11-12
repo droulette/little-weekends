@@ -79,6 +79,10 @@ test('card actions share a row and remain usable',async ({page})=>{
   const card=page.locator('#cards article').first();
   await expect(card.locator('.visual')).toHaveCount(0);
   await expect(card.getByRole('button',{name:'Save Family craft day'})).toBeVisible();
+  const meta=card.locator('.meta');
+  await expect(meta.locator('.badge.free')).toHaveText('Free');
+  await expect(meta.locator('.badge').nth(1)).toHaveText('Age range not listed');
+  await expect(card.locator('.badges')).not.toContainText('Free');
   const actions=card.locator('.card-actions');
   const calendar=actions.getByRole('button',{name:'Add Family craft day to calendar'});
   const hide=actions.getByRole('button',{name:'Hide Family craft day'});
