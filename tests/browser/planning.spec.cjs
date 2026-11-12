@@ -76,13 +76,18 @@ test('download a calendar event with the right date and time',async ({page})=>{
 });
 
 test('card actions share a row and remain usable',async ({page})=>{
-  const actions=page.locator('#cards article').first().locator('.card-actions');
+  const card=page.locator('#cards article').first();
+  await expect(card.locator('.visual')).toHaveCount(0);
+  await expect(card.getByRole('button',{name:'Save Family craft day'})).toBeVisible();
+  const actions=card.locator('.card-actions');
   const calendar=actions.getByRole('button',{name:'Add Family craft day to calendar'});
   const hide=actions.getByRole('button',{name:'Hide Family craft day'});
   const directions=actions.getByRole('link',{name:'Directions ↗'});
   await expect(calendar).toBeVisible();await expect(hide).toBeVisible();await expect(directions).toBeVisible();
   const [a,b,c]=await Promise.all([calendar.boundingBox(),hide.boundingBox(),directions.boundingBox()]);
   expect(Math.abs(a.y-b.y)).toBeLessThanOrEqual(1);expect(Math.abs(a.y-c.y)).toBeLessThanOrEqual(1);
+  const style=await calendar.evaluate(el=>({border:getComputedStyle(el).borderStyle,decoration:getComputedStyle(el).textDecorationLine}));
+  expect(style.border).toBe('none');expect(style.decoration).toContain('underline');
   await expect(directions).toHaveAttribute('href',/google\.com\/maps\/dir/);
 });
 
