@@ -75,6 +75,25 @@ test('download a calendar event with the right date and time',async ({page})=>{
   expect(calendar).toContain('END:VCALENDAR');
 });
 
+test('card actions share a row and remain usable',async ({page})=>{
+  const actions=page.locator('#cards article').first().locator('.card-actions');
+  const calendar=actions.getByRole('button',{name:'Add Family craft day to calendar'});
+  const hide=actions.getByRole('button',{name:'Hide Family craft day'});
+  const directions=actions.getByRole('link',{name:'Directions ↗'});
+  await expect(calendar).toBeVisible();await expect(hide).toBeVisible();await expect(directions).toBeVisible();
+  const [a,b,c]=await Promise.all([calendar.boundingBox(),hide.boundingBox(),directions.boundingBox()]);
+  expect(Math.abs(a.y-b.y)).toBeLessThanOrEqual(1);expect(Math.abs(a.y-c.y)).toBeLessThanOrEqual(1);
+  await expect(directions).toHaveAttribute('href',/google\.com\/maps\/dir/);
+});
+
+test('card actions wrap without overflow at a narrow width',async ({page})=>{
+  await page.setViewportSize({width:320,height:800});
+  const card=page.locator('#cards article').first();
+  await expect(card.getByRole('button',{name:'Hide Family craft day'})).toBeVisible();
+  const sizes=await page.evaluate(()=>({viewport:document.documentElement.clientWidth,content:document.documentElement.scrollWidth}));
+  expect(sizes.content).toBeLessThanOrEqual(sizes.viewport);
+});
+
 test('preview the coming weekend without sending email',async ({page})=>{
   await page.getByText('Preview this weekend’s digest').click();
   const digest=page.locator('#digest-content');
