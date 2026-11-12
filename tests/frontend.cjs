@@ -25,6 +25,8 @@ setImmediate(async()=>{
   await vm.runInContext('loadFeed()',ctx);
   assert.equal(vm.runInContext('period',ctx),'all');
   assert.equal(elements['#heading'].textContent,'Next 60 days');
+  assert.match(fs.readFileSync(path.join(root,'site/index.html'),'utf8'),/id="weekends-only" checked/);
+  assert.match(fs.readFileSync(path.join(root,'site/index.html'),'utf8'),/<option value="free" selected>Free only<\/option>/);
   assert.equal(vm.runInContext('horizonEnd()',ctx),'2027-01-02');
   ctx.windowFixture=[{...feed.events[0],id:'weekday',title:'Weekday event',date:'2026-11-06'},
    {...feed.events[0],id:'boundary',title:'Last day event',date:'2027-01-02'},
