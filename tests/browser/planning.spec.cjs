@@ -81,6 +81,24 @@ test('recommendations explain matches and persist locally',async ({page})=>{
   await expect(page.locator('#cards').locator('article').filter({hasText:'Family craft day'})).toContainText('6 points');
 });
 
+test('known age mismatch ranks below an event with unlisted ages',async ({page})=>{
+  const older={...fixture.events[0],id:'older-kids',title:'Older kids sewing',start:'09:00',end:'10:00',cat:'Stories & play',min:8,max:12};
+  await page.route('**/data/events.json',route=>route.fulfill({json:{...fixture,events:[older,...fixture.events]}}));
+  await page.reload({waitUntil:'domcontentloaded'});
+  await expect(page.locator('#cards article')).toHaveCount(2);
+  await page.getByText('Personalize recommendations').click();
+  await page.getByLabel('Preferred city').selectOption({label:'Oakland'});
+  await page.getByLabel('Preferred activity').selectOption({label:'Art & crafts'});
+  await page.getByLabel('Age match').selectOption('both');
+  await page.getByLabel('Rank by my preferences').check();
+  const cards=page.locator('#cards article');
+  await expect(cards.first()).toContainText('Family craft day');
+  await expect(cards.first()).toContainText('Age range not listed');
+  await expect(cards.nth(1)).toContainText('Older kids sewing');
+  await expect(cards.nth(1)).toContainText('Listed ages exclude one or more selected ages');
+  await expect(cards.nth(1)).toContainText('0 points');
+});
+
 test('phone layout fits and main controls can be used',async ({page},testInfo)=>{
   test.skip(testInfo.project.name!=='mobile-chromium','Phone-sized viewport only');
   await expect(page.locator('#cards').getByRole('heading',{name:'Family craft day'})).toBeVisible();

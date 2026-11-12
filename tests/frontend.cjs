@@ -424,6 +424,14 @@ setImmediate(async()=>{
   assert.match(cards,/8 points/);assert.match(cards,/Preferred city/);assert.match(cards,/Fits ages 4 and 6/);assert.match(cards,/Age range not listed/);
   assert.equal(JSON.parse(storage.get('lw-recommendations')).city,'Oakland');
   assert.equal(vm.runInContext("scoreEvent({city:'Oakland',cat:'Art & crafts',min:null,max:null}).score",ctx),6);
+  // Listed age mismatches lose up to four points; unknown ages remain neutral.
+  assert.equal(vm.runInContext("scoreEvent({city:'Oakland',cat:'Stories & play',min:8,max:12}).score",ctx),0);
+  assert.equal(vm.runInContext("scoreEvent({city:'Oakland',cat:'Stories & play',min:null,max:null}).score",ctx),4);
+  assert.equal(vm.runInContext("scoreEvent({city:'Emeryville',cat:'Art & crafts',min:4,max:99}).score",ctx),4);
+  assert.equal(vm.runInContext("scoreEvent({city:'Oakland',cat:'Art & crafts',min:4,max:5}).score",ctx),2);
+  assert.equal(vm.runInContext("scoreEvent({city:'Alameda',cat:'Building',min:8,max:12}).score",ctx),0);
+  assert.equal(vm.runInContext("scoreEvent({city:'Oakland',cat:'Stories & play',min:8,max:12},{city:'Oakland',activity:'',age:''}).score",ctx),4);
+  assert.match(vm.runInContext("recommendationHTML({city:'Oakland',cat:'Stories & play',min:8,max:12})",ctx),/Listed ages exclude one or more selected ages/);
   vm.runInContext("$('#recommend-enabled').checked=false;updatePreferences()",ctx);
   cards=elements['#cards'].innerHTML;assert(cards.indexOf('data-save="early"')<cards.indexOf('data-save="match"'));assert(!cards.includes('points</strong>'));
   console.log('Passed frontend checks: feed loading, filters, ongoing order, calendar range, escaping, failure messages, source health, cached freshness, provenance, saved-ID migration, weekend selection, plan statuses, conflicts, directions, backup validation/merge, visit badges, hide/restore, saved-plan independence, refresh persistence, alias migration, and backup safety.');

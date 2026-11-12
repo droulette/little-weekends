@@ -146,7 +146,7 @@ feed. The frontend also excludes it from older browser-cached collections.
 
 ## Planning your outings
 
-**Optional recommendations:** in Discover, expand Personalize recommendations and choose a preferred city, activity, and/or age match. Turn on ranking to add 4 points for the preferred city, 2 for the preferred activity, and 2 for a listed age range covering the selected age(s). Unknown ages receive no age points and are labeled as unknown. Existing filters still apply; scores sort within each date, with ongoing activities at the end. Preferences stay in browser storage and are not included in plan backups or email digests. Ranking is a transparent rule, not an AI prediction or a guarantee of suitability.
+**Optional recommendations:** in Discover, expand Personalize recommendations and choose a preferred city, activity, and/or age match. Turn on ranking to add 4 points for the preferred city, 2 for the preferred activity, and 2 for a listed age range covering the selected age(s). If the listed age range excludes any selected age, subtract up to 4 points, with a minimum score of zero. Unknown ages remain neutral and are labeled as unknown. Existing filters still apply; scores sort within each date, with ongoing activities at the end. Preferences stay in browser storage and are not included in plan backups or email digests. Ranking is a transparent rule, not an AI prediction or a guarantee of suitability.
 
 - **Choose a weekend:** pick any date and the app shows that week's Saturday and
   Sunday. The existing This weekend / Next weekend shortcuts remain available.

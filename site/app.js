@@ -61,6 +61,7 @@ function scoreEvent(e,p=preferences){
  if(p.age&&Number.isInteger(e.min)&&Number.isInteger(e.max)){
   const ages=p.age==='both'?[4,6]:[Number(p.age)];
   if(ages.every(age=>e.min<=age&&e.max>=age)){score+=2;reasons.push(p.age==='both'?'Fits ages 4 and 6':'Fits age '+p.age)}
+  else{score=Math.max(0,score-4);reasons.push('Listed ages exclude one or more selected ages (up to −4)')}
  }
  return {score,reasons,ageUnknown:Boolean(p.age&&(e.min==null||e.max==null))};
 }
