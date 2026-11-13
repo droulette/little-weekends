@@ -392,13 +392,18 @@
     "cat": "Celebrations",
     "icon": "🎉",
     "color": "#f0e3ca",
-    "source": "Festival organizer",
+    "source": "Downtown San Leandro · organizer",
     "source_id": "curated",
-    "status": "Organizer listing",
+    "status": "Organizer and local calendar",
     "url": "https://downtownsanleandro.com/events/29th-annual-its-a-wonderful-night/",
-    "desc": "Free community holiday celebration December 4, 5–9pm. Tree lighting at 5:30pm in Estudillo Plaza, with the main event near W. Juana Avenue and Butterfly Plaza. Santa photos, performances and a kids zone; purchases may cost extra. Organizer calendar and Eventeny event date agree on December 4; an Eventeny paragraph retains an inconsistent date.",
-    "checked_at": "2026-11-05T16:29:11.996940+00:00",
-    "price_basis": "Organizer-hosted Eventeny listing describes a free community event."
+    "desc": "Free community holiday celebration December 4, 5–9pm. Tree lighting at 5:30pm in Estudillo Plaza, followed by festivities around W. Juana Avenue and Butterfly Plaza. The organizer lists performances, free Santa photos, train rides, a kids zone and a holiday market. Food, shopping and parking can cost extra. Current organizer and Eventeny dates now agree; GoBayArea independently confirms the outing. No numeric age limits or registration availability are published.",
+    "checked_at": "2026-11-13T16:40:59.689927+00:00",
+    "price_basis": "Organizer-hosted Eventeny page describes a free community event; GoBayArea independently lists Free admission.",
+    "evidence_urls": [
+      "https://downtownsanleandro.com/events/29th-annual-its-a-wonderful-night/",
+      "https://www.eventeny.com/events/copy-of-its-a-wonderful-night-2026-34646/",
+      "https://gobayarea.com/events/its-a-wonderful-night-san-leandro"
+    ]
   },
   {
     "id": "sl-neon-2026",
@@ -680,5 +685,31 @@
       "https://www.solanoavenueassn.org/winter-on-solano/",
       "https://gobayarea.com/events/winter-on-solano-santa-on-solano"
     ]
+  },
+  {
+    "id": "alameda-winter-lights-2026",
+    "title": "Alameda Winter Lights",
+    "date": "2026-12-05",
+    "start": "17:00",
+    "end": "18:00",
+    "city": "Alameda",
+    "venue": "Alameda City Hall · 2263 Santa Clara Avenue",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "🎉",
+    "color": "#f0e3ca",
+    "source": "City of Alameda · organizer",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://www.alamedaca.gov/Shortcut-Content/Events-Activities/Winter-Lights",
+    "desc": "Free community Winter Lights celebration at Alameda City Hall on December 5, 5–6pm. The City confirms the date, hours, location and free admission; its detailed 2026 program is still being updated. GoBayArea describes a family tree lighting, but individual activities are not yet confirmed by the City. No numeric age limits or registration availability are published.",
+    "checked_at": "2026-11-13T16:40:59.689927+00:00",
+    "evidence_urls": [
+      "https://www.alamedaca.gov/Shortcut-Content/Events-Activities/Winter-Lights",
+      "https://gobayarea.com/events/winter-lights-alameda-city-hall-tree-lighting"
+    ],
+    "price_basis": "City of Alameda explicitly calls this a free community event; GoBayArea independently lists Free admission."
   }
 ]
