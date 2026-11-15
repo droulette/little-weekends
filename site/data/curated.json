@@ -1,26 +1,5 @@
 [
   {
-    "id": "ikea-pumpkin",
-    "title": "Beaded pumpkin keychain",
-    "date": "2026-11-14",
-    "start": "13:00",
-    "end": "14:00",
-    "city": "Emeryville",
-    "venue": "IKEA Emeryville · 4400 Shellmound St",
-    "price": "Free",
-    "min": null,
-    "max": null,
-    "cat": "Art & crafts",
-    "icon": "🎨",
-    "color": "#f4e8b7",
-    "source": "IKEA Emeryville",
-    "status": "Check registration",
-    "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/beaded-pumpkin-keychain--107f1b92-430c-4795-83ad-6c7b9fdd1b0b/",
-    "desc": "Free PYSSLA bead craft; IKEA staff handle ironing. IKEA Family registration required. One keychain per participant; participants must be present.",
-    "source_id": "curated",
-    "checked_at": "2026-11-03T20:00:00Z"
-  },
-  {
     "id": "ikea-ornament",
     "title": "Holiday ornament decorating",
     "date": "2026-11-21",
@@ -190,27 +169,6 @@
     "checked_at": "2026-11-03T20:00:00Z"
   },
   {
-    "id": "michaels-clay",
-    "title": "Kids Club: Air-dry clay figurines",
-    "date": "2026-11-14",
-    "start": "10:00",
-    "end": "12:00",
-    "city": "Emeryville",
-    "venue": "Michaels · East Bay Bridge · 3991 Hollis St (confirm store)",
-    "price": "Confirm cost",
-    "min": 4,
-    "max": 99,
-    "cat": "Art & crafts",
-    "icon": "🎨",
-    "color": "#f1dfdf",
-    "source": "Michaels national schedule",
-    "status": "Confirm local participation",
-    "url": "https://www.michaelspressroom.com/news/detail/5107/michaels-and-hallmark-bring-the-screen-free-spirit-of",
-    "desc": "National event date and time; East Bay Bridge participation and local hours are not yet confirmed. Call (510) 658-4830 before going. Kids Club is intended for ages 4+.",
-    "source_id": "curated",
-    "checked_at": "2026-11-03T20:00:00Z"
-  },
-  {
     "id": "michaels-cookieclay",
     "title": "Cookie cutter clay ornaments",
     "date": "2026-11-15",
@@ -274,27 +232,6 @@
     "checked_at": "2026-11-03T20:00:00Z"
   },
   {
-    "id": "comic",
-    "title": "Comics, costumes & local creators",
-    "date": "2026-11-14",
-    "start": "12:00",
-    "end": "18:00",
-    "city": "Oakland",
-    "venue": "Oakstop · 2323 Broadway",
-    "price": "Kids 12 & under free · adult price varies",
-    "min": null,
-    "max": null,
-    "cat": "Celebrations",
-    "icon": "💬",
-    "color": "#e4e0ef",
-    "source": "Veteran Comic Con",
-    "status": "Adult registration",
-    "url": "https://www.veterancomiccon.org/register",
-    "desc": "Veteran Comic Con features artists, comics and cosplay. Children must attend with a registered adult. Check programming for your children.",
-    "source_id": "curated",
-    "checked_at": "2026-11-03T20:00:00Z"
-  },
-  {
     "id": "ornament",
     "title": "Christmas Car Ornament kids workshop",
     "date": "2026-11-21",
@@ -350,35 +287,6 @@
     ]
   },
   {
-    "id": "cv-parade-2026",
-    "title": "Castro Valley Light Parade",
-    "date": "2026-11-14",
-    "start": "15:00",
-    "end": "21:00",
-    "city": "Castro Valley",
-    "venue": "Castro Valley Boulevard · downtown",
-    "price": "Free",
-    "min": null,
-    "max": null,
-    "cat": "Celebrations",
-    "icon": "🎉",
-    "color": "#f0e3ca",
-    "source": "Castro Valley/Eden Area Chamber · organizer",
-    "source_id": "curated",
-    "status": "Organizer and local calendar",
-    "url": "https://www.edenareachamber.com/cvlightparade/",
-    "desc": "Holiday Sweet Street Spectacular: family festivities, bands and kids activities November 14, 3–9pm. The light parade begins after dark, not necessarily at 3pm. Alameda Kids confirms free admission. Castro Valley Boulevard closes between Lake Chabot Road and Redwood Road. Vendor spaces being sold out does not mean public attendance is full.",
-    "checked_at": "2026-11-10T16:48:09.050633+00:00",
-    "also_listed_at": [
-      "https://www.alamedakids.org/castro-valley-%E2%80%93-castro-valley-light-parade-0/"
-    ],
-    "evidence_urls": [
-      "https://www.edenareachamber.com/cvlightparade/",
-      "https://alamedakids.org/castro-valley-%E2%80%93-castro-valley-light-parade-0"
-    ],
-    "price_basis": "Alameda Kids explicitly lists Cost: Free for the family parade; vendor fees are separate."
-  },
-  {
     "id": "sl-holidays-2026",
     "title": "It’s a Wonderful Night",
     "date": "2026-12-04",
@@ -410,7 +318,7 @@
     "title": "Emeryville tree lighting & holiday parade",
     "date": "2026-12-04",
     "start": "16:30",
-    "end": "20:30",
+    "end": "19:00",
     "city": "Emeryville",
     "venue": "Emeryville City Hall · 1333 Park Ave, then Bay Street",
     "price": "Free",
@@ -423,12 +331,16 @@
     "source_id": "curated",
     "status": "Organizer and local calendar",
     "url": "https://baystreetemeryville.com/events/2026-tree-lighting-celebration/",
-    "desc": "Free admission listed by 510 Families. City Hall festivities begin at 4:30pm, followed by a car-free parade to Bay Street. Bay Street lists its tree lighting at 6:15pm and market until 9pm; 510 Families lists the City Hall outing through 8:30pm. Food, shopping and garage parking cost extra; Santa photo pricing is not confirmed.",
-    "checked_at": "2026-11-05T16:29:11.996940+00:00",
+    "desc": "Free City Hall tree lighting and car-free parade toward Bay Street on December 4, starting at 4:30pm. The current 510 Families outing ends at 7pm; the separate Bay Street market continues until 9pm. Bay Street tree lighting is at 6:15pm. Food, shopping and garage parking cost extra; Santa photo pricing is not confirmed. No numeric age limits are published.",
+    "checked_at": "2026-11-15T16:42:27.137029+00:00",
     "also_listed_at": [
       "https://www.510families.com/calendar/tree-lighting/"
     ],
-    "price_basis": "510 Families event page explicitly lists Free admission."
+    "price_basis": "510 Families explicitly lists Free admission; Bay Street independently confirms the December 4 community program.",
+    "evidence_urls": [
+      "https://baystreetemeryville.com/events/2026-tree-lighting-celebration/",
+      "https://www.510families.com/calendar/tree-lighting/"
+    ]
   },
   {
     "id": "fourth-street-craft-party-2026",
@@ -448,13 +360,13 @@
     "source_id": "curated",
     "status": "Organizer and local calendar",
     "url": "https://www.fourthstreet.com/eventslisting/2026/12/12/holiday-crafting-like-never-before-2026/",
-    "desc": "Free outdoor family craft festival with wreath making, collage pendants, glitter pine cones, snowflakes, live music, and visits with Santa, an Elf and the Grinch. Charm pressing is limited to the first 150 people. No numeric age limits or registration availability are published.",
+    "desc": "Free family craft festival on December 12, 1–4pm, outdoors at Fourth and Delaware. Activities include wreaths, collage pendants, glitter pine cones, snowflakes, live music and costumed-character visits. Charm pressing is limited to the first 150 people. The online food-bank fundraiser is separate from free event admission. No numeric age limits or registration availability are published.",
     "evidence_urls": [
-      "https://www.fourthstreet.com/events",
+      "https://www.fourthstreet.com/eventslisting/2026/12/12/holiday-crafting-like-never-before-2026/",
       "https://www.510families.com/a-parents-guide-to-berkeleys-fourth-street/"
     ],
     "price_basis": "Organizer explicitly states that the annual family event is free.",
-    "checked_at": "2026-11-06T16:06:59.224450+00:00"
+    "checked_at": "2026-11-15T16:42:27.137029+00:00"
   },
   {
     "id": "alameda-cocoa-stroll-2026",
