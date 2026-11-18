@@ -365,13 +365,16 @@
     "source_id": "curated",
     "status": "Organizer and local calendar",
     "url": "https://downtownalameda.com/events/holiday-activities/",
-    "desc": "Free family-friendly stroll with participating downtown businesses offering sips and nibbles while supplies last. Runs alongside the Winter Market, whose shopping and other purchases cost extra. The organizer’s 2026 events page and 510 Families independently confirm December 5; the organizer holiday page supplies the 5–7pm hours.",
+    "desc": "Free family Hot Cocoa Stroll on December 5, 5–7pm. Participating downtown businesses offer sips and nibbles while supplies last. Runs alongside the Winter Market; shopping and other purchases cost extra. The current holiday overview and local calendar confirm the 2026 date. The separate business-by-business page still shows the prior year; its participant list is not confirmed for 2026.",
     "evidence_urls": [
-      "https://downtownalameda.com/events/",
-      "https://www.510families.com/things-to-do-alameda-kids/"
+      "https://downtownalameda.com/events/holiday-activities/",
+      "https://www.510families.com/calendar/hot-cocoa-stroll/"
     ],
-    "price_basis": "Organizer explicitly describes a free family-friendly tradition.",
-    "checked_at": "2026-11-06T16:06:59.224450+00:00"
+    "price_basis": "Current organizer holiday overview explicitly describes a free family tradition; the dated 510 Families listing independently confirms Free admission.",
+    "checked_at": "2026-11-18T16:17:03.320570+00:00",
+    "also_listed_at": [
+      "https://www.510families.com/calendar/hot-cocoa-stroll/"
+    ]
   },
   {
     "id": "estuary-lighted-yacht-parade-2026",
