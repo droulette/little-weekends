@@ -821,5 +821,63 @@
       "https://www.510families.com/calendar/laurel-district-santa-stroll/"
     ],
     "price_basis": "Organizer explicitly says free for all families; Funcheap independently lists Free admission."
+  },
+  {
+    "id": "bart-sweaterfest-2026",
+    "title": "BART SweaterFest",
+    "date": "2026-12-05",
+    "start": "12:00",
+    "end": "14:00",
+    "city": "Oakland",
+    "venue": "Rockridge BART Station Plaza · College Avenue & Shafter",
+    "source": "BART · organizer and 510 Families",
+    "url": "https://www.bart.gov/news/articles/2026/news20261113",
+    "desc": "Holiday gift-bag crafts, carolers and festive photos at Rockridge Station Plaza, December 5, noon–2pm. Free event admission is confirmed by 510 Families. Merchandise and BART fares cost extra. Numeric age bounds and registration availability are not published.",
+    "price_basis": "510 Families explicitly lists Free admission for the plaza celebration; organizer confirms the dated public craft event.",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "🎉",
+    "color": "#f0e3ca",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "evidence_urls": [
+      "https://www.bart.gov/news/articles/2026/news20261113",
+      "https://www.510families.com/calendar/bart-sweaterfest/"
+    ],
+    "also_listed_at": [
+      "https://www.510families.com/calendar/bart-sweaterfest/"
+    ],
+    "checked_at": "2026-11-20T16:52:01.455478+00:00"
+  },
+  {
+    "id": "alameda-menorah-2026",
+    "title": "Alameda Community Menorah Lighting",
+    "date": "2026-12-09",
+    "start": "17:00",
+    "end": "19:00",
+    "city": "Alameda",
+    "venue": "South Shore Center · Center Court, 523 S. Shore Center",
+    "source": "Temple Israel of Alameda · organizer and 510 Families",
+    "url": "https://www.templeisraelalameda.org/event/southshore-mall-chanukiah-lighting.html",
+    "desc": "Free family celebration December 9, 5–7pm, at South Shore Center’s center court. Includes klezmer music, dancing, crafts, a sing-along, a dreidel competition and Hanukkah treats. Everyone is welcome. Numeric age bounds and registration availability are not published. This Wednesday outing appears when the weekend-only filter is turned off.",
+    "price_basis": "Organizer explicitly says Free; independent 510 Families listing confirms free family admission and everyone welcome.",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "🎉",
+    "color": "#f0e3ca",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "evidence_urls": [
+      "https://www.templeisraelalameda.org/event/southshore-mall-chanukiah-lighting.html",
+      "https://www.510families.com/calendar/alameda-community-menorah-lighting/"
+    ],
+    "also_listed_at": [
+      "https://www.510families.com/calendar/alameda-community-menorah-lighting/"
+    ],
+    "checked_at": "2026-11-20T16:52:01.455478+00:00"
   }
 ]
