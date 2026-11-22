@@ -395,15 +395,15 @@
     "source": "Lighted Yacht Parade · organizers",
     "source_id": "curated",
     "status": "Organizer and local calendar",
-    "url": "https://www.lightedyachtparade.com/",
-    "desc": "Watch illuminated boats from the public Jack London Square waterfront. The organizer lists a 5:30pm parade start; arrival at a particular viewing spot can be later. Free public viewing is corroborated by a local family calendar. Yacht-club dinners, reserved seating and boat-entry fees are separate paid options. No end time is published.",
-    "price_basis": "Littles Weekly lists free public viewing; paid club meals and boat participation are not included.",
+    "url": "https://www.lightedyachtparade.com/parade",
+    "desc": "Free public viewing of illuminated boats December 5. The parade starts around 5:30pm on the Alameda side, then crosses at Jack London Square and returns along Oakland; arrival at a viewing spot can be later. The organizer confirms viewing along both shores between Jack London Square and Fortman Marina and says it runs rain or shine. Boat-entry fees, ferry trips, club dinners and reserved seating are separate paid options. No end time is published.",
+    "price_basis": "Bay Area Parent’s November 20, 2026 guide explicitly lists FREE public viewing; organizer confirms the route, public shore viewing and dated start.",
     "evidence_urls": [
-      "https://www.encinal.org/default.aspx?ID=201083&chgs=&p=.NETEventView&qfilter=&ssid=0&title=&type=0",
-      "https://www.510families.com/holiday-lights-oakland/",
-      "https://littlesweekly.com/bay-area/christmas-parades/"
+      "https://www.lightedyachtparade.com/parade",
+      "https://www.lightedyachtparade.com/faq",
+      "https://www.bayareaparent.com/holiday-lights/"
     ],
-    "checked_at": "2026-11-07T16:39:29.257516+00:00"
+    "checked_at": "2026-11-22T16:37:44.904468+00:00"
   },
   {
     "id": "el-cerrito-winter-market-2026",
@@ -987,5 +987,35 @@
     ],
     "price_basis": "Church organizer confirms free family admission; 510 Families independently specifies free entry, storytime and the craft table.",
     "checked_at": "2026-11-21T16:07:04.095280+00:00"
+  },
+  {
+    "id": "mountain-view-circle-lights-2026",
+    "title": "Holiday Circle of Lights",
+    "date": "2026-12-01",
+    "endDate": "2027-01-01",
+    "start": "17:00",
+    "end": "21:00",
+    "ongoing": true,
+    "hoursLabel": "Daily 5–9pm",
+    "city": "Oakland",
+    "venue": "Mountain View Cemetery · 5000 Piedmont Avenue",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "✨",
+    "color": "#f0e3ca",
+    "source": "Mountain View Cemetery · organizer and Bay Area Parent",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://www.mountainviewcemetery.org/events/18th-holiday-circle-of-lights",
+    "desc": "Free outdoor holiday light display daily December 1–January 1, 5–9pm, starting at the front fountain. Features whimsical scenes, illuminated trees and buildings. The organizer explicitly says there is no charge; Bay Area Parent independently confirms the current season, hours and address. Numeric age bounds and registration availability are not published.",
+    "evidence_urls": [
+      "https://www.mountainviewcemetery.org/events/18th-holiday-circle-of-lights",
+      "https://www.bayareaparent.com/holiday-lights/",
+      "https://www.510families.com/holiday-lights-oakland/"
+    ],
+    "price_basis": "Organizer explicitly states no charge; Bay Area Parent independently lists FREE admission in its November 20, 2026 guide.",
+    "checked_at": "2026-11-22T16:37:44.904468+00:00"
   }
 ]
