@@ -1,26 +1,5 @@
 [
   {
-    "id": "ikea-ornament",
-    "title": "Holiday ornament decorating",
-    "date": "2026-11-21",
-    "start": "13:00",
-    "end": "14:00",
-    "city": "Emeryville",
-    "venue": "IKEA Emeryville · 4400 Shellmound St",
-    "price": "Free",
-    "min": null,
-    "max": null,
-    "cat": "Art & crafts",
-    "icon": "🎨",
-    "color": "#f4e8b7",
-    "source": "IKEA Emeryville",
-    "status": "Check registration",
-    "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-ornament-decorating--66c5b267-ba0f-4bb1-aae0-5c4a59165fd7/",
-    "desc": "Decorate an ornament with materials provided. IKEA Family registration required; one ornament per participant, while supplies last.",
-    "source_id": "curated",
-    "checked_at": "2026-11-03T20:00:00Z"
-  },
-  {
     "id": "ikea-holiday-28",
     "title": "Celebrate the holidays at IKEA",
     "date": "2026-11-28",
@@ -209,37 +188,6 @@
     "desc": "National event date and time; East Bay Bridge participation and local hours are not yet confirmed. Call (510) 658-4830 before going. Kids Club is intended for ages 4+.",
     "source_id": "curated",
     "checked_at": "2026-11-03T20:00:00Z"
-  },
-  {
-    "id": "ornament",
-    "title": "Christmas Car Ornament kids workshop",
-    "date": "2026-11-21",
-    "start": "09:00",
-    "end": "12:00",
-    "city": "Emeryville",
-    "venue": "Home Depot Emeryville · 3838 Hollis Avenue",
-    "price": "Free",
-    "min": 5,
-    "max": 12,
-    "cat": "Building",
-    "icon": "🚗",
-    "color": "#e4eadc",
-    "source": "Home Depot Emeryville · organizer and local calendar",
-    "status": "Check registration",
-    "url": "https://www.alamedakids.org/emeryville-kids-workshop-christmas-car/",
-    "desc": "Free Christmas Car Ornament workshop November 21, 9am–noon, confirmed on the Emeryville store page and local calendars. Adult accompaniment required. The national program is designed for ages 5–12; four-year-old participation is not confirmed. Tools and materials are provided while supplies last. Current registration availability has not been verified.",
-    "source_id": "curated",
-    "checked_at": "2026-11-19T16:52:01.474729+00:00",
-    "also_listed_at": [
-      "https://www.homedepot.com/c/kids-workshop"
-    ],
-    "price_basis": "National program explicitly provides free workshops; the Emeryville store confirms the dated session and Alameda Kids independently lists Free family admission.",
-    "evidence_urls": [
-      "https://www.homedepot.com/l/Emeryville/CA/Emeryville/94608/627",
-      "https://www.homedepot.com/c/kids-workshop",
-      "https://alamedakids.org/emeryville-kids-workshop-christmas-car",
-      "https://www.510families.com/locations/home-depot/"
-    ]
   },
   {
     "id": "train",
@@ -1017,5 +965,37 @@
     ],
     "price_basis": "Organizer explicitly states no charge; Bay Area Parent independently lists FREE admission in its November 20, 2026 guide.",
     "checked_at": "2026-11-22T16:37:44.904468+00:00"
+  },
+  {
+    "id": "lakeshore-san-leandro-gift-making-2026",
+    "title": "Holiday Gift-Making at Lakeshore",
+    "date": "2026-12-05",
+    "start": "11:00",
+    "end": "15:00",
+    "city": "San Leandro",
+    "venue": "Lakeshore Learning · 1144 Montague Avenue",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Art & crafts",
+    "icon": "🎨",
+    "color": "#e6e9db",
+    "source": "Lakeshore Learning San Leandro · organizer and local calendars",
+    "source_id": "curated",
+    "status": "No reservations needed",
+    "url": "https://www.eventbrite.com/e/free-kids-event-holiday-gift-making-featuring-ooly-san-leandro-tickets-2004911905480",
+    "desc": "Free walk-in family craft event December 5, 11am–3pm. Make keepsakes and cards with OOLY pens and markers and explore hands-on activities. Organizer lists ages 3+ with an accompanying adult and says no reservations are needed. No upper age limit is published. Shopping and optional promotions are separate from free event participation.",
+    "evidence_urls": [
+      "https://www.eventbrite.com/e/free-kids-event-holiday-gift-making-featuring-ooly-san-leandro-tickets-2004911905480",
+      "https://img.lakeshorelearning.com/is/content/OCProduction/pdf/8597056_LE%20Year%20Calendar_2026_No%20Crop.pdf",
+      "https://www.unation.com/event/free-kids-event-holiday-gift-making-featuring-ooly-san-leandro-73239396/",
+      "https://happeningnext.com/event/free-kids-event-holiday-gift-making-featuring-ooly-san-leandro-eid1ef0l9khd83a"
+    ],
+    "also_listed_at": [
+      "https://www.unation.com/event/free-kids-event-holiday-gift-making-featuring-ooly-san-leandro-73239396/",
+      "https://happeningnext.com/event/free-kids-event-holiday-gift-making-featuring-ooly-san-leandro-eid1ef0l9khd83a"
+    ],
+    "price_basis": "Organizer explicitly calls this a free family walk-in event with adult accompaniment; UNATION independently lists Free admission for the San Leandro session.",
+    "checked_at": "2026-11-23T16:46:38.568557+00:00"
   }
 ]
