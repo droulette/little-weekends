@@ -997,5 +997,34 @@
     ],
     "price_basis": "Organizer explicitly calls this a free family walk-in event with adult accompaniment; UNATION independently lists Free admission for the San Leandro session.",
     "checked_at": "2026-11-23T16:46:38.568557+00:00"
+  },
+  {
+    "id": "bay-street-chanukah-2026",
+    "title": "Bay Street Chanukah Celebration",
+    "date": "2026-12-06",
+    "start": "15:30",
+    "end": "17:00",
+    "city": "Emeryville",
+    "venue": "Bay Street Emeryville · South Bay Street Plaza, 5616 Bay Street",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "🎉",
+    "color": "#f0e3ca",
+    "source": "Bay Street Emeryville · organizer and 510 Families",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://baystreetemeryville.com/events/celebrate-the-festival-of-lights-2/",
+    "desc": "Free family celebration December 6 with children’s crafts, live music, entertainment, holiday treats and a sunset menorah lighting. Organizer confirms a 3:30pm start; 510 Families lists a 5pm end. Free and open to everyone. Garage parking, shopping and other purchases cost extra. Numeric age bounds and registration availability are not published.",
+    "evidence_urls": [
+      "https://baystreetemeryville.com/events/celebrate-the-festival-of-lights-2/",
+      "https://www.510families.com/calendar/chanukah-celebration/"
+    ],
+    "also_listed_at": [
+      "https://www.510families.com/calendar/chanukah-celebration/"
+    ],
+    "price_basis": "Organizer explicitly says free and open to everyone; 510 Families independently lists Free admission for the dated family celebration.",
+    "checked_at": "2026-11-24T16:57:54.542542+00:00"
   }
 ]
