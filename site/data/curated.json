@@ -1026,5 +1026,36 @@
     ],
     "price_basis": "Organizer explicitly says free and open to everyone; 510 Families independently lists Free admission for the dated family celebration.",
     "checked_at": "2026-11-24T16:57:54.542542+00:00"
+  },
+  {
+    "id": "south-shore-tree-lighting-2026",
+    "title": "South Shore holiday tree lighting",
+    "date": "2026-11-27",
+    "start": "16:00",
+    "end": "18:00",
+    "city": "Alameda",
+    "venue": "Alameda South Shore Center · 523 South Shore Center West",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "🎉",
+    "color": "#f0e3ca",
+    "source": "South Shore Center · organizer and local calendars",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://www.alamedasouthshorecenter.com/event/45655-tree-lighting-free-family-event",
+    "desc": "Free family celebration Friday November 27, 4–6pm, with live music, the Tap Dancing Christmas Trees and Santa lighting the tree at 5:15pm. Includes flashing lights. Children’s light-up gifts are limited to one per child while supplies last. Numeric age bounds and registration availability are not published. Turn off weekend-only to see this Friday outing.",
+    "evidence_urls": [
+      "https://www.alamedasouthshorecenter.com/event/45655-tree-lighting-free-family-event",
+      "https://www.510families.com/calendar/alameda-south-shore-centers-holiday-tree-lighting-ceremony/",
+      "https://thealamedapulse.co/events/1f45347c-e426-4f95-817f-55e68952bd7a"
+    ],
+    "also_listed_at": [
+      "https://www.510families.com/calendar/alameda-south-shore-centers-holiday-tree-lighting-ceremony/",
+      "https://thealamedapulse.co/events/1f45347c-e426-4f95-817f-55e68952bd7a"
+    ],
+    "price_basis": "Organizer labels this a FREE FAMILY EVENT; 510 Families and The Alameda Pulse confirm free family admission for the dated celebration.",
+    "checked_at": "2026-11-25T16:50:24.072266+00:00"
   }
 ]
