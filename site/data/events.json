@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-24T23:31:32.267093+00:00",
-  "last_successful_collection": "2026-11-24T23:31:32.267093+00:00",
+  "generated_at": "2026-11-25T16:51:47.668047+00:00",
+  "last_successful_collection": "2026-11-25T16:51:47.668047+00:00",
   "sources": [
     {
       "id": "ikea",
       "name": "IKEA Emeryville",
       "url": "https://www.ikea.com/us/en/stores/emeryville/",
       "mode": "automatic",
-      "last_success": "2026-11-24T23:31:32.267093+00:00",
-      "last_attempt": "2026-11-24T23:31:32.267093+00:00",
+      "last_success": "2026-11-25T16:51:47.668047+00:00",
+      "last_attempt": "2026-11-25T16:51:47.668047+00:00",
       "state": "ok",
       "count": 11,
       "note": "Official Emeryville store data; only free family activities."
@@ -19,8 +19,8 @@
       "name": "Temescal Branch Library",
       "url": "https://oaklandlibrary.bibliocommons.com/v2/events?locations=TMA",
       "mode": "automatic",
-      "last_success": "2026-11-24T23:31:32.267093+00:00",
-      "last_attempt": "2026-11-24T23:31:32.267093+00:00",
+      "last_success": "2026-11-25T16:51:47.668047+00:00",
+      "last_attempt": "2026-11-25T16:51:47.668047+00:00",
       "state": "ok",
       "count": 51,
       "note": "First 6 pages of the Temescal-filtered calendar; Temescal Branch only; children/family audiences."
@@ -30,10 +30,10 @@
       "name": "Alameda Kids · free family events",
       "url": "https://www.alamedakids.org/calendar",
       "mode": "automatic",
-      "last_success": "2026-11-24T23:31:32.267093+00:00",
-      "last_attempt": "2026-11-24T23:31:32.267093+00:00",
+      "last_success": "2026-11-25T16:51:47.668047+00:00",
+      "last_attempt": "2026-11-25T16:51:47.668047+00:00",
       "state": "ok",
-      "count": 15,
+      "count": 16,
       "note": "Free local family events, including festivals, workshops, and San Leandro / Castro Valley activities."
     },
     {
@@ -42,8 +42,8 @@
       "url": "https://www.510families.com/feed/",
       "mode": "automatic",
       "kind": "articles",
-      "last_success": "2026-11-24T23:31:32.267093+00:00",
-      "last_attempt": "2026-11-24T23:31:32.267093+00:00",
+      "last_success": "2026-11-25T16:51:47.668047+00:00",
+      "last_attempt": "2026-11-25T16:51:47.668047+00:00",
       "state": "ok",
       "count": 5,
       "note": "Publisher RSS: recent weekend and budget articles, not a calendar feed. Article publication dates are not event dates; guides can include paid ideas."
@@ -53,8 +53,8 @@
       "name": "SF Funcheap · East Bay",
       "url": "https://sf.funcheap.com/region/east-bay/",
       "mode": "automatic",
-      "last_success": "2026-11-24T23:31:32.267093+00:00",
-      "last_attempt": "2026-11-24T23:31:32.267093+00:00",
+      "last_success": "2026-11-25T16:51:47.668047+00:00",
+      "last_attempt": "2026-11-25T16:51:47.668047+00:00",
       "state": "ok",
       "count": 0,
       "note": "Family-keyword candidates only; events without a structured local address are skipped."
@@ -98,6 +98,47 @@
   ],
   "events": [
     {
+      "id": "south-shore-tree-lighting-2026",
+      "title": "South Shore holiday tree lighting",
+      "date": "2026-11-27",
+      "start": "16:00",
+      "end": "18:00",
+      "city": "Alameda",
+      "venue": "Alameda South Shore Center · 523 South Shore Center West",
+      "price": "Free",
+      "min": null,
+      "max": null,
+      "cat": "Celebrations",
+      "icon": "🎉",
+      "color": "#f0e3ca",
+      "source": "South Shore Center · organizer and local calendars",
+      "source_id": "curated",
+      "status": "Organizer and local calendar",
+      "url": "https://www.alamedasouthshorecenter.com/event/45655-tree-lighting-free-family-event",
+      "desc": "Free family celebration Friday November 27, 4–6pm, with live music, the Tap Dancing Christmas Trees and Santa lighting the tree at 5:15pm. Includes flashing lights. Children’s light-up gifts are limited to one per child while supplies last. Numeric age bounds and registration availability are not published. Turn off weekend-only to see this Friday outing.",
+      "evidence_urls": [
+        "https://www.alamedasouthshorecenter.com/event/45655-tree-lighting-free-family-event",
+        "https://www.510families.com/calendar/alameda-south-shore-centers-holiday-tree-lighting-ceremony/",
+        "https://thealamedapulse.co/events/1f45347c-e426-4f95-817f-55e68952bd7a"
+      ],
+      "also_listed_at": [
+        "https://www.510families.com/calendar/alameda-south-shore-centers-holiday-tree-lighting-ceremony/",
+        "https://thealamedapulse.co/events/1f45347c-e426-4f95-817f-55e68952bd7a"
+      ],
+      "price_basis": "Organizer labels this a FREE FAMILY EVENT; 510 Families and The Alameda Pulse confirm free family admission for the dated celebration.",
+      "checked_at": "2026-11-25T16:50:24.072266+00:00",
+      "stale": false,
+      "alternate_ids": [],
+      "listings": [
+        {
+          "source_id": "curated",
+          "source": "South Shore Center · organizer and local calendars",
+          "url": "https://www.alamedasouthshorecenter.com/event/45655-tree-lighting-free-family-event",
+          "checked_at": "2026-11-25T16:50:24.072266+00:00"
+        }
+      ]
+    },
+    {
       "id": "ikea-holiday-28",
       "title": "Celebrate the Holidays at IKEA!",
       "date": "2026-11-28",
@@ -121,10 +162,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/celebrate-the-holidays-at-ikea--6366cc2f-a20c-4065-955c-1b32a69c6c2c/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -152,10 +193,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-card-making--de99e7ae-03de-40d6-a08c-95de089bcf3c/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -175,7 +216,7 @@
       "color": "#e6e9db",
       "source": "IKEA Emeryville",
       "source_id": "ikea",
-      "status": "Registration required",
+      "status": "Full · check waitlist",
       "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-cookie-decorating--08b6d636-8a1b-4ca8-95e0-f785f3f2ded6/",
       "desc": "IKEA Family signup required. Space is limited. Reserve your spot today! Registration and check-in required. For ages 12 and under. Children must be accompanied by an adult.",
       "listings": [
@@ -183,10 +224,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-cookie-decorating--08b6d636-8a1b-4ca8-95e0-f785f3f2ded6/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -214,10 +255,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-photo-frame-decorating--4fa55662-8eba-4569-ab05-952bdd4e905b/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -246,10 +287,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6adfdb13de685359098bc002/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -314,10 +355,10 @@
           "source_id": "alamedakids",
           "source": "Alameda Kids · free family events",
           "url": "https://www.alamedakids.org/oakland-holiday-tree-lighting-ceremony",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -345,10 +386,10 @@
           "source_id": "alamedakids",
           "source": "Alameda Kids · free family events",
           "url": "https://www.alamedakids.org/oakland-magic-christmas-lighting-concert",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -376,10 +417,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/celebrate-the-holidays-at-ikea--6366cc2f-a20c-4065-955c-1b32a69c6c2c/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -407,10 +448,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-card-making--de99e7ae-03de-40d6-a08c-95de089bcf3c/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -438,10 +479,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-cookie-decorating--08b6d636-8a1b-4ca8-95e0-f785f3f2ded6/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -469,10 +510,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-photo-frame-decorating--4fa55662-8eba-4569-ab05-952bdd4e905b/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -501,10 +542,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206aec/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -548,6 +589,37 @@
       ]
     },
     {
+      "id": "event-267f3242551803f2a5",
+      "title": "Castro Valley - Christmas Tree Lighting",
+      "date": "2026-12-04",
+      "start": "17:00",
+      "end": "20:00",
+      "city": "Castro Valley",
+      "venue": "Castro Valley Shopping Center, 3389 Village Dr., Castro Valley",
+      "price": "Free",
+      "min": null,
+      "max": null,
+      "cat": "Stories & play",
+      "icon": "🧸",
+      "color": "#dce8dd",
+      "source": "Alameda Kids · free family events",
+      "source_id": "alamedakids",
+      "status": "Local family calendar",
+      "url": "https://www.alamedakids.org/castro-valley-christmas-tree-lighting",
+      "desc": "Celebrate the holiday season at Castro Village’s Annual Christmas Tree Lighting Event. The festive evening features holiday music, live entertainment, and free photos with Santa Claus.",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
+      "stale": false,
+      "alternate_ids": [],
+      "listings": [
+        {
+          "source_id": "alamedakids",
+          "source": "Alameda Kids · free family events",
+          "url": "https://www.alamedakids.org/castro-valley-christmas-tree-lighting",
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
+        }
+      ]
+    },
+    {
       "id": "sl-holidays-2026",
       "title": "It’s a Wonderful Night",
       "date": "2026-12-04",
@@ -581,6 +653,37 @@
           "source": "Downtown San Leandro · organizer",
           "url": "https://downtownsanleandro.com/events/29th-annual-its-a-wonderful-night/",
           "checked_at": "2026-11-13T16:40:59.689927+00:00"
+        }
+      ]
+    },
+    {
+      "id": "event-16b6f8af2aad4304c7",
+      "title": "San Leandro - It's a Wonderful Night",
+      "date": "2026-12-04",
+      "start": "17:00",
+      "end": "21:00",
+      "city": "San Leandro",
+      "venue": "Downtown San Leandro, 320 W. Estudillo Ave., San Leandro",
+      "price": "Free",
+      "min": null,
+      "max": null,
+      "cat": "Stories & play",
+      "icon": "🧸",
+      "color": "#dce8dd",
+      "source": "Alameda Kids · free family events",
+      "source_id": "alamedakids",
+      "status": "Local family calendar",
+      "url": "https://www.alamedakids.org/san-leandro-its-wonderful-night",
+      "desc": "Join Downtown San Leandro for the annual holiday celebration. Ring in the holidays with the annual tree lighting, holiday performances, free photos with Santa, holiday train rides, kids zone, holiday market, holiday drinks, and more!",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
+      "stale": false,
+      "alternate_ids": [],
+      "listings": [
+        {
+          "source_id": "alamedakids",
+          "source": "Alameda Kids · free family events",
+          "url": "https://www.alamedakids.org/san-leandro-its-wonderful-night",
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ]
     },
@@ -687,12 +790,43 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a834c85be1482002987efe1/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
+    },
+    {
+      "id": "event-12755014f888454ed9",
+      "title": "Oakland - Social Justice Children's Book Fair",
+      "date": "2026-12-05",
+      "start": "11:00",
+      "end": "15:00",
+      "city": "Oakland",
+      "venue": "Emerson Elementary School, 4803 Lawton Ave., Oakland",
+      "price": "Free",
+      "min": null,
+      "max": null,
+      "cat": "Celebrations",
+      "icon": "🎉",
+      "color": "#f0e3ca",
+      "source": "Alameda Kids · free family events",
+      "source_id": "alamedakids",
+      "status": "Local family calendar",
+      "url": "https://www.alamedakids.org/oakland-social-justice-childrens-book-fair",
+      "desc": "The Social Justice Children's Book Fair invites families to read alouds. The fair celebrates diversity, inclusivity, and the power of storytelling. Check out panels, read alouds, activities, and more.",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
+      "stale": false,
+      "alternate_ids": [],
+      "listings": [
+        {
+          "source_id": "alamedakids",
+          "source": "Alameda Kids · free family events",
+          "url": "https://www.alamedakids.org/oakland-social-justice-childrens-book-fair",
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
+        }
+      ]
     },
     {
       "id": "social-justice-childrens-book-fair-2026",
@@ -945,7 +1079,7 @@
       "also_listed_at": [
         "https://www.510families.com/calendar/hot-cocoa-stroll/"
       ],
-      "stale": false,
+      "stale": true,
       "alternate_ids": [],
       "listings": [
         {
@@ -1205,10 +1339,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206aed/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1236,10 +1370,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/julbord-buffet-tickets-on-sale-now-in-store--a2ab97b1-a19a-41e9-ac4d-dbf6ecc92d40/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1551,10 +1685,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67722/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1583,10 +1717,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206aee/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1825,10 +1959,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a834c85be1482002987efe2/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1857,10 +1991,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206aef/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1889,10 +2023,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67723/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1921,10 +2055,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af0/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1953,10 +2087,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af1/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -1985,10 +2119,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af2/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2017,10 +2151,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af3/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2049,10 +2183,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a834c85be1482002987efe3/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2081,10 +2215,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67724/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2113,10 +2247,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af4/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2145,10 +2279,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af5/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2177,10 +2311,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af6/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2209,10 +2343,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af7/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2241,10 +2375,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a834c85be1482002987efe4/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2273,10 +2407,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67725/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2305,10 +2439,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af8/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2337,10 +2471,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206af9/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2369,10 +2503,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206afa/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2401,10 +2535,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206afb/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2433,10 +2567,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a834c85be1482002987efe5/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2465,10 +2599,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206afc/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2497,10 +2631,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67726/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2529,10 +2663,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206afd/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2561,10 +2695,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206afe/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2593,10 +2727,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206aff/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2625,10 +2759,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b00/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2657,10 +2791,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67727/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2689,10 +2823,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b01/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2721,10 +2855,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b02/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2753,10 +2887,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b03/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2785,10 +2919,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b04/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2817,10 +2951,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b05/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2849,10 +2983,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67728/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2881,10 +3015,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b06/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2913,10 +3047,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b07/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2945,10 +3079,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b08/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -2977,10 +3111,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b09/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3009,10 +3143,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a7247d4f4e5db3d00c67729/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3041,10 +3175,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b0a/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3073,10 +3207,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b0b/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3105,10 +3239,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b0c/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3137,10 +3271,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b0d/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3169,10 +3303,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b0e/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3201,10 +3335,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b0f/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3233,10 +3367,10 @@
           "source_id": "opl",
           "source": "Temescal Branch Library",
           "url": "https://oaklandlibrary.bibliocommons.com/v2/events/6a724789e9de653600206b10/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3267,10 +3401,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/gnome-in-the-home-scavenger-hunt--e0ddf204-25eb-4cc0-8b87-ad4eae9adc07/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3301,10 +3435,10 @@
           "source_id": "ikea",
           "source": "IKEA Emeryville",
           "url": "https://www.ikea.com/us/en/stores/events/ikea-emeryville-ca/holiday-toy-drive-at-ikea-emeryville--daedd05a-8274-4329-998d-2d83f9b420c6/",
-          "checked_at": "2026-11-24T23:31:32.267093+00:00"
+          "checked_at": "2026-11-25T16:51:47.668047+00:00"
         }
       ],
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "stale": false,
       "alternate_ids": []
     },
@@ -3355,7 +3489,7 @@
       "title": "10+ Free Holiday Happenings at Alameda South Shore Center",
       "url": "https://www.510families.com/christmas-alameda-south-shore/",
       "published_at": "2026-11-24T17:00:19+00:00",
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "source": "510 Families",
       "source_id": "510",
       "summary": "Beginning with a tree lighting Nov. 27 through Christmas Eve, your family can visit Santa Claus and see holiday movies outdoors. The post 10+ Free Holiday Happenings at Alameda South Shore Center appeared first on 510 Families .",
@@ -3375,7 +3509,7 @@
       "title": "Fun Things To Do in the East Bay this Weekend: Nov. 21 – 22",
       "url": "https://www.510families.com/oakland-weekend-picks-for-kids/",
       "published_at": "2026-11-18T17:00:18+00:00",
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "source": "510 Families",
       "source_id": "510",
       "summary": "The weekend again? Every week, Tiffany, mom to three young ones, chooses her favorite activities and events. The post Fun Things To Do in the East Bay this Weekend: Nov. 21 – 22 appeared first on 510 Families .",
@@ -3389,7 +3523,7 @@
       "title": "Best Christmas Lights in the East Bay",
       "url": "https://www.510families.com/holiday-lights-oakland/",
       "published_at": "2026-11-18T12:00:56+00:00",
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "source": "510 Families",
       "source_id": "510",
       "summary": "We love holiday lights! Whether you stay in the car and do a \"drive-by\" or get out to stroll, East Bay Christmas light displays are a fun winter tradition. The post Best Christmas Lights in the East Bay appeared first on 510 Families .",
@@ -3409,7 +3543,7 @@
       "title": "Best Bay Area Christmas Events for Families",
       "url": "https://www.510families.com/east-bay-holiday-activities/",
       "published_at": "2026-11-17T23:12:16+00:00",
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "source": "510 Families",
       "source_id": "510",
       "summary": "Your Christmas planner of family-friendly Bay Area Christmas event picks for toddlers to teens. The post Best Bay Area Christmas Events for Families appeared first on 510 Families .",
@@ -3429,7 +3563,7 @@
       "title": "Indigenous People’s Heritage Month for Kids",
       "url": "https://www.510families.com/indigenous-peoples-heritage-month/",
       "published_at": "2026-11-15T17:00:35+00:00",
-      "checked_at": "2026-11-24T23:31:32.267093+00:00",
+      "checked_at": "2026-11-25T16:51:47.668047+00:00",
       "source": "510 Families",
       "source_id": "510",
       "summary": "November is Indigenous People’s Heritage Month. Here are a few ways to reflect on the cultures, traditions, and history of the Bay Area's first peoples. The post Indigenous People’s Heritage Month for Kids appeared first on 510 Families .",
@@ -3448,54 +3582,13 @@
   "note": "Public, free family listings. Collection is bounded and may miss events. Check organizer details before attending.",
   "collection_summary": {
     "previous_count": 97,
-    "current_count": 97,
-    "added": 0,
+    "current_count": 101,
+    "added": 4,
     "removed_expired": 0,
     "removed_other": 0,
     "retained_unchecked": 33
   },
   "collection_history": [
-    {
-      "generated_at": "2026-11-12T23:17:20.370509+00:00",
-      "event_count": 93,
-      "sources": [
-        {
-          "id": "ikea",
-          "name": "IKEA Emeryville",
-          "state": "ok",
-          "count": 14,
-          "unit": "events"
-        },
-        {
-          "id": "opl",
-          "name": "Temescal Branch Library",
-          "state": "ok",
-          "count": 55,
-          "unit": "events"
-        },
-        {
-          "id": "alamedakids",
-          "name": "Alameda Kids · free family events",
-          "state": "ok",
-          "count": 23,
-          "unit": "events"
-        },
-        {
-          "id": "510",
-          "name": "510 Families · RSS guides",
-          "state": "ok",
-          "count": 4,
-          "unit": "guides"
-        },
-        {
-          "id": "funcheap",
-          "name": "SF Funcheap · East Bay",
-          "state": "ok",
-          "count": 0,
-          "unit": "events"
-        }
-      ]
-    },
     {
       "generated_at": "2026-11-12T23:23:11.726470+00:00",
       "event_count": 93,
@@ -4667,6 +4760,47 @@
           "name": "Alameda Kids · free family events",
           "state": "ok",
           "count": 15,
+          "unit": "events"
+        },
+        {
+          "id": "510",
+          "name": "510 Families · RSS guides",
+          "state": "ok",
+          "count": 5,
+          "unit": "guides"
+        },
+        {
+          "id": "funcheap",
+          "name": "SF Funcheap · East Bay",
+          "state": "ok",
+          "count": 0,
+          "unit": "events"
+        }
+      ]
+    },
+    {
+      "generated_at": "2026-11-25T16:51:47.668047+00:00",
+      "event_count": 101,
+      "sources": [
+        {
+          "id": "ikea",
+          "name": "IKEA Emeryville",
+          "state": "ok",
+          "count": 11,
+          "unit": "events"
+        },
+        {
+          "id": "opl",
+          "name": "Temescal Branch Library",
+          "state": "ok",
+          "count": 51,
+          "unit": "events"
+        },
+        {
+          "id": "alamedakids",
+          "name": "Alameda Kids · free family events",
+          "state": "ok",
+          "count": 16,
           "unit": "events"
         },
         {
