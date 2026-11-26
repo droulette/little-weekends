@@ -1057,5 +1057,36 @@
     ],
     "price_basis": "Organizer labels this a FREE FAMILY EVENT; 510 Families and The Alameda Pulse confirm free family admission for the dated celebration.",
     "checked_at": "2026-11-25T16:50:24.072266+00:00"
+  },
+  {
+    "id": "montclair-holiday-stroll-2026",
+    "title": "Montclair Village Holiday Stroll",
+    "date": "2026-12-10",
+    "start": "16:30",
+    "end": "20:00",
+    "city": "Oakland",
+    "venue": "Montclair Village · Mountain Boulevard & Medau Place",
+    "price": "Free",
+    "min": null,
+    "max": null,
+    "cat": "Celebrations",
+    "icon": "🎉",
+    "color": "#f0e3ca",
+    "source": "Montclair Village Association · organizer and Alameda Kids",
+    "source_id": "curated",
+    "status": "Organizer and local calendar",
+    "url": "https://www.montclairvillage.com/holiday-stroll",
+    "desc": "Free admission and entertainment December 10, 4:30–8pm, with crafts, storytime, button-making, lawn games, caroling and live performances. Professional Santa photos cost $35; food and shopping cost extra. Organizer and Alameda Kids agree on the 4:30pm start. Numeric age bounds and registration availability are not published. Turn off weekend-only to see this Thursday district festival.",
+    "evidence_urls": [
+      "https://www.montclairvillage.com/holiday-stroll",
+      "https://www.alamedakids.org/oakland-montclair-village-holiday-stroll",
+      "https://www.visitoakland.com/event/montclair-village-holiday-stroll/36173/",
+      "https://sf.funcheap.com/free-montclair-village-holiday-stroll-caroling-crafts-40-local-shops-oakland/"
+    ],
+    "also_listed_at": [
+      "https://www.alamedakids.org/oakland-montclair-village-holiday-stroll"
+    ],
+    "price_basis": "Organizer explicitly states free admission and entertainment; Alameda Kids independently lists Free for the dated local family event. Paid Santa photos are separate.",
+    "checked_at": "2026-11-26T16:16:18.204860+00:00"
   }
 ]
