@@ -229,17 +229,24 @@
     "cat": "Celebrations",
     "icon": "🎉",
     "color": "#f0e3ca",
-    "source": "Downtown San Leandro · organizer",
+    "source": "Downtown San Leandro · organizer and Alameda Kids",
     "source_id": "curated",
     "status": "Organizer and local calendar",
     "url": "https://downtownsanleandro.com/events/29th-annual-its-a-wonderful-night/",
-    "desc": "Free community holiday celebration December 4, 5–9pm. Tree lighting at 5:30pm in Estudillo Plaza, followed by festivities around W. Juana Avenue and Butterfly Plaza. The organizer lists performances, free Santa photos, train rides, a kids zone and a holiday market. Food, shopping and parking can cost extra. Current organizer and Eventeny dates now agree; GoBayArea independently confirms the outing. No numeric age limits or registration availability are published.",
-    "checked_at": "2026-11-13T16:40:59.689927+00:00",
-    "price_basis": "Organizer-hosted Eventeny page describes a free community event; GoBayArea independently lists Free admission.",
+    "desc": "Free family holiday celebration December 4, 5–9pm. Tree lighting at 5:30pm in Estudillo Plaza, with festivities centered on W. Juana Avenue and Butterfly Plaza. Organizer lists performances, free Santa photos, train rides, a kids zone and a holiday market; Alameda Kids confirms free event admission and hours. Food, shopping and parking can cost extra. Prices for individual extras, numeric age bounds and registration availability are not confirmed.",
+    "checked_at": "2026-11-27T16:18:55.646786+00:00",
+    "price_basis": "Alameda Kids explicitly lists Cost: Free for this dated family outing; current organizer confirms the local celebration, program and hours.",
     "evidence_urls": [
       "https://downtownsanleandro.com/events/29th-annual-its-a-wonderful-night/",
       "https://www.eventeny.com/events/copy-of-its-a-wonderful-night-2026-34646/",
-      "https://gobayarea.com/events/its-a-wonderful-night-san-leandro"
+      "https://gobayarea.com/events/its-a-wonderful-night-san-leandro",
+      "https://www.alamedakids.org/san-leandro-its-wonderful-night"
+    ],
+    "also_listed_at": [
+      "https://www.alamedakids.org/san-leandro-its-wonderful-night"
+    ],
+    "alternate_ids": [
+      "event-16b6f8af2aad4304c7"
     ]
   },
   {
